@@ -87,9 +87,9 @@ Below is the verified catalogue of all capabilities currently built and function
 
 ### 4. Zero-Downtime Dual Camera Redundancy
 * **Target File:** [`android/.../camera/CameraManager.kt`](file:///E:/HAckbios-R&D/hackbios-neuraX/android/app/src/main/java/ai/drishti/camera/CameraManager.kt)
-* **Chest-Mounted ESP32-CAM ([mjpeg_streamer.ino](file:///E:/HAckbios-R&D/hackbios-neuraX/esp32-firmware/mjpeg_streamer/mjpeg_streamer.ino)):** Streams VGA ($640 \times 480$) chunked HTTP MJPEG over Wi-Fi SoftAP @ 10–15 FPS. Stabilizes forward field-of-view against head movement.
-* **Seamless Hot Handover (<500 ms):** If external Wi-Fi drops or frame delivery stalls, `CameraManager` instantly falls back to native **Android CameraX** (Back or Front lens) with zero downtime, speaking: *"ESP32 camera lost. Switched to phone camera."*
-* **Background Polling:** Continuously polls in the background to automatically reconnect the chest camera once Wi-Fi recovers.
+* **Smart Sunglasses ESP32-CAM ([mjpeg_streamer.ino](file:///E:/HAckbios-R&D/hackbios-neuraX/esp32-firmware/mjpeg_streamer/mjpeg_streamer.ino)):** Streams VGA ($640 \times 480$) chunked HTTP MJPEG over Wi-Fi SoftAP @ 10–15 FPS from camera integrated in the sunglasses frame. Captures true gaze-aligned, eye-level field of view.
+* **Seamless Hot Handover (<500 ms):** If sunglasses Wi-Fi drops or frame delivery stalls, `CameraManager` instantly falls back to native **Android CameraX** (Back or Front lens) with zero downtime, speaking: *"External camera lost. Switched to phone camera."*
+* **Background Polling:** Continuously polls in the background to automatically reconnect the sunglasses camera once Wi-Fi recovers.
 
 ---
 

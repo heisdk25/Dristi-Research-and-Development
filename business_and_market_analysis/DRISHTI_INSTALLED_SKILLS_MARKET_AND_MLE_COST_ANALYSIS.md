@@ -8,7 +8,7 @@
 Project Drishti addresses the global crisis of assistive visual technology exclusion. While over **2.2 billion people** globally live with vision impairment (including **43.3 million blind** individuals and **295 million** with moderate-to-severe visual impairment), commercial assistive hardware remains restricted to the top **0.1%** wealth bracket due to prohibitive pricing ($3,500 – $4,500 for OrCam MyEye; $2,500 for Envision Glasses). Conversely, smartphone-only software solutions (Seeing AI, Be My Eyes) require visually impaired users to physically occupy one hand with a smartphone, monopolizing the white-cane hand and creating severe street-level drop and theft risks.
 
 Applying the `market-research` intelligence standards and the `mle-workflow` production machine learning engineering discipline reveals a decisive architectural and commercial opportunity:
-1. **Bring-Your-Own-Device (BYOD) Decoupling:** By building a **$6.46 (₹536)** chest-mounted camera pendant that tethers to the user's existing Android smartphone, Drishti reduces manufacturing Capex by **99.6%** compared to proprietary smart glasses.
+1. **Bring-Your-Own-Device (BYOD) Decoupling:** By building **$6.46 (₹536)** smart assistive sunglasses with integrated camera and edge transmitter hardware that tethers to the user's existing Android smartphone, Drishti reduces manufacturing Capex by **99.6%** compared to proprietary smart glasses.
 2. **Asymmetric Mistake Economics & Edge-Cloud Split:** By assigning continuous hazard detection (YOLOv8n INT8 + monocular depth heuristics) strictly to the edge at sub-350ms latency, Drishti guarantees zero cloud API cost for continuous navigation safety while maintaining a strict mistake budget.
 3. **Ultra-Low Opex of ₹2.55 ($0.03) Per User Per Day:** Cloud conversational reasoning (Gemini 2.0 Flash) and vernacular Indian voice processing (Sarvam Saaras & Bulbul) cost just **₹76.61 ($0.92) per user per month**, delivering a **48.6% gross margin** on a ₹149/month consumer subscription.
 4. **Clear Pre-Funded Public Procurement Pathway:** In India, the Ministry of Social Justice and Empowerment's **ADIP Scheme** subsidizes high-tech aids up to **₹12,000 per person**, allowing Drishti to be distributed at **100% free cost to low-income beneficiaries** through state procurement.
@@ -64,7 +64,7 @@ The table below contrasts vendor marketing claims against verified technical and
 | **Envision Glasses** | Google Glass Enterprise edition | "Hands-free AI companion powered by GPT-4" | • Bulky enterprise frame looks stigmatizing.<br>• Battery drains in ~2 hours.<br>• Requires ongoing €20/month subscription after paying $2,500 up front. | **$2,499 – $3,269**<br>(₹2,05,000 – ₹2,70,000) | **0.05%** (Unaffordable in India/Latin America/Africa). |
 | **WeWALK Smart Cane** | Ultrasonic sensor handle | "Revolutionary smart navigation cane" | • Only detects chest-height obstacles via ultrasonic ping; **no camera/computer vision**.<br>• Cannot read text, recognize currency, or describe scenes.<br>• Heavy handle causes wrist fatigue. | **$599**<br>(₹49,500) | **0.5%** (Too expensive for simple sonar beeps). |
 | **Seeing AI / Be My Eyes** | Mobile software app | "Free AI sight in your pocket" | • **Occupies the cane hand:** user cannot hold a white cane and the phone simultaneously safely.<br>• Smartphone camera drops, breaks, or gets snatched.<br>• Continuous cloud streaming overheats phones and drains battery within 1.5 hrs. | **Free** (or $15/mo for Be My Eyes Pro) | **High software installs, but low outdoor usability due to physical hazard.** |
-| **Project Drishti** | **Hands-Free Chest Pendant + Android App** | **Voice-First Hybrid Edge-Cloud Companion** | • **Hands completely free:** White cane remains unobstructed.<br>• Sub-350ms local safety reflex runs offline.<br>• Cloud multimodal reasoning on-demand.<br>• Native Hindi & regional voice models. | **$14.40 Device**<br>(₹1,199)<br>+ ₹149/mo sub | **100% Scalable** (Within ADIP government grant ceiling of ₹12,000). |
+| **Project Drishti** | **Smart Assistive Sunglasses + Android App** | **Voice-First Hybrid Edge-Cloud Companion** | • **Hands completely free:** Natural eyewear form factor; white cane remains unobstructed.<br>• Sub-350ms local safety reflex runs offline.<br>• Cloud multimodal reasoning on-demand.<br>• Native Hindi & regional voice models. | **$14.40 Device**<br>(₹1,199)<br>+ ₹149/mo sub | **100% Scalable** (Within ADIP government grant ceiling of ₹12,000). |
 
 ---
 
@@ -132,23 +132,23 @@ Path Clear     │   Nuisance Beep    │   Silent Walking   │
 
 ## 5. Cost of Creation (Capex / BOM Breakdown per Person)
 
-Drishti leverages standard off-the-shelf components manufactured at volume. The user's smartphone supplies the screen, battery, cellular radio, and CPU. Only the **Chest Pendant** is produced:
+Drishti leverages standard off-the-shelf components manufactured at volume. The user's smartphone supplies the screen, battery, cellular radio, and CPU. The physical hardware product manufactured is the **Smart Assistive Sunglasses**:
 
 ### 5.1 Itemized Bill of Materials (BOM)
 
 | Item | Component Specification | Role in Architecture | Cost @ 1k Units [INR] | Cost @ 10k Units [INR] | USD (10k) | Sourced Vendor Tier |
 | :---: | :--- | :--- | :---: | :---: | :---: | :--- |
-| **1** | **AI-Thinker ESP32-CAM Board**<br>(ESP32-S SoC, 520KB SRAM + 4MB PSRAM, Wi-Fi 802.11 b/g/n) | Local Wi-Fi MJPEG streaming web server | ₹420.00 | ₹340.00 | \$4.10 | Espressif tier-1 distributor |
-| **2** | **OmniVision OV2640 2MP Camera Sensor**<br>(UXGA resolution, 15–30 FPS QVGA stream) | Primary video capture module | Included in board | Included in board | — | Bundled with AI-Thinker |
-| **3** | **120° Wide-Angle Lens Ribbon Cable**<br>(Replaces standard 68° lens for peripheral view) | Captures 10 o'clock and 2 o'clock side hazards | ₹85.00 | ₹55.00 | \$0.66 | Shenzhen King-Display Optotech |
-| **4** | **Custom Ergonomic Wearable Enclosure**<br>(Injection-molded ABS with ventilation slots) | Lightweight casing clipped to shirt or chest harness | ₹75.00 | ₹32.00 | \$0.39 | Local toolmaker / Moldex India |
-| **5** | **Tactile Privacy Power Switch**<br>(Heavy tactile detent slider with Braille dot) | Blind-accessible physical privacy mute & power | ₹18.00 | ₹9.00 | \$0.11 | C&K / Omron switch OEM |
-| **6** | **Braided 90° USB-C Power Tether Cable (1m)**<br>(Draws 5V 180mA via OTG from phone) | Eliminates onboard battery weight and wear | ₹45.00 | ₹25.00 | \$0.30 | Foxconn / Baseus contract OEM |
-| **7** | **Lanyard & Neodymium Magnetic Chest Dock** | Stabilizes pendant flat against chest while walking | ₹40.00 | ₹22.00 | \$0.27 | Dongguan Magwell Magnetics |
+| **1** | **AI-Thinker ESP32-CAM Board**<br>(ESP32-S SoC, 520KB SRAM + 4MB PSRAM, Wi-Fi 802.11 b/g/n) | Integrated inside sunglasses temple arm as local streaming server | ₹420.00 | ₹340.00 | \$4.10 | Espressif tier-1 distributor |
+| **2** | **OmniVision OV2640 2MP Camera Sensor**<br>(UXGA resolution, 15–30 FPS QVGA stream) | Eye-level forward video capture module at sunglasses bridge | Included in board | Included in board | — | Bundled with AI-Thinker |
+| **3** | **120° Wide-Angle Lens Ribbon Cable**<br>(Replaces standard 68° lens for peripheral view) | Captures 10 o'clock and 2 o'clock side hazards at true gaze level | ₹85.00 | ₹55.00 | \$0.66 | Shenzhen King-Display Optotech |
+| **4** | **Lightweight Sunglasses Frame with Temple Housing**<br>(Injection-molded TR90 / Polycarbonate with UV400 dark lenses) | Ergonomic sunglasses chassis housing electronics and UV eye protection | ₹75.00 | ₹32.00 | \$0.39 | Optical frame OEM / Wenzhou eyewear |
+| **5** | **Tactile Privacy Power Switch**<br>(Heavy tactile detent slider with Braille dot on temple arm) | Blind-accessible physical privacy mute & power toggle | ₹18.00 | ₹9.00 | \$0.11 | C&K / Omron switch OEM |
+| **6** | **Braided 90° USB-C Power Tether Cable (1m)**<br>(Runs discreetly behind neck to phone in pocket, 5V 180mA OTG) | Eliminates heavy onboard battery; draws power from phone | ₹45.00 | ₹25.00 | \$0.30 | Foxconn / Baseus contract OEM |
+| **7** | **Eyewear Retainer Sports Strap & Comfort Grips** | Secures sunglasses comfortably during walking and head turns | ₹40.00 | ₹22.00 | \$0.27 | Dongguan Magwell Magnetics |
 | **8** | **Embossed Braille Packaging & Quick-Start Card** | Accessible unboxing for non-visual setup | ₹35.00 | ₹18.00 | \$0.22 | Printpack India (accessible braille) |
-| **9** | **Assembly, Automated Jig Flashing & QA** | Pick-and-place, flashing firmware, test verification | ₹60.00 | ₹35.00 | \$0.42 | EMS Partner (Dixon / Syrma SGS) |
-| **TOTAL** | **Option A: Phone-Tethered Wearable Pendant** | **Complete Hardware Kit** | **₹778.00** | **₹536.00** | **\$6.46** | — |
-| **ALT** | **Option B: Autonomous Battery-Integrated**<br>(Adds 600mAh LiPo + TP4056 USB-C charging) | Fully wireless 4.5h battery operation | **₹958.00** | **₹653.00** | **\$7.87** | EVE Energy / McNair Battery |
+| **9** | **Assembly, Automated Jig Flashing & Optical QA** | Pick-and-place, lens alignment, flashing firmware, test | ₹60.00 | ₹35.00 | \$0.42 | EMS Partner (Dixon / Syrma SGS) |
+| **TOTAL** | **Option A: Phone-Tethered Smart Sunglasses** | **Complete Smart Sunglasses Product Kit** | **₹778.00** | **₹536.00** | **\$6.46** | — |
+| **ALT** | **Option B: Autonomous Battery-Integrated Sunglasses**<br>(Adds 500mAh slim LiPo in right temple + USB-C charging) | Fully wireless 3.5h continuous smart glasses operation | **₹958.00** | **₹653.00** | **\$7.87** | EVE Energy / McNair Battery |
 
 ---
 
@@ -251,7 +251,7 @@ Per the `market-research` standard, we rigorously examine failure modes, downsid
 | **2. Thermal & Battery Drain** | Continuous camera decoding and ML inference can heat low-end phones and deplete battery in < 3 hours. | High | **Dynamic Duty-Cycling:** When user is stationary (detected via IMU), frame processing drops from 10 FPS to 1 FPS; background frame dispatch to cloud is throttled to once every 5.0 seconds. |
 | **3. Audio Fatigue & Rejection** | Visually impaired individuals rely heavily on environmental acoustic cues (echoes, footsteps, engine noises). Continuous spoken chatter causes disorientation and user abandonment. | Critical | **Strict Audio Hygiene:** Drishti speaks only on priority hazard events (< 3.0m). Local speech is ducked cleanly. System answers strictly in 1 to 2 short sentences. |
 | **4. Cloud API Inflation** | Commercial STT/TTS vendors (Sarvam, ElevenLabs) or LLMs could raise API prices by 3x–5x. | Medium | **Open-Source Parity:** System architecture uses standardized OpenAI/LiveKit plugin interfaces. Can be switched to self-hosted vLLM (Qwen/Llama 3) and local Whisper/Silero on Spot GPU instances. |
-| **5. Hardware Breakage & Cable Snag** | A wired cable connecting pendant to phone in pocket can snag on door handles or transit turnstiles. | Medium | **Magnetic Breakaway Connector:** The 90° USB cable features a magnetic breakaway pogo-pin dock that detaches harmlessly under 1.5N tensile force without damaging ports. |
+| **5. Hardware Breakage & Cable Snag** | A wired cable connecting sunglasses behind the neck to phone in pocket could snag. | Medium | **Magnetic Breakaway Connector:** The 90° USB cable features a magnetic breakaway pogo-pin dock at the sunglasses temple that detaches harmlessly under 1.5N tensile force without damaging ports. |
 
 ---
 

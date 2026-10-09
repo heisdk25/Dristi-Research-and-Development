@@ -91,4 +91,4 @@ When $A_{\text{total}}$ exceeds the fall threshold followed by angular velocity 
 
 ## 7. Strategic Synthesis for Project Drishti
 * **Validates Dual-Tier Concept:** Demonstrates early successful proof of concept for edge-cloud collaboration (local reflexes for safety, cloud for heavy vision).
-* **Direct Solution to Cane Mounting Defects:** Project Drishti directly solves Ma et al.'s primary ergonomic flaw by moving the camera to a **chest lanyard / harness mount**, eliminating the $2\text{ Hz}$ cane oscillation blur and keeping the cane lightweight.
+* **Direct Solution to Cane Mounting Defects:** Project Drishti directly solves Ma et al.'s primary ergonomic flaw by moving the camera to **smart assistive sunglasses**, eliminating the $2\text{ Hz}$ cane oscillation blur, delivering natural head-gaze alignment, and keeping the physical white cane featherlight.

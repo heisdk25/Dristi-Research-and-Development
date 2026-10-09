@@ -143,7 +143,7 @@ Solid lines = MUST BUILD path (fully local, no internet). Dotted lines = SHOULD 
 - Laptop (runs YOLOv8n, optionally face_recognition and the LiveKit agent)
 - Working microphone (built-in or external USB) — required for Assistant-mode voice queries
 - Speaker/earphone for audio output
-- Mounting rig (clip/lanyard) for demo portability
+- Smart sunglasses frame housing ESP32-CAM module and OV2640 lens for eye-level demo portability
 
 ## 10. Proof-of-Concept Gate (run these FIRST)
 

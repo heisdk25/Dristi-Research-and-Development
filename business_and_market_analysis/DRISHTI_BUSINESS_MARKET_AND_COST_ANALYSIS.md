@@ -5,7 +5,7 @@
 
 ## 1. Executive Summary & Strategic Value Proposition
 
-**Project Drishti** is an affordable, voice-first, multimodal assistive wearable system for blind and visually impaired persons (VIP). It combines an ultra-low-cost chest-mounted camera pendant ($<\$12$ BOM), an Android smartphone as the primary edge compute hub, and a low-latency edge-cloud hybrid intelligence architecture.
+**Project Drishti** is an affordable, voice-first, multimodal assistive wearable system for blind and visually impaired persons (VIP). The core physical product is a pair of **Smart Assistive Sunglasses** with an integrated micro-camera and edge transmitter ($<\$12$ BOM), paired with an Android smartphone as the primary edge compute hub, and a low-latency edge-cloud hybrid intelligence architecture.
 
 ### The Problem It Solves
 Globally and across the Global South, assistive visual technologies suffer from a **fatal dichotomy**:
@@ -13,8 +13,9 @@ Globally and across the Global South, assistive visual technologies suffer from 
 2. **Mobile Screen-Reader Apps (The Usability Barrier):** Smartphone apps (e.g., Be My Eyes, Seeing AI, Google Lookout) require the user to hold the phone constantly in one hand. This creates severe physical hazards: it occupies the hand needed for the white cane, induces severe muscle fatigue, exposes the phone to street snatching and drops, and suffers from narrow field-of-view misalignments.
 
 ### The Drishti Breakthrough
-By pairing a **\$10 wearable camera pendant** (hands-free POV) with the **smartphone already in the user's pocket** (zero new compute purchase) and an **asymmetric edge-cloud architecture** (sub-350ms safety reflex at zero API cost + on-demand cloud conversational reasoning), Drishti achieves:
+By integrating the camera directly into **lightweight, stylish smart sunglasses** (true head-level gaze POV) paired with the **smartphone already in the user's pocket** (zero new compute purchase) and an **asymmetric edge-cloud architecture** (sub-350ms safety reflex at zero API cost + on-demand cloud conversational reasoning), Drishti achieves:
 - **99.6% Reduction in Hardware Cost:** From \$3,500+ down to **\$12 – \$15 (₹1,000 – ₹1,250)**.
+- **Natural, Non-Stigmatizing Eyewear Form Factor:** Visually impaired users already wear sunglasses for UV protection, light sensitivity, and physical safety; Drishti turns their everyday sunglasses into an intelligent vision assistant.
 - **Operating Cost of ₹3.50 – ₹14.00 per day (\$0.04 – \$0.17/day):** Less than the cost of a single cup of tea.
 - **Native Hindi, English, and Regional Language Interaction:** Built-in vernacular voice models (Sarvam Saaras & Bulbul).
 
@@ -58,13 +59,13 @@ Initial target via Blind Schools, NGOs (NAB, BPA), and Government Assistive Sche
 | **Envision Glasses** | Google Glass enterprise | \$2,499 – \$3,269 | ₹2,05,000 – ₹2,70,000 | ~1.5s | 2.0 hrs | Partial | Yes |
 | **WeWALK Smart Cane** | Ultrasonic handle clip | \$599 | ₹49,500 | ~300ms (radar only) | 4.0 hrs | No (beeps only) | No camera |
 | **Seeing AI / Be My Eyes** | Smartphone App only | Free / \$15/mo | Free / ₹1,200/mo | ~2.5s – 5s | Drains phone | Partial | ❌ No (Blocks hand) |
-| **Project Drishti** | **Chest Pendant + Android App** | **\$15.00 (Device) + \$2.50/mo** | **₹1,250 (Device) + ₹199/mo** | **< 350ms (Edge)** | **6.0+ hrs (Phone powered)** | **✅ Full (Hindi/Hinglish/English)** | **✅ Yes (Hands-free)** |
+| **Project Drishti** | **Smart Sunglasses + Android App** | **\$15.00 (Device) + \$2.50/mo** | **₹1,250 (Device) + ₹199/mo** | **< 350ms (Edge)** | **6.0+ hrs (Phone powered)** | **✅ Full (Hindi/Hinglish/English)** | **✅ Yes (Eye-level POV)** |
 
 ---
 
 ## 3. Cost of Creation (Capex / BOM Breakdown per Device)
 
-Drishti follows a **Bring-Your-Own-Device (BYOD)** philosophy. The user's existing Android smartphone acts as the edge computing computer, cellular modem, and GPS receiver. Therefore, the physical device that must be manufactured and distributed is the **Chest-Mounted Camera Pendant**.
+Drishti follows a **Bring-Your-Own-Device (BYOD)** philosophy. The user's existing Android smartphone acts as the edge computing computer, cellular modem, and GPS receiver. Therefore, the physical product that is manufactured and distributed is the **Drishti Smart Assistive Sunglasses**.
 
 ### 3.1 Hardware Bill of Materials (BOM) — Per Unit Breakdown
 
@@ -72,16 +73,16 @@ The table below details wholesale pricing based on pilot batch (1,000 units) and
 
 | Item # | Component & Specification | Function in Drishti | 1,000 Units (Pilot) [INR] | 10,000+ Units (Mass Prod) [INR] | Pilot (USD) | Mass Prod (USD) |
 | :---: | :--- | :--- | :---: | :---: | :---: | :---: |
-| **1** | **ESP32-CAM Board (AI-Thinker)**<br>Dual-core Xtensa 32-bit LX6 @ 240MHz, 520KB SRAM + 4MB PSRAM, 802.11 b/g/n Wi-Fi & BLE | Core camera streaming controller & Wi-Fi hotspot transmitter | ₹420.00 | ₹340.00 | \$5.06 | \$4.10 |
-| **2** | **OV2640 2.0 Megapixel Sensor**<br>UXGA (1600x1200) native, 68° D-FOV standard lens ribbon | Video frame capture (QVGA/VGA streaming) | Included in board | Included in board | — | — |
-| **3** | **Optional 120° Wide-Angle Lens Mod**<br>(Fish-eye ribbon replacement for panoramic obstacle view) | Peripheral vision expansion for 10 & 2 o'clock obstacles | ₹85.00 | ₹55.00 | \$1.02 | \$0.66 |
-| **4** | **Pendant Enclosure (ABS/Polycarbonate)**<br>Lightweight injection-molded casing with clip & ventilation ribs | Protects electronics, clips securely to collar/shirt chest | ₹75.00 | ₹32.00 | \$0.90 | \$0.39 |
-| **5** | **Tactile Braille Quick-Toggle Switch**<br>Physical sliding switch for instant privacy mute/power | Blind-accessible hardware tactile feedback | ₹18.00 | ₹9.00 | \$0.22 | \$0.11 |
-| **6** | **Power Supply Cabling (Option A: Wired to Phone)**<br>1-meter braided 90° angled USB-C to Micro-USB cable | Draws 5V 180mA directly from phone battery (OTG) | ₹45.00 | ₹25.00 | \$0.54 | \$0.30 |
-| **7** | **Lanyard & Dual Magnetic Chest Dock**<br>Breakaway neck strap + neodymium clothing clip | Prevents swinging while walking; ensures stable chest horizon | ₹40.00 | ₹22.00 | \$0.48 | \$0.27 |
+| **1** | **ESP32-CAM Board (AI-Thinker)**<br>Dual-core Xtensa 32-bit LX6 @ 240MHz, 520KB SRAM + 4MB PSRAM, 802.11 b/g/n Wi-Fi & BLE | Embedded in sunglasses temple arm; local Wi-Fi MJPEG streamer | ₹420.00 | ₹340.00 | \$5.06 | \$4.10 |
+| **2** | **OV2640 2.0 Megapixel Sensor**<br>UXGA (1600x1200) native, 68° D-FOV standard lens ribbon | Eye-level forward video frame capture at bridge of sunglasses | Included in board | Included in board | — | — |
+| **3** | **Optional 120° Wide-Angle Lens Mod**<br>(Fish-eye ribbon replacement for panoramic obstacle view) | Peripheral vision expansion for 10 & 2 o'clock gaze obstacles | ₹85.00 | ₹55.00 | \$1.02 | \$0.66 |
+| **4** | **Sunglasses Frame (TR90 / Polycarbonate with UV400 Dark Lenses)**<br>Lightweight eyewear chassis housing temple electronics & UV eye protection | Ergonomic sunglasses chassis worn naturally by visually impaired user | ₹75.00 | ₹32.00 | \$0.90 | \$0.39 |
+| **5** | **Tactile Braille Quick-Toggle Switch**<br>Physical sliding switch on temple arm for instant privacy mute/power | Blind-accessible hardware tactile feedback on temple | ₹18.00 | ₹9.00 | \$0.22 | \$0.11 |
+| **6** | **Power Supply Cabling (Option A: Wired to Phone)**<br>1-meter braided 90° angled USB-C to Micro-USB cable running behind neck | Draws 5V 180mA directly from phone battery (OTG) | ₹45.00 | ₹25.00 | \$0.54 | \$0.30 |
+| **7** | **Eyewear Retainer Sports Strap & Comfort Grips**<br>Adjustable neck retainer + non-slip silicone nose/temple pads | Prevents slipping or falling off head while walking or bending | ₹40.00 | ₹22.00 | \$0.48 | \$0.27 |
 | **8** | **Tactile Packaging & Braille Quick-Start Guide**<br>Embossed recyclable cardboard box with tactile markings | Accessible unboxing experience for visually impaired user | ₹35.00 | ₹18.00 | \$0.42 | \$0.22 |
-| **9** | **Assembly, Firmware Flashing & Automated QA**<br>Pick-and-place mounting, test jig verification, automated burning | Production labor and factory quality control | ₹60.00 | ₹35.00 | \$0.72 | \$0.42 |
-| **TOTAL** | **Option A (Phone-Powered / OTG Tethered)** | **Complete Wearable Pendant Kit** | **₹778.00** | **₹536.00** | **\$9.37** | **\$6.46** |
+| **9** | **Assembly, Firmware Flashing & Optical QA**<br>Pick-and-place mounting, lens alignment, test jig verification | Production labor and factory quality control | ₹60.00 | ₹35.00 | \$0.72 | \$0.42 |
+| **TOTAL** | **Option A (Phone-Powered / OTG Tethered)** | **Complete Smart Sunglasses Kit** | **₹778.00** | **₹536.00** | **\$9.37** | **\$6.46** |
 
 ---
 
@@ -90,13 +91,13 @@ If the user prefers a completely wireless experience without a cable running int
 
 | Additional Component | Specification | Cost (1,000 Units) [INR] | Cost (10,000 Units) [INR] | Cost (USD) |
 | :--- | :--- | :---: | :---: | :---: |
-| **3.7V 600mAh LiPo Battery** | Rechargeable pouch cell, 4.5 hours continuous Wi-Fi stream | ₹140.00 | ₹95.00 | \$1.15 |
-| **TP4056 + Protection Board** | Micro-USB / Type-C charging circuit with overcharge cutoff | ₹25.00 | ₹14.00 | \$0.17 |
-| **Enclosure Expansion** | Slightly deeper mold to house cell | ₹15.00 | ₹8.00 | \$0.10 |
-| **TOTAL OPTION B** | **Fully Wireless Battery-Integrated Pendant** | **₹958.00** | **₹653.00** | **\$11.54 / \$7.87** |
+| **3.7V 500mAh Slim LiPo Battery** | Slim pouch cell embedded in right temple arm, 3.5 hrs stream | ₹140.00 | ₹95.00 | \$1.15 |
+| **TP4056 + USB-C Charging Board** | Miniature USB-C charging circuit with overcharge protection | ₹25.00 | ₹14.00 | \$0.17 |
+| **Temple Enclosure Expansion** | Balanced weight distribution across left/right temples | ₹15.00 | ₹8.00 | \$0.10 |
+| **TOTAL OPTION B** | **Fully Wireless Battery-Integrated Smart Sunglasses** | **₹958.00** | **₹653.00** | **\$11.54 / \$7.87** |
 
 > **Conclusion on Creation Cost:**  
-> A complete, fully assembled, quality-tested Drishti camera pendant can be produced at **₹536 to ₹653 ($6.46 to $7.87 USD)** in scale, and retailed with healthy distribution margins at **₹999 to ₹1,299 ($12.00 to $15.50 USD)**.
+> A complete pair of Drishti smart assistive sunglasses can be produced at **₹536 to ₹653 ($6.46 to $7.87 USD)** in scale, and retailed with healthy distribution margins at **₹999 to ₹1,299 ($12.00 to $15.50 USD)**.
 
 ---
 
@@ -237,7 +238,7 @@ To reach millions of visually impaired individuals sustainably, Drishti leverage
 ```
 
 ### 5.1 Model A: Direct-to-Consumer (B2C Freemium)
-- **Hardware:** Wearable camera pendant sold at **₹1,199 (\$14.40)** with free shipping.
+- **Hardware:** Drishti Smart Sunglasses sold at **₹1,199 (\$14.40)** with free shipping.
 - **Software Tiers:**
   - **Free Tier ("Drishti Basic"):**
     - 100% on-device obstacle detection.
@@ -257,7 +258,7 @@ To reach millions of visually impaired individuals sustainably, Drishti leverage
 ### 5.2 Model B: Business-to-Government (B2G Public Assistive Schemes)
 In India, the **Ministry of Social Justice and Empowerment** runs the **ADIP Scheme** (*Assistance to Disabled Persons for Purchase/Fitting of Aids and Appliances*):
 - The government provides grants up to **₹12,000 per beneficiary** for certified high-tech assistive equipment (e.g., smart canes, Braille readers, DAISY players).
-- **Drishti Advantage:** A complete package of Drishti Hardware (Pendant) + 3 Years of Pre-Funded Cloud Connectivity can be bundled at **₹3,999 (\$48.00)**, well within the ADIP budget ceiling.
+- **Drishti Advantage:** A complete package of Drishti Smart Sunglasses Hardware + 3 Years of Pre-Funded Cloud Connectivity can be bundled at **₹3,999 (\$48.00)**, well within the ADIP budget ceiling.
 - **ALIMCO (Artificial Limbs Manufacturing Corporation of India)** can act as the manufacturing and distribution partner for nationwide mass deployment.
 
 ---
@@ -266,7 +267,7 @@ In India, the **Ministry of Social Justice and Empowerment** runs the **ADIP Sch
 Under Section 135 of the Indian Companies Act, corporations must allocate 2% of their net profits to CSR:
 - Tech giants (Tata, Infosys, Reliance, Microsoft India, Google India) frequently fund disability empowerment projects.
 - Drishti partners with organizations like the **National Association for the Blind (NAB)**, **Blind People's Association (BPA)**, and **NTPC Blind Welfare**:
-  - Companies sponsor cohorts of 1,000 blind students or workers at **₹2,500 per person** (covers 1 pendant + 1 year unlimited cloud service).
+  - Companies sponsor cohorts of 1,000 blind students or workers at **₹2,500 per person** (covers 1 pair of smart sunglasses + 1 year unlimited cloud service).
 
 ---
 
@@ -312,7 +313,7 @@ Under Section 135 of the Indian Companies Act, corporations must allocate 2% of 
 
 ## 8. Summary & Strategic Conclusion
 
-1. **Ultra-Low Capex:** A wearable POV camera pendant costs only **₹536 ($6.46)** to manufacture at scale.
+1. **Ultra-Low Capex:** A pair of Drishti smart assistive sunglasses costs only **₹536 ($6.46)** to manufacture at scale.
 2. **Minimal Opex:** Cloud voice, LLM, and vision cost only **₹76.61 ($0.92) per user per month**, or **₹2.55 per day**, because 82% of computation is filtered on-device.
 3. **Massive Market Inefficiency Disrupted:** Replaces \$4,000 proprietary hardware with a \$15 accessory paired with existing Android smartphones.
 4. **Immediate Path to Scalability:** Government inclusion under the ADIP scheme (up to ₹12,000 allocation per person) provides a clear, pre-funded public procurement pipeline for rapid distribution across 250,000+ beneficiaries.

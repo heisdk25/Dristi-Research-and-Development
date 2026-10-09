@@ -34,16 +34,16 @@
 | **Bharat-Assist [06]** | Wearable Headframe | Espressif ESP32-CAM (Xtensa LX6) | OV2640 2MP camera, HC-SR04, NEO-6M GPS | Bone Conduction + Haptic Discs | 100% Offline Edge (860 ms loop) | $\mathbf{<\$10 - \$15}$ |
 | **Král et al. [07]** | Smart Glasses | Raspberry Pi Zero 2W (512MB RAM) | Arducam IMX519 16MP Autofocus Camera | 4 Tactile Frame Buttons + TTS + Volunteer Call | Local OCR/CNN + WebRTC Volunteer Stream | $\approx \$80 - \$100$ |
 | **Chen et al. [08]** | Wearable Chest/Head Unit | NVIDIA Jetson Embedded GPU | Intel RealSense RGB-D (Stereo IR + Color) | IFLYTEK Speech Synthesis + BT Earphones | Real-Time SLAM ($\ge 30\text{ FPS}$, ~5cm error) | $\approx \$600 - \$1,000$ |
-| **Project Drishti [CORE]** | Chest Lanyard Camera + Phone | ESP32-CAM + Android Mobile SoC + Cloud | Dual Camera (ESP32 MJPEG + CameraX Fallback) + 3-Axis IMU | Hands-Free Voice + Priority Ducking + Silero VAD | **Tier 1: <400ms reflex (26.4ms infer) / Tier 2: 1.1–2.2s MLLM** | **$<\$60$ Total Add-on** |
+| **Project Drishti [CORE]** | Smart Sunglasses + Phone | ESP32-CAM + Android Mobile SoC + Cloud | Dual Camera (ESP32 MJPEG + CameraX Fallback) + 3-Axis IMU | Hands-Free Voice + Priority Ducking + Silero VAD | **Tier 1: <400ms reflex (26.4ms infer) / Tier 2: 1.1–2.2s MLLM** | **$<\$15$ Sunglasses Add-on** |
 
 ---
 
 ## 3. Cross-Cutting Engineering Insights
 
-### 3.1 Ergonomics: Cane vs. Eyewear vs. Chest Mount
+### 3.1 Ergonomics: Cane vs. Monolithic Eyewear vs. Decoupled Smart Sunglasses
 * **Cane Mounts (Ma et al. [05]):** Suffers from continuous $>2\text{ Hz}$ cyclical sweeping oscillations, causing severe rolling-shutter tearing and motion blur that degrades deep learning inference.
-* **Eyewear Mounts (Tsinaforniotis [03], Král et al. [07]):** Natural head-gaze alignment, but suffers from weight on the nasal bridge, thermal dissipation near the temples, and battery life limited to $<2\text{ hours}$.
-* **Chest Lanyard Mount (Drishti):** Emerges as the optimal physical compromise: stable forward FOV ($65^\circ-90^\circ$), eliminates head-shake, allows large pocket battery packs ($>3000\text{ mAh}$), and keeps hands free to sweep a physical cane.
+* **Monolithic Eyewear Mounts (Tsinaforniotis [03], Král et al. [07]):** Natural head-gaze alignment, but suffers from heavy processors on the nasal bridge, thermal dissipation near the temples, and battery life limited to $<2\text{ hours}$.
+* **Decoupled Smart Sunglasses (Drishti):** Emerges as the optimal physical compromise: camera and ESP32 transmitter embedded directly into lightweight sunglasses eyewear frames (<38g) with dark UV lenses (socially familiar and protective), offloading heavy compute and battery to the pocket Android smartphone via Wi-Fi SoftAP. Keeping hands completely free for white-cane ground sweeping.
 
 ### 3.2 Edge Computing vs. Cloud Trade-Offs
 * **Pure Cloud (Be My Eyes, early prototypes):** Fatal flaw in assistive navigation—multi-second network latency ($3-7\text{ s}$) and complete system freeze during subway or rural cell dropouts.

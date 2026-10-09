@@ -87,10 +87,10 @@ Unlike conversational bots that lecture you with long paragraphs, Drishti follow
    * **12 o'clock:** Directly ahead of you.
    * **10 o'clock:** Slightly to your left.
    * **2 o'clock:** Slightly to your right.
-2. **Comfortable and Hands-Free (Chest Mount):**
-   Instead of heavy glasses on your nose or a heavy stick in your hand, a tiny $6 camera clips onto your shirt or lanyard. It provides a steady, stable view, doesn't shake, uses your phone's all-day battery, and leaves your hands free to hold a white cane or grocery bags.
+2. **Integrated Smart Sunglasses (Natural & Hands-Free):**
+   Drishti is built directly into a stylish, lightweight pair of sunglasses. Visually impaired users already wear sunglasses for eye protection, UV shielding, and social comfort. The camera sits right at the bridge and temple, pointing exactly where the user turns their head. Because all heavy computing is offloaded to the smartphone in their pocket, the sunglasses stay featherlight (<38g), never overheat on the face, and leave both hands completely free to sweep a white cane.
 3. **Emergency Backup Camera (Zero Downtime):**
-   If the tiny chest camera gets accidentally disconnected or runs out of battery, the system instantly switches to your smartphone's built-in camera in under half a second, announcing: *"ESP32 camera lost. Switched to phone camera."*
+   If the smart sunglasses camera gets temporarily disconnected, the system instantly switches to your smartphone's built-in camera in under half a second, announcing: *"External camera lost. Switched to phone camera."*
 4. **Smart Fall Detection (No Embarrassing False Alarms):**
    If you toss your phone onto a bed or sit down fast, regular devices panic and call 911. Drishti uses a smart physical check: it makes sure there was a true fall, sudden impact, and prolonged stillness. Then, it gives you **15 seconds to just say "Cancel" or "I'm fine"** before it automatically messages your family.
 5. **Universal Affordability ($< \$60):**
@@ -124,7 +124,7 @@ We studied 8 top international research papers and discovered **7 clever softwar
 
 ### Upgrade 6: Preventing Video Freezes (From Paper 6: Bharat-Assist)
 * **The Analogy:** If water backs up in a pipe, you open an emergency valve so the pipe doesn't burst.
-* **The Upgrade:** If Wi-Fi gets laggy, the tiny chest camera drops delayed video frames immediately instead of cramming them into memory. This stops the camera from crashing or freezing.
+* **The Upgrade:** If Wi-Fi gets laggy, the smart sunglasses camera drops delayed video frames immediately instead of cramming them into memory. This stops the camera from crashing or freezing.
 
 ### Upgrade 7: The "Call a Real Human" Lifeline (From Paper 7: Král et al.)
 * **The Analogy:** Sometimes AI isn't sure—like trying to read messy handwriting on a doctor's prescription.
@@ -177,8 +177,8 @@ Explain these 4 partners to judges like this:
 **Q1: "What happens if the user walks into an underground subway station with no Wi-Fi or 5G?"**  
 * *Your Plain-English Answer:* "That's exactly why we built the Two-Brain system! The conversational chatter turns off, but the local safety reflexes remain 100% active on the phone. It still detects obstacles, vehicles, and falls in under 30 milliseconds and speaks emergency warnings without needing a single byte of internet."
 
-**Q2: "Why put the camera on the chest instead of smart glasses?"**  
-* *Your Plain-English Answer:* "Smart glasses are heavy on the nose, the battery dies in under 2 hours, and processors heat up right against your temple. A tiny chest clip is weightless, doesn't shake when you turn your head, allows you to use your phone's all-day battery, and costs just $6."
+**Q2: "How are Drishti sunglasses different from expensive $4,000 smart glasses like OrCam or Envision?"**  
+* *Your Plain-English Answer:* "Traditional smart glasses try to cram a hot, heavy computer, battery, and cellular radio onto the eyeglass frame, making them weigh down the nose, burn the temple, die in under 2 hours, and cost $4,000. Drishti decouples the system: the sunglasses only house the featherlight camera and transmitter, while the smartphone in the pocket does all the heavy computing and battery heavy-lifting. This gives users all-day battery, zero face heat, true eye-level gaze, and cuts the cost by 99%—down to just $15!"
 
 **Q3: "Won't constant voice alerts give the user a headache?"**  
 * *Your Plain-English Answer:* "Yes, that's called auditory fatigue. We solve it with strict 1-to-2 sentence answers, a 5-second alert cooldown, gentle chimes for routine mode changes, and our 'Car Radio' rule that only interrupts for immediate collision danger."

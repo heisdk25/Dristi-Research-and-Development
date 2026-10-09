@@ -46,7 +46,7 @@ Every change from `PRD_Drishti v3 (Final).md` with a reason:
 | Physical push-button primary, voice secondary | **Voice-only** mode switching | Blind user controls everything via earphone mic. No physical button to reach for. |
 | LiveKit is a "gated stretch layer" | **LiveKit is core** (always on) | The new design is a real-time voice agent. Without LiveKit there is no conversational UX. |
 | OCR explicitly **out of scope** | **Mode 3: OCR / Reading** is now in scope | The user specified three modes (Assistant, Navigation, OCR). OCR is mandatory. |
-| ESP32-CAM + laptop webcam as sources | **ESP32-CAM Wi-Fi + phone camera** as switchable sources | Phone camera is always available; ESP32-CAM can be mounted on a chest strap for wider FOV. |
+| ESP32-CAM + laptop webcam as sources | **ESP32-CAM Wi-Fi + phone camera** as switchable sources | Phone camera is always available; ESP32-CAM is integrated directly into the smart sunglasses for natural eye-level gaze alignment. |
 | `face_recognition`/dlib (Python, local) | **On-device TFLite + ML Kit** for face detection+recognition | dlib does not run on Android. ML Kit + MobileFaceNet TFLite model is the Android-native path. |
 | `pyttsx3`/`gTTS` for local TTS | **Android TextToSpeech (on-device)** or **LiveKit TTS** | For offline fallback. Android's built-in TTS is zero-latency and needs no API key. |
 | Hackathon MVP → Phase 2 mobile → Phase 3 pilot | **Directly build the mobile prototype** (skipping the laptop phase) | The user is building the app now. The laptop intermediate step is eliminated. |

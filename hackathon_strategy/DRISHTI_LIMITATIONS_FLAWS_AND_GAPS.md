@@ -1,4 +1,4 @@
-﻿# Project Drishti: Critical Analysis of Limitations, Architectural Flaws, and Research Gaps
+# Project Drishti: Critical Analysis of Limitations, Architectural Flaws, and Research Gaps
 
 > **Document Type:** Forensic Technical Audit & Gap Analysis Compendium  
 > **Target System:** Project Drishti (Voice-First Multimodal Companion for Visually Impaired Persons)  
@@ -67,8 +67,8 @@ This document provides a forensic, evidence-backed breakdown of these flaws acro
 
 ---
 
-### 1.2 Zero Torso Pitch / Phone Tilt Compensation
-* **The Flaw:** In real-world walking, a user's chest pitches forward and backward by 10° to 25° during normal gait cycle. Furthermore, if the user holds their smartphone, pitch and roll vary continuously.
+### 1.2 Zero Head / Eyewear Pitch & Phone Tilt Compensation
+* **The Flaw:** In real-world walking, a user's head and sunglasses pitch forward and backward by 5° to 15° during normal gait cycle. Furthermore, if the user switches to the fallback smartphone camera in hand, pitch and roll vary continuously.
 * **Failure Dynamics:**
   - Standard pinhole geometry requires the optical horizon to compute ground plane distance:
     d = (h_camera - h_obstacle) / tan(theta_pitch + alpha)

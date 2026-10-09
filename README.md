@@ -1,4 +1,4 @@
-﻿# Project Drishti: Research and Development
+# Project Drishti: Research and Development
 
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 [![Kotlin](https://img.shields.io/badge/Kotlin-1.9+-7F52FF.svg?logo=kotlin&logoColor=white)](https://kotlinlang.org)
@@ -68,12 +68,12 @@ Drishti solves the assistive computing trade-off through a decoupled **two-tier 
 
 | Component | Role | Approximate Cost |
 | :--- | :--- | :--- |
-| **Android Smartphone** | Edge Compute (YOLOv8n, Sensor Fusion, TTS, LiveKit) | User-owned / Base device |
-| **ESP32-CAM Node** | Wearable chest/chest-mount camera module | ~.50 |
-| **3.7V LiPo Battery + TP4056** | Power supply for wearable node | ~.00 |
-| **3D-Printed / Belt Clip Enclosure** | Mechanical housing | ~.00 |
-| **Earphone / Headset** | Spatial audio output & microphone | ~.00 |
-| **Total BOM** | Ultra-accessible, mass-manufacturable | **~.50 – .00** |
+| **Android Smartphone** | Edge Compute (YOLOv8n, Sensor Fusion, TTS, LiveKit) | User-owned / BYOD base device |
+| **Drishti Smart Sunglasses (ESP32-CAM)** | Smart sunglasses frame with embedded forward eye-level camera | ~$6.50 – $9.50 |
+| **Slim LiPo Battery / USB-C Tether** | Power supply (slim temple battery or phone-tethered) | ~$1.50 – $2.50 |
+| **Eyewear Chassis & Retainer Strap** | Ergonomic sunglasses frame with UV400 lenses & sports strap | ~$1.50 – $2.00 |
+| **Earphone / Headset** | Spatial audio output & microphone | ~$3.00 |
+| **Total Hardware Cost** | Ultra-accessible, mass-manufacturable smart sunglasses | **~$12.50 – $16.00** |
 
 ---
 

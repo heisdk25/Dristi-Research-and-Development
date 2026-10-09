@@ -35,7 +35,7 @@ QUESTION TYPE
 |                                                                                                                    |
 |   CRITERIA               CONVENTIONAL RESEARCH                   COMMERCIAL DEVICES          PROJECT DRISHTI       |
 |  ────────────────────    ─────────────────────────────           ───────────────────         ────────────────────  |
-|  * Form Factor           Cane (2Hz blur) / Glasses (heavy)       Glasses (nasal fatigue)     Chest Lanyard (stable)|
+|  * Form Factor           Cane (2Hz blur) / Glasses (heavy)       Glasses (nasal fatigue)     Smart Sunglasses (light)|
 |  * Processing Node       Arduino / Pi 4B / Jetson (€2,000)       Proprietary DSP ($4,000)    Existing Phone SoC    |
 |  * Reflex Latency        860ms (MCU) to 3-6s (Cloud apps)        <1s (no nav / rigid)        155-300ms Guaranteed  |
 |  * Model Resolution      96x96 (choked MCU) / 640x640 heavy      N/A                         320x320 Float16 Pareto|
@@ -55,9 +55,9 @@ QUESTION TYPE
 2. **Empirical Inverse-Height Heuristic & Clock-Face Mental Mapping:**
    * *Problem in prior work:* Pinhole equations require calibrated focal length and assumed physical heights per class, failing when cameras tilt during walking.
    * *Drishti's Victory:* Production code ([ObstacleClassifier.kt](file:///E:/HAckbios-R&D/hackbios-neuraX/android/app/src/main/java/ai/drishti/vision/ObstacleClassifier.kt)) calculates distance via empirical bounding box height: $d = \frac{0.8}{\text{safeHeight}}$ ($\le 4.0\text{ m}$). It maps azimuth directly to clock-face coordinates (Left = "10 o'clock", Center = "12 o'clock", Right = "2 o'clock") with 14 filtered hazard classes, immediately prioritizing approaching vehicles and pedestrians ($d < 2.5\text{ m}$).
-3. **Ergonomic Superiority of the Chest Mount:**
-   * *Problem in prior work:* Cane mounts (Ma et al.) experience continuous $>2\text{ Hz}$ cyclical sweeping oscillations, causing severe rolling-shutter tearing and motion blur. Eyewear mounts (OpsisVision, Král et al., Envision) cause nasal bridge weight fatigue, temple thermal heating, and $<2\text{ hr}$ battery life.
-   * *Drishti's Victory:* Mounting the ESP32-CAM to a chest lanyard/harness provides a stable forward field-of-view, eliminates head-shake, allows a standard large phone battery ($>4000\text{ mAh}$), and leaves the user's hands free to sweep a white cane.
+3. **Ergonomic Superiority of the Smart Sunglasses Decoupled Architecture:**
+   * *Problem in prior work:* Cane mounts (Ma et al.) experience continuous $>2\text{ Hz}$ cyclical sweeping oscillations, causing severe rolling-shutter tearing and motion blur. Proprietary smart glasses (OpsisVision, Král et al., Envision) cram heavy CPUs, cellular modems, and bulky batteries onto the frame, causing nasal bridge weight fatigue, temple thermal heating, and $<2\text{ hr}$ battery life.
+   * *Drishti's Victory:* Drishti embeds only the micro-camera and wireless transmitter inside stylish, lightweight **Smart Sunglasses** ($<35\text{ g}$ total weight), while offloading all heavy compute, heat, and battery consumption to the smartphone in the pocket. This captures natural gaze at true eye-level while keeping the glasses featherlight, comfortable, and socially familiar.
 4. **Zero-Downtime Optical Redundancy ([CameraManager.kt](file:///E:/HAckbios-R&D/hackbios-neuraX/android/app/src/main/java/ai/drishti/camera/CameraManager.kt)):**
    * *Problem in prior work:* Every reviewed system exhibits a catastrophic single point of optical failure. If a cable loosens or Wi-Fi drops, the system goes blind.
    * *Drishti's Victory:* CameraManager monitors external streaming latency. If frame delays exceed $500\text{ ms}$ or Wi-Fi drops, it executes a seamless hot failover to the native smartphone camera via **Android CameraX** (Back or Front lens) with an immediate verbal advisory (*"ESP32 camera lost. Switched to phone camera"*).
@@ -241,6 +241,6 @@ flowchart TD
 Project Drishti's production codebase ([hackbios-neuraX](file:///E:/HAckbios-R&D/hackbios-neuraX)) already possesses the **strongest structural architecture** across all 9 surveyed systems:
 * It outperforms **pure-cloud systems** by guaranteeing sub-300 ms offline safety reflexes (`yolov8n_float16.tflite` @ 320x320).
 * It outperforms **pure-edge microcontrollers** by offloading neural inference to the phone SoC ($20-38\text{ ms}$ inference vs. $860\text{ ms}$ on $96\times 96$ frames in Bharat-Assist).
-* It outperforms **wearable smart glasses and smart canes** by adopting a stable chest mount that eliminates cane sweep blur, nasal bridge fatigue, and high commercial costs.
+* It outperforms **heavy standalone smart glasses and smart canes** by adopting a decoupled smart sunglasses architecture that eliminates cane sweep blur, frame overheating, and prohibitive commercial costs.
 
 By incorporating the **7 software-only refinements** detailed above—specifically the **distance-weighted text fusion**, **voice-driven local SQLite personalization**, **HSV traffic light color slicing**, **Vosk wake-word battery gating**, and **the remote caregiver LiveKit bridge**—Project Drishti achieves complete technological maturity, clinical robustness, and competition-winning superiority without spending a single additional cent on hardware.

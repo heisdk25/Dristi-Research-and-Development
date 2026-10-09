@@ -48,7 +48,7 @@ $$q = \text{round}\left( \frac{r}{S} \right) + Z \quad \text{(Eq. 2)}$$
 Executed via TFLite using **NNAPI** (Qualcomm Hexagon, MediaTek APU) or **GPU Delegates** (Vulkan/OpenGL ES), achieving **26.4 ms** inference latency.
 
 ### 4.3 Monocular Depth & Proximity Geometry
-Given a calibrated chest camera at elevation $H_{\text{cam}}$ and focal length $f_y$, physical distance $d$ to an object of real height $H_{\text{obj}}$ is:
+Given a calibrated eye-level camera mounted on sunglasses at elevation $H_{\text{cam}}$ and focal length $f_y$, physical distance $d$ to an object of real height $H_{\text{obj}}$ is:
 $$d \approx \frac{f_y \cdot H_{\text{obj}}}{h_{\text{bbox}} \cdot I_{\text{height}}} \quad \text{(Eq. 3)}$$
 Horizontal azimuth is partitioned into three discrete cones:
 $$\text{Azimuth} = \begin{cases} \text{Left}, & x_c < 0.35 \\ \text{Center}, & 0.35 \le x_c \le 0.65 \\ \text{Right}, & x_c > 0.65 \end{cases} \quad \text{(Eq. 4)}$$
@@ -74,7 +74,7 @@ Four sequential phases:
 ## 5. System Architecture: Three Functional Tiers
 
 ### Tier 0: Hardware & Sensors (Sub-10 ms)
-- **Primary Visual Node:** Chest-mounted ESP32-CAM (Xtensa dual-core LX6 @ 240 MHz, 520 KB SRAM, 4 MB PSRAM, OV2640 2MP sensor). Emits VGA (640x480) HTTP MJPEG over Wi-Fi SoftAP @ 10–15 FPS.
+- **Primary Visual Node:** Smart Sunglasses ESP32-CAM Node (Xtensa dual-core LX6 @ 240 MHz, 520 KB SRAM, 4 MB PSRAM, OV2640 2MP sensor integrated directly into the sunglasses temple frame with bridge-mounted eye-level camera). Emits VGA (640x480) HTTP MJPEG over Wi-Fi SoftAP @ 10–15 FPS.
 - **Secondary Visual Node:** Android Smartphone camera via native CameraX (zero-downtime hot failover if external socket drops or latency exceeds 500 ms).
 - **Audio & Haptic:** In-ear/bone-conduction headset microphone and speaker.
 - **Inertial Sensing:** 3-axis IMU accelerometer for step counting and fall detection.
@@ -156,7 +156,7 @@ Continuous IMU a(t) ---> Compute SVM(t)
 | Feature | OrCam MyEye 2 | Envision Glasses | Microsoft Seeing AI | Be My AI | Project Drishti |
 |---|---|---|---|---|---|
 | **Cost** | $\approx \$4,000$ | $\approx \$2,500$ | Free App | Free App | **$<\$60$ Hardware** |
-| **Form Factor** | Eyeglass clip (22g) | Google Glass EE2 | Phone (handheld) | Phone (handheld) | **Chest mount / Phone** |
+| **Form Factor** | Eyeglass clip (22g) | Google Glass EE2 | Phone (handheld) | Phone (handheld) | **Smart Sunglasses / Phone** |
 | **Operation** | Touch-bar tap | Touchpad / voice | Touchscreen swipes | Touchscreen tap | **Hands-free Voice-First** |
 | **Offline Mode** | 100% Offline | Hybrid (fails without net) | Local scene, no reflex | Fails 100% offline | **Sub-400ms Local Reflex** |
 | **Cloud Intelligence**| None | Cloud OCR / GPT-4 | Azure Vision | GPT-4o Vision | **WebRTC LiveKit + MLLM** |

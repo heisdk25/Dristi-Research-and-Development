@@ -1021,7 +1021,7 @@
           </tr>
           <tr style="background: rgba(56, 189, 248, 0.15); font-weight: bold; border: 1px solid #38bdf8;">
             <td style="color: #38bdf8;"><strong>Project Drishti</strong></td>
-            <td>Chest ESP32 + Phone</td>
+            <td>Smart Sunglasses + Phone</td>
             <td>YOLOv8n Float16 + LiveKit + Groq/GPT-4o</td>
             <td>Hands-Free Voice-First</td>
             <td>Dual-Tier Hybrid</td>
@@ -1207,7 +1207,7 @@
     const nodeData = {
       esp32: {
         title: "ESP32-CAM Microcontroller Node",
-        sub: "Wearable Chest/Lanyard Camera Capture Unit",
+        sub: "Smart Sunglasses Embedded Camera Capture Unit",
         tier: "TIER 0: HARDWARE",
         tierColor: "#38bdf8",
         section: "esp32-firmware/mjpeg_streamer.ino",
@@ -1217,7 +1217,7 @@
         m4: "4 MB PSRAM", l4: "Memory Buffer",
         formula: "GET /stream  →  multipart/x-mixed-replace (mjpeg_streamer.ino)",
         formulaDesc: "OV2640 hardware DMA JPEG encoder directly streams byte chunks over HTTP TCP with status endpoints at /status.",
-        role: "Chest-mounted to stabilize forward field-of-view against body sway. Provides continuous MJPEG stream over Wi-Fi SoftAP to Android app.",
+        role: "Embedded inside sunglasses frame at bridge/temple to capture natural eye-level gaze. Provides continuous MJPEG stream over Wi-Fi SoftAP to Android app.",
         safety: "Auto-reconnects on Wi-Fi loss. If connection drops, Android CameraManager switches instantly to phone camera."
       },
       camerax: {
@@ -1232,7 +1232,7 @@
         m4: "Native OS", l4: "Camera2 Pipeline",
         formula: "onStreamError()  →  switchToPhoneBack('ESP32 camera lost')",
         formulaDesc: "Automatic coroutine watcher switches capture feed without restarting detection loops.",
-        role: "Mission-critical backup if chest camera battery drains or Wi-Fi is jammed. Captures forward imagery from phone body or lanyard.",
+        role: "Mission-critical backup if sunglasses camera battery drains or Wi-Fi is jammed. Captures forward imagery from phone body or pocket.",
         safety: "Spoken alert: 'ESP32 camera lost. Switched to phone camera' keeps user informed."
       },
       speaker: {

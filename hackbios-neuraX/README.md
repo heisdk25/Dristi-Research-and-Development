@@ -1,7 +1,7 @@
-# Drishti (दृष्टि) — AI Voice Companion for Visually Impaired
+# Drishti (दृष्टि) — AI Smart Sunglasses & Voice Companion for Visually Impaired
 
-> **A Voice-First, Multi-Modal Mobility & Assistive System**  
-> Built as an Android Native (Kotlin) app paired with LiveKit Voice Agent, on-device TensorFlow Lite vision, and optional ESP32-CAM Wi-Fi streaming.
+> **A Voice-First, Multi-Modal Mobility & Assistive Eyewear System**  
+> Built as an integrated Smart Sunglasses hardware product (embedded ESP32-CAM Wi-Fi camera) paired with an Android Native (Kotlin) edge app, LiveKit Voice Agent, and on-device TensorFlow Lite vision.
 
 ---
 
@@ -19,9 +19,9 @@ Drishti provides visually impaired individuals with complete auditory independen
 
 ```
 ┌─────────────────┐       HTTP MJPEG       ┌──────────────────────────────────────────────┐
-│    ESP32-CAM    │ ─────────────────────> │             Android App (Kotlin)             │
-│ (WiFi Hotspot)  │                        │                                              │
-└─────────────────┘                        │  - CameraManager (ESP32 / Phone CameraX)     │
+│ Smart Sunglasses│ ─────────────────────> │             Android App (Kotlin)             │
+│(ESP32-CAM Wi-Fi)│                        │                                              │
+└─────────────────┘                        │  - CameraManager (Glasses / Phone CameraX)   │
                                            │  - TFLiteDetector (YOLOv8n Obstacles)        │
 ┌─────────────────┐       CameraX          │  - LocalTTS (Offline Priority Safety Alerts) │
 │  Phone Camera   │ ─────────────────────> │  - FallDetector & LocationProvider           │
@@ -62,7 +62,7 @@ vision_man/
 │   │   │   │   ├── LiveKitClient.kt     # WebRTC room audio/video & data channel
 │   │   │   │   └── LocalTTS.kt          # Low-latency offline Android TextToSpeech
 │   │   │   ├── camera/
-│   │   │   │   ├── CameraManager.kt     # Coordinates ESP32-CAM ↔ Phone Camera fallback
+│   │   │   │   ├── CameraManager.kt     # Coordinates Smart Sunglasses ↔ Phone Camera fallback
 │   │   │   │   ├── Esp32StreamClient.kt # HTTP MJPEG parser & bitmap decoder
 │   │   │   │   └── PhoneCamera.kt       # CameraX integration for phone camera
 │   │   │   ├── vision/

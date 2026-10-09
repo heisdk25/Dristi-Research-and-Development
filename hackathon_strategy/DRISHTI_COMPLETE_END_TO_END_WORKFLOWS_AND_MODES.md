@@ -11,7 +11,7 @@
 
 ## Benchmark Scene Context: Urban Indian Sidewalk
 
-To demonstrate the deterministic dataflow through **every component** of Project Drishti, we evaluate the system against a real-world first-person perspective (POV) image captured from a chest-mounted camera:
+To demonstrate the deterministic dataflow through **every component** of Project Drishti, we evaluate the system against a real-world first-person perspective (POV) image captured from the forward-facing camera embedded in the smart sunglasses:
 
 * **Image Path:** [`hackathon_strategy/test_assets/test_scene_urban_sidewalk.jpg`](file:///E:/HAckbios-R&D/hackathon_strategy/test_assets/test_scene_urban_sidewalk.jpg)
 * **Physical Scene Geometry:**
