@@ -508,6 +508,132 @@
     .data-table tr:hover {
       background: rgba(255, 255, 255, 0.03);
     }
+
+    /* Competitor Benchmark Styles */
+    .comp-filter-bar {
+      display: flex;
+      gap: 8px;
+      flex-wrap: wrap;
+      margin-bottom: 20px;
+      padding-bottom: 12px;
+      border-bottom: 1px solid var(--border-color);
+    }
+
+    .comp-pill {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 6px 14px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .comp-pill:hover {
+      color: var(--text-main);
+      border-color: var(--accent-cyan);
+    }
+
+    .comp-pill.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-weight: 600;
+      box-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    .comp-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(320px, 1fr));
+      gap: 16px;
+      margin-top: 20px;
+      margin-bottom: 30px;
+    }
+
+    .comp-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 16px;
+      transition: var(--transition-smooth);
+      display: flex;
+      flex-direction: column;
+    }
+
+    .comp-card:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-cyan);
+      transform: translateY(-2px);
+    }
+
+    .comp-card-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      margin-bottom: 10px;
+      gap: 8px;
+    }
+
+    .comp-name {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .comp-category {
+      font-size: 11px;
+      color: var(--text-muted);
+      margin-top: 2px;
+    }
+
+    .comp-price-badge {
+      font-size: 11px;
+      font-weight: 700;
+      padding: 4px 8px;
+      border-radius: 6px;
+      background: rgba(244, 63, 94, 0.15);
+      color: var(--accent-rose);
+      border: 1px solid rgba(244, 63, 94, 0.3);
+      white-space: nowrap;
+    }
+
+    .comp-price-badge.winner {
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--accent-emerald);
+      border-color: rgba(16, 185, 129, 0.4);
+    }
+
+    .comp-section-title {
+      font-size: 11px;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin: 10px 0 4px;
+    }
+
+    .comp-incapacity {
+      color: #fda4af;
+      font-size: 12px;
+      line-height: 1.45;
+      background: rgba(244, 63, 94, 0.08);
+      padding: 8px 10px;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-rose);
+      margin-bottom: 10px;
+    }
+
+    .comp-advantage {
+      color: #6ee7b7;
+      font-size: 12px;
+      line-height: 1.45;
+      background: rgba(16, 185, 129, 0.08);
+      padding: 8px 10px;
+      border-radius: 6px;
+      border-left: 3px solid var(--accent-emerald);
+      margin-top: auto;
+    }
   </style>
 </head>
 <body data-theme="dark">
@@ -551,6 +677,7 @@
     <button class="tab-btn active" data-target="tab-diagram">Visual Architecture Diagram</button>
     <button class="tab-btn" data-target="tab-latency">Latency Budget Waterfall (Table 3)</button>
     <button class="tab-btn" data-target="tab-benchmarks">Benchmarking & Blueprint vs. Codebase Matrix</button>
+    <button class="tab-btn" data-target="tab-competitors">Cheaper Alternatives & Competitive Benchmark</button>
     <button class="tab-btn" data-target="tab-mermaid">Mermaid Source Code</button>
   </div>
 
@@ -1032,7 +1159,247 @@
       </table>
     </div>
 
-    <!-- Tab 4: Mermaid Source Code -->
+    <!-- Tab 4: Cheaper Alternatives & Competitive Benchmark Deep-Dive -->
+    <div class="tab-content" id="tab-competitors" style="padding: 30px; max-width: 1050px; margin: 0 auto; width: 100%; overflow-y: auto;">
+      <div style="display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 16px; flex-wrap: wrap; gap: 12px;">
+        <div>
+          <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 6px;">Cheaper Alternatives & Competitive Capability Deep-Dive</h2>
+          <p style="color: var(--text-muted); font-size: 13px;">
+            Rigorous technical benchmark comparing existing low-cost market alternatives against Project Drishti's hands-free smart sunglasses architecture.
+          </p>
+        </div>
+        <div style="display: flex; gap: 8px;">
+          <span class="comp-price-badge winner" style="font-size: 12px; padding: 6px 12px;">
+            Drishti BOM: $10.92 (₹1,056.73) | Retail: ₹3,999
+          </span>
+        </div>
+      </div>
+
+      <!-- Interactive Category Filter Bar -->
+      <div class="comp-filter-bar">
+        <span class="trace-label" style="align-self: center; margin-right: 6px;">Category Filter:</span>
+        <button class="comp-pill active" data-comp-filter="all">🌐 All Solutions</button>
+        <button class="comp-pill" data-comp-filter="india">🇮🇳 Indian Hardware</button>
+        <button class="comp-pill" data-comp-filter="commercial">👓 Commercial Smart Glasses</button>
+        <button class="comp-pill" data-comp-filter="chinese">🇨🇳 Cheap Chinese Glasses</button>
+        <button class="comp-pill" data-comp-filter="apps">📱 Smartphone Apps</button>
+        <button class="comp-pill" data-comp-filter="luxury">💎 High-End Assistive</button>
+      </div>
+
+      <!-- Comparative Data Table -->
+      <table class="data-table" style="margin-bottom: 30px;">
+        <thead>
+          <tr>
+            <th>Product / Alternative</th>
+            <th>Retail Price (INR / USD @ ₹96.77)</th>
+            <th>Form Factor & Hands-Free</th>
+            <th>Real-Time Reflex</th>
+            <th>Primary Fatal Incapabilities & Blindspots</th>
+            <th>Project Drishti Advantage</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr class="comp-table-row" data-comp-cat="india">
+            <td><strong>Smart Vision Glasses</strong><br><span style="color: var(--text-muted); font-size: 11px;">SHG Tech (Bengaluru)</span></td>
+            <td><span class="comp-price-badge">₹50,400 ($520.82)</span></td>
+            <td>Heavy spectacle clip-on (45g)</td>
+            <td>~1.0s (LiDAR)</td>
+            <td>12.6x more expensive; clip-on nasal torque; discrete LiDAR blind to road drop-offs; legacy rule-based OCR without conversational AI.</td>
+            <td style="color: var(--accent-emerald);"><strong>12.6x cheaper (₹3,999); &lt;38g integrated sunglasses; 120° wide-angle DFOV; Gemini 2.0 Flash multimodal AI.</strong></td>
+          </tr>
+          <tr class="comp-table-row" data-comp-cat="india">
+            <td><strong>TorchIt Saarthi</strong><br><span style="color: var(--text-muted); font-size: 11px;">Smart Cane Attachment</span></td>
+            <td><span class="comp-price-badge">₹3,500 ($36.17)</span></td>
+            <td>White cane handle mount</td>
+            <td>Real-time buzzer</td>
+            <td>Zero vision intelligence (no text, currency, or objects); ultrasonic deflected by fabric/plants; blind to drop-offs/potholes/downward stairs.</td>
+            <td style="color: var(--accent-emerald);"><strong>3MP wide-angle camera; reads Indian currency, signs & medicine; 12ms YOLOv8n hazard detection with clock-face voice.</strong></td>
+          </tr>
+          <tr class="comp-table-row" data-comp-cat="commercial">
+            <td><strong>Ray-Ban Meta AI</strong><br><span style="color: var(--text-muted); font-size: 11px;">Meta / EssilorLuxottica</span></td>
+            <td><span class="comp-price-badge">₹35,000–₹42,000 ($299+)</span></td>
+            <td>Integrated sunglasses (50g)</td>
+            <td>None (No safety reflex)</td>
+            <td>Strict 3-minute video streaming limit (thermal throttling); 0% offline safety reflex; privacy LED shuts off camera in dim light; no Hindi/Indian languages.</td>
+            <td style="color: var(--accent-emerald);"><strong>Continuous streaming (&gt;2.5h); 12ms offline safety reflex; sub-32°C temple thermals; native Hindi/Tamil/Telugu voice support.</strong></td>
+          </tr>
+          <tr class="comp-table-row" data-comp-cat="chinese">
+            <td><strong>Generic Camera Glasses</strong><br><span style="color: var(--text-muted); font-size: 11px;">OhO Sunshine / Alibaba</span></td>
+            <td><span class="comp-price-badge">₹2,400–₹4,800 ($25–$50)</span></td>
+            <td>Sports sunglasses (55g)</td>
+            <td>None (Video record only)</td>
+            <td>Firmware records only to internal micro-SD TF card; zero streaming API; no developer SDK; tiny untextured buttons with invisible LED indicators.</td>
+            <td style="color: var(--accent-emerald);"><strong>Direct Wi-Fi SoftAP MJPEG stream to phone app; tactile physical privacy switch; full dual-tier AI pipeline.</strong></td>
+          </tr>
+          <tr class="comp-table-row" data-comp-cat="apps">
+            <td><strong>Smartphone AI Apps</strong><br><span style="color: var(--text-muted); font-size: 11px;">Seeing AI / Be My Eyes</span></td>
+            <td><span class="comp-price-badge" style="color: #38bdf8; border-color: #38bdf8; background: rgba(56,189,248,0.1);">"Free" (Needs ₹15k Phone)</span></td>
+            <td><strong>Handheld phone (NOT hands-free)</strong></td>
+            <td>3.0–6.0s (Cloud only)</td>
+            <td>"Two-hand trap": cane in one hand + phone in other = zero free hands; severe blind aiming failure; high phone theft/drop risk; 3-6s transit lag.</td>
+            <td style="color: var(--accent-emerald);"><strong>100% hands-free sunglasses; natural head-aligned 120° FOV; phone stays safely in pocket; 12ms offline reflex + hot failover.</strong></td>
+          </tr>
+          <tr class="comp-table-row" data-comp-cat="luxury">
+            <td><strong>OrCam MyEye 2 / PRO</strong><br><span style="color: var(--text-muted); font-size: 11px;">OrCam Technologies</span></td>
+            <td><span class="comp-price-badge">₹340,000–₹435,000 ($3,500+)</span></td>
+            <td>Magnetic eyeglass clip (22g)</td>
+            <td>&lt;1.0s (Reading OCR only)</td>
+            <td>Astronomical cost excludes 99.5% of Indian BVI population; clip-on gets hot; rigid menu commands with zero conversational reasoning; no walking navigation.</td>
+            <td style="color: var(--accent-emerald);"><strong>85x cheaper (₹3,999 vs ₹3.4L); full dynamic walking navigation with clock-face directions; conversational Gemini 2.0 Flash LLM.</strong></td>
+          </tr>
+          <tr style="background: rgba(16, 185, 129, 0.15); font-weight: bold; border: 2px solid #10b981;">
+            <td style="color: #10b981;"><strong>Project Drishti</strong><br><span style="font-size: 11px; color: #a7f3d0;">Dual-Tier Smart Sunglasses</span></td>
+            <td><span class="comp-price-badge winner">₹3,999 ($41.33)</span></td>
+            <td>Integrated TR90 Sunglasses (&lt;38g)</td>
+            <td><strong>12ms Local (Sub-300ms total)</strong></td>
+            <td>Requires paired Android smartphone (BYOD); mitigated by 95%+ smartphone penetration among urban BVI users and ultra-low data requirements.</td>
+            <td style="color: #10b981;"><strong>Unmatched affordability, sub-300ms offline safety reflex, conversational intelligence, open-ear echolocation, and fall dispatch.</strong></td>
+          </tr>
+        </tbody>
+      </table>
+
+      <!-- Deep Dive Competitor Cards Grid -->
+      <h3 style="font-size: 15px; text-transform: uppercase; color: var(--accent-cyan); margin: 24px 0 12px; letter-spacing: 0.5px;">
+        Detailed Engineering Incapability Deep-Dive & Drishti Countermeasures
+      </h3>
+      <div class="comp-grid">
+        
+        <!-- Card 1: Smart Vision Glasses -->
+        <div class="comp-card" data-comp-cat="india">
+          <div class="comp-card-header">
+            <div>
+              <div class="comp-name">Smart Vision Glasses</div>
+              <div class="comp-category">SHG Technologies (Bengaluru)</div>
+            </div>
+            <div class="comp-price-badge">₹50,400 ($520.82)</div>
+          </div>
+          <div class="comp-section-title" style="color: var(--accent-rose);">Their Fatal Incapabilities</div>
+          <div class="comp-incapacity">
+            • <strong>Extreme Price Barrier:</strong> ₹50,400 equals 4–6 months of median income for an average Indian BVI individual.<br>
+            • <strong>Clip-On Drag & Imbalance:</strong> 45g clip-on accessory twists standard spectacles, causing painful nasal pressure within 45 mins.<br>
+            • <strong>LiDAR Blind Spots:</strong> Multi-zone LiDAR beams project forward in narrow cones, completely missing street drop-offs, potholes, and downward steps.<br>
+            • <strong>No Conversational Reasoning:</strong> Legacy rule-based OCR cannot answer complex questions or interpret medicine dosage warnings.
+          </div>
+          <div class="comp-section-title" style="color: var(--accent-emerald);">Drishti's Superior Capability</div>
+          <div class="comp-advantage">
+            ✅ <strong>12.6x Lower Cost (₹3,999)</strong> with 61.8% gross margin. Lightweight TR90 sunglasses (&lt;38g) with symmetric ear-tip balance. 120° wide-angle camera with 12° downward angle captures ground potholes. Gemini 2.0 Flash provides natural conversational scene reasoning.
+          </div>
+        </div>
+
+        <!-- Card 2: TorchIt Saarthi -->
+        <div class="comp-card" data-comp-cat="india">
+          <div class="comp-card-header">
+            <div>
+              <div class="comp-name">TorchIt Saarthi</div>
+              <div class="comp-category">Smart Ultrasonic White Cane Attachment</div>
+            </div>
+            <div class="comp-price-badge">₹3,500 ($36.17)</div>
+          </div>
+          <div class="comp-section-title" style="color: var(--accent-rose);">Their Fatal Incapabilities</div>
+          <div class="comp-incapacity">
+            • <strong>Completely Sightless:</strong> Zero optical camera. Cannot read text, identify Indian Rupee currency, recognize buses, or describe scenes.<br>
+            • <strong>Acoustic Reflection Failure:</strong> Ultrasonic pulses are absorbed or scattered by soft winter clothing, shrubs, and sloped surfaces.<br>
+            • <strong>Deadly Drop-Off Blindness:</strong> Ultrasonic waves travel straight ahead and cannot detect open gutters, manholes, or stairs going down.<br>
+            • <strong>Buzzer Sensory Fatigue:</strong> Constant tactile buzzing in noisy Indian markets causes hand numbness and sensory exhaustion.
+          </div>
+          <div class="comp-section-title" style="color: var(--accent-emerald);">Drishti's Superior Capability</div>
+          <div class="comp-advantage">
+            ✅ <strong>Full High-Definition Visual Understanding:</strong> 3MP camera captures full environment. Reads medicine strips, signboards, and currency notes. YOLOv8n calculates inverse-height obstacle distance with spoken clock-face audio (10, 12, 2 o'clock).
+          </div>
+        </div>
+
+        <!-- Card 3: Ray-Ban Meta AI -->
+        <div class="comp-card" data-comp-cat="commercial">
+          <div class="comp-card-header">
+            <div>
+              <div class="comp-name">Ray-Ban Meta AI</div>
+              <div class="comp-category">Commercial Fashion Smart Glasses</div>
+            </div>
+            <div class="comp-price-badge">₹35,000–₹42,000 ($299+)</div>
+          </div>
+          <div class="comp-section-title" style="color: var(--accent-rose);">Their Fatal Incapabilities</div>
+          <div class="comp-incapacity">
+            • <strong>3-Minute Video Streaming Cap:</strong> Meta firmware strictly limits continuous video streaming to 3 minutes to prevent severe battery drain and overheating.<br>
+            • <strong>Zero Real-Time Offline Safety:</strong> Relies 100% on cloud AI. In network dead zones (subways, basements), it cannot alert to a single hazard.<br>
+            • <strong>Tamper LED Shutdown:</strong> If front privacy LED is covered or ambient lighting is low, the camera disables itself automatically.<br>
+            • <strong>No Indian Vernacular:</strong> Meta AI has zero native comprehension of Hindi, Tamil, Telugu, Kannada, or Bengali dialects.
+          </div>
+          <div class="comp-section-title" style="color: var(--accent-emerald);">Drishti's Superior Capability</div>
+          <div class="comp-advantage">
+            ✅ <strong>Continuous Navigation Streaming:</strong> Low-power ESP32-S3 draws only 0.65W (180mA), streaming for &gt;2.5 hours continuously at &lt;32°C. 12ms offline local reflex (YOLOv8n). Full bilingual Indian language support via Sarvam AI.
+          </div>
+        </div>
+
+        <!-- Card 4: Generic Chinese Camera Glasses -->
+        <div class="comp-card" data-comp-cat="chinese">
+          <div class="comp-card-header">
+            <div>
+              <div class="comp-name">Generic Camera Glasses</div>
+              <div class="comp-category">OhO Sunshine / Shezi / Alibaba OEM</div>
+            </div>
+            <div class="comp-price-badge">₹2,400–₹4,800 ($25–$50)</div>
+          </div>
+          <div class="comp-section-title" style="color: var(--accent-rose);">Their Fatal Incapabilities</div>
+          <div class="comp-incapacity">
+            • <strong>Zero Live Video Streaming:</strong> Firmware only writes .MP4 video files to internal micro-SD TF cards. Zero wireless streaming API or SDK.<br>
+            • <strong>Factory Firmware Lock-in:</strong> Unlocking live RTSP/MJPEG streaming requires $8,000–$15,000 factory NRE fees.<br>
+            • <strong>Inaccessible Controls:</strong> Single flush, untextured button that requires looking at a tiny blinking LED light to know if recording.<br>
+            • <strong>Severe Rolling Shutter:</strong> Cheap action-cam sensors suffer extreme motion blur during normal walking sway.
+          </div>
+          <div class="comp-section-title" style="color: var(--accent-emerald);">Drishti's Superior Capability</div>
+          <div class="comp-advantage">
+            ✅ <strong>Direct Open MJPEG Stream:</strong> Custom ESP32-S3 firmware streams video frames directly over Wi-Fi SoftAP into Drishti's Android app. Dedicated physical tactile sliding privacy switch. Optimized for pedestrian vision.
+          </div>
+        </div>
+
+        <!-- Card 5: Smartphone AI Apps -->
+        <div class="comp-card" data-comp-cat="apps">
+          <div class="comp-card-header">
+            <div>
+              <div class="comp-name">Smartphone-Only AI Apps</div>
+              <div class="comp-category">Microsoft Seeing AI / Be My Eyes / Lookout</div>
+            </div>
+            <div class="comp-price-badge" style="color: #38bdf8; border-color: #38bdf8; background: rgba(56,189,248,0.1);">"Free"</div>
+          </div>
+          <div class="comp-section-title" style="color: var(--accent-rose);">Their Fatal Incapabilities</div>
+          <div class="comp-incapacity">
+            • <strong>The "Two-Hand Deprivation Trap":</strong> White cane in dominant hand + phone in secondary hand = ZERO free hands for balance, doors, or subway handrails.<br>
+            • <strong>Blind Aiming Failure:</strong> Blind users cannot see the screen to aim, causing missed text, wrist twisting, and arm fatigue within 5 minutes.<br>
+            • <strong>Theft & Drop Hazard:</strong> Holding an exposed ₹20k–₹50k smartphone in hand on crowded Indian streets creates severe snatching risk.<br>
+            • <strong>Fatal 3–6s Cloud Latency:</strong> Walking at 1.2 m/s, the user travels 4–7 meters before hearing an obstacle warning—far too late to avoid injury.
+          </div>
+          <div class="comp-section-title" style="color: var(--accent-emerald);">Drishti's Superior Capability</div>
+          <div class="comp-advantage">
+            ✅ <strong>100% Hands-Free Sunglasses:</strong> Keeps white cane hand free and secondary hand free for balance. Camera naturally tracks head gaze. Phone stays safely in pocket. Sub-300ms local edge safety reflex.
+          </div>
+        </div>
+
+        <!-- Card 6: OrCam MyEye 2 / PRO -->
+        <div class="comp-card" data-comp-cat="luxury">
+          <div class="comp-card-header">
+            <div>
+              <div class="comp-name">OrCam MyEye 2 / PRO</div>
+              <div class="comp-category">OrCam Technologies (Israel)</div>
+            </div>
+            <div class="comp-price-badge">₹340,000–₹435,000 ($3,500+)</div>
+          </div>
+          <div class="comp-section-title" style="color: var(--accent-rose);">Their Fatal Incapabilities</div>
+          <div class="comp-incapacity">
+            • <strong>Astronomical Cost:</strong> ₹3.4L–₹4.3L is completely unaffordable for 99.5% of the 15M+ visually impaired population in India.<br>
+            • <strong>Thermal Dissipation Issues:</strong> Temple-mounted compute clip overheats against the skin during extended reading.<br>
+            • <strong>Rigid Menu Scripting:</strong> Relies on predetermined audio prompts; cannot engage in natural conversational Q&A.<br>
+            • <strong>No Dynamic Transit Navigation:</strong> Designed as a reading/face-recognition tool, not a dynamic walking navigation guide.
+          </div>
+          <div class="comp-section-title" style="color: var(--accent-emerald);">Drishti's Superior Capability</div>
+          <div class="comp-advantage">
+            ✅ <strong>85x More Accessible (₹3,999 target retail):</strong> Scaled BOM of $10.92 (₹1,056.73). Full real-time walking hazard navigation with clock-face directions. Conversational multimodal Gemini 2.0 Flash intelligence.
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- Tab 5: Mermaid Source Code -->
     <div class="tab-content" id="tab-mermaid" style="padding: 30px; max-width: 1000px; margin: 0 auto; width: 100%;">
       <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
         <h2 style="font-size: 18px; font-weight: 700;">Mermaid Architecture Diagram Definition (Updated)</h2>
@@ -1688,6 +2055,32 @@
     document.getElementById('resetZoom').addEventListener('click', () => {
       searchInput.value = '';
       pills[0].click();
+    });
+
+    // Competitor Category Filter
+    const compPills = document.querySelectorAll('.comp-pill');
+    compPills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        compPills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        const filter = pill.getAttribute('data-comp-filter');
+        const cards = document.querySelectorAll('.comp-card');
+        const rows = document.querySelectorAll('.comp-table-row');
+        cards.forEach(card => {
+          if (filter === 'all' || card.getAttribute('data-comp-cat') === filter) {
+            card.style.display = 'flex';
+          } else {
+            card.style.display = 'none';
+          }
+        });
+        rows.forEach(row => {
+          if (filter === 'all' || row.getAttribute('data-comp-cat') === filter) {
+            row.style.display = '';
+          } else {
+            row.style.display = 'none';
+          }
+        });
+      });
     });
   </script>
 </body>
