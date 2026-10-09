@@ -99,9 +99,9 @@ async def get_token(
 
                     if not has_active_agent:
                         await lk_api.agent_dispatch.create_dispatch(
-                            CreateAgentDispatchRequest(room=room, agent_name="drishti-agent")
+                            CreateAgentDispatchRequest(room=room, agent_name="")
                         )
-                        logger.info(f"Dispatched agent 'drishti-agent' to room '{room}'")
+                        logger.info(f"Dispatched default agent to room '{room}'")
                     await lk_api.aclose()
                 except Exception as dispatch_err:
                     logger.debug(f"Agent auto-dispatch note: {dispatch_err}")
@@ -112,7 +112,8 @@ async def get_token(
         return {
             "token": jwt_token,
             "room": room,
-            "identity": user
+            "identity": user,
+            "ws_url": livekit_url
         }
     except Exception as exc:
         logger.exception("Failed to generate token")

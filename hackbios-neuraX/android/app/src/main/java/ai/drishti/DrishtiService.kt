@@ -360,8 +360,8 @@ class DrishtiService : LifecycleService() {
             }
         }
 
-        // 2. Periodically dispatch camera frame to cloud agent (every 2.0s) for instant vision scene Q&A
-        if (now - lastFrameSendTimeMs >= 2000L) {
+        // 2. Periodically dispatch camera frame to cloud agent (every 5.0s) to keep visual context fresh without congesting WebRTC audio
+        if (now - lastFrameSendTimeMs >= 5000L) {
             lastFrameSendTimeMs = now
             sendCameraFrameToAgent(bitmap)
         }

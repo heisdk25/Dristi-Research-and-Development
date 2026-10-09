@@ -42,36 +42,33 @@ class PromptManager:
 
     BASE_PROMPT = (
         "You are Drishti, an assistive voice companion for a visually impaired user. "
-        "CRITICAL RULE: Always give answers in short! Keep every response strictly to 1 to 2 short sentences. "
-        "Never speak in long paragraphs, lists, or verbose explanations. Be concise, direct, crisp, and warm. "
-        "Current Active Mode: {mode}\n"
-        "IMPORTANT RULES FOR MODES:\n"
-        "1. You have 4 modes: assistant, navigation, ocr, emergency.\n"
-        "2. To switch modes, you MUST call the switch_mode tool.\n"
-        "3. You can only use navigation tools when in navigation mode. If the user asks to navigate while in another mode, call switch_mode to switch to navigation FIRST.\n"
-        "4. You can only use OCR/reading tools when in OCR mode. If the user asks to read text while in another mode, call switch_mode to switch to OCR FIRST.\n"
-        "5. If a user asks to switch modes and do a task in the same sentence (e.g. 'Switch to navigation and take me home'), call switch_mode FIRST, wait for confirmation, then execute the next task.\n\n"
+        "CRITICAL RULES:\n"
+        "1. Always give answers in short! Strictly 1 to 2 short sentences. "
+        "2. Speak naturally and warmly in the user's preferred language (Hindi, English, or mixed Hinglish). "
+        "3. You are fully capable of conversational chat, answering questions, giving guidance, and using your tools.\n"
+        "4. Current Active Mode: {mode}\n"
+        "5. TOOLS GUIDANCE:\n"
+        "   - When the user asks what is in front of them, to describe the scene, or asks in Hindi ('samne kya hai', 'aage kya hai', 'kya dikh raha hai', 'dekho'), immediately call the describe_scene tool.\n"
+        "   - When the user asks to switch or change modes ('mode badlo', 'switch to navigation', 'ocr mode', 'normal mode'), call the switch_mode tool.\n"
+        "   - When the user asks to read text, signs, or documents ('kya likha hai', 'padho', 'read text'), call the read_text_in_view tool.\n"
+        "   - When the user asks to navigate or go somewhere ('take me to ...', 'ghar chalo', 'metro station jana hai'), call the start_navigation tool.\n"
+        "   - For any other general conversation, greetings, or questions, answer directly, warmly, and helpfully in 1 short sentence.\n\n"
     )
 
     PROMPTS: Dict[str, str] = {
         "assistant": (
-            "You are in Assistant Mode (General-purpose AI assistant).\n"
-            "Whenever the user asks 'what is in front of me?', 'describe the scene', 'what do you see?', "
-            "or asks about their current surroundings or objects around them, immediately call the describe_scene tool. "
-            "Mention relative clock directions (e.g., 'at your 2 o'clock') and approximate distances when known. "
-            "If an obstacle alert is reported, immediately prioritize safety."
+            "You are in Assistant Mode (General-purpose voice assistant).\n"
+            "Converse naturally on any topic. When asked about surroundings, call describe_scene. "
+            "Mention relative clock directions (e.g., 'at your 2 o'clock') and approximate distances when known."
         ),
         "navigation": (
             "You are in Navigation Mode. Guide the visually impaired user along their walking path.\n"
             "Give clear, brief step-by-step instructions (e.g., 'Walk straight for 20 meters, then turn right at 2 o'clock'). "
-            "Use clock-face orientations ('12 o'clock' for straight ahead). "
-            "Prioritize hazards, curbs, stairs, and crosswalks. "
-            "Keep instructions brief so the user can hear ambient street sounds."
+            "Use clock-face orientations ('12 o'clock' for straight ahead). Prioritize hazards and crosswalks."
         ),
         "ocr": (
             "You are in OCR Mode. Your duty is to read and interpret text presented in front of the camera.\n"
-            "If the text is a sign, price tag, or label, read it verbatim and briefly. "
-            "If the user asks for a summary, provide the main takeaway in 1 short sentence. "
+            "If text is detected, read it verbatim and briefly in 1 short sentence. "
             "You can speak both English and Hindi naturally based on the text script."
         ),
         "emergency": (
@@ -104,13 +101,13 @@ class ModeManager:
 
     def switch_mode(self, mode: str) -> dict:
         mode_lower = mode.strip().lower()
-        if "nav" in mode_lower:
+        if "nav" in mode_lower or "walk" in mode_lower or "rasht" in mode_lower or "chal" in mode_lower:
             target = "navigation"
-        elif "ocr" in mode_lower or "read" in mode_lower or "text" in mode_lower:
+        elif "ocr" in mode_lower or "read" in mode_lower or "text" in mode_lower or "padh" in mode_lower:
             target = "ocr"
-        elif "emerg" in mode_lower or "help" in mode_lower:
+        elif "emerg" in mode_lower or "help" in mode_lower or "sos" in mode_lower or "khatr" in mode_lower:
             target = "emergency"
-        elif "assist" in mode_lower or "normal" in mode_lower or "back" in mode_lower:
+        elif "assist" in mode_lower or "normal" in mode_lower or "back" in mode_lower or "baat" in mode_lower:
             target = "assistant"
         else:
             target = mode_lower
@@ -292,13 +289,14 @@ async def entrypoint(ctx: JobContext) -> None:
 
     initial_mode = os.getenv("DEFAULT_AGENT_MODE", "assistant")
 
-    # ── Configure STT (Low-Latency Saaras:v4 Streaming) ──
-    # Note: Setting a definitive language code avoids the heavy Language Identification (LID) delay.
-    stt_lang = os.getenv("SARVAM_STT_LANGUAGE", "en-IN")
+    # ── Configure STT (Low Latency Multilingual Indian Voice Streaming) ──
+    stt_lang = os.getenv("SARVAM_STT_LANGUAGE", "unknown")
     stt_plugin = sarvam.STT(
         language=stt_lang,
         model="saaras:v4",
         mode="transcribe",
+        high_vad_sensitivity=True,
+        min_speech_frames=2,
         flush_signal=True,
     )
 
@@ -321,7 +319,7 @@ async def entrypoint(ctx: JobContext) -> None:
         return openai.LLM(**kwargs)
 
     def build_groq_llm():
-        groq_model = os.getenv("GROQ_MODEL", "llama-3.1-70b-versatile").strip()
+        groq_model = os.getenv("GROQ_MODEL", "qwen/qwen3.8-27b").strip()
         logger.info(f"Using Groq Ultra-Fast LPU LLM ({groq_model})")
         return openai.LLM(
             base_url="https://api.groq.com/openai/v1",
@@ -351,8 +349,8 @@ async def entrypoint(ctx: JobContext) -> None:
     else:
         llm_plugin = build_openai_llm()
 
-    # ── Configure TTS (Fast natural cadence, skip preprocessing delay) ──
-    tts_pace = float(os.getenv("SARVAM_TTS_PACE", "1.05"))
+    # ── Configure TTS (Fast natural cadence with robust Indian language preprocessing) ──
+    tts_pace = float(os.getenv("SARVAM_TTS_PACE", "1.18"))
     tts_lang = os.getenv("SARVAM_TTS_LANGUAGE", "hi-IN")
     tts_speaker = os.getenv("SARVAM_TTS_SPEAKER", "kabir")
     tts_plugin = sarvam.TTS(
@@ -360,35 +358,21 @@ async def entrypoint(ctx: JobContext) -> None:
         model="bulbul:v3",
         speaker=tts_speaker,
         pace=tts_pace,
-        temperature=0.4,
+        temperature=0.3,
         loudness=1.0,
-        enable_preprocessing=False,
+        enable_preprocessing=True,
     )
 
-    # ── Configure VAD for Low-Latency Turn Detection ──
-    # Fast silence detection cutoff (0.28s) to trigger immediate turn completion
+    # ── Configure VAD for Fast Low-Latency Conversational Turn Detection ──
+    # 0.32s silence duration ensures fast cutoff without clipping words
     vad_plugin = silero.VAD.load(
-        min_silence_duration=0.28,
+        min_silence_duration=0.32,
         activation_threshold=0.5,
-        prefix_padding_duration=0.2,
+        prefix_padding_duration=0.15,
     )
 
-    # ── Create AgentSession with Preemptive Generation & Tight Turn Handling ──
-    session = AgentSession(
-        stt=stt_plugin,
-        llm=llm_plugin,
-        tts=tts_plugin,
-        vad=vad_plugin,
-        turn_handling={
-            "endpointing": {"min_delay": 0.25, "max_delay": 1.2},
-            "preemptive_generation": {"preemptive_tts": True},
-        },
-    )
-
-    # ── Real-Time Camera Frame State & Data Channel Listener ──
+    # ── Real-Time Camera Frame State & Mode Manager ──
     latest_camera_frame: Optional[str] = None
-    
-    # Initialize ModeManager for this session
     mode_manager = ModeManager(initial_mode)
 
     @ctx.room.on("data_received")
@@ -400,7 +384,7 @@ async def entrypoint(ctx: JobContext) -> None:
             msg_type = payload.get("type")
             if msg_type == "CAMERA_FRAME":
                 latest_camera_frame = payload.get("image_base64")
-                logger.info("Received fresh camera frame from mobile device")
+                logger.debug("Received fresh camera frame from mobile device")
             elif msg_type == "OBSTACLE_WARNING":
                 obstacle = payload.get("obstacle", "obstacle")
                 pos = payload.get("position", "ahead")
@@ -538,7 +522,7 @@ async def entrypoint(ctx: JobContext) -> None:
 
     @function_tool
     async def describe_scene() -> str:
-        """Call this tool whenever the user asks to describe the scene, what is in front of them, or what the camera sees."""
+        """Call this tool whenever the user asks what is in front of them, to describe the scene, what the camera sees, or asks in Hindi/Hinglish ('सामने क्या है', 'आगे क्या है', 'क्या दिख रहा है', 'dekho', 'samne kya hai', 'aage kya hai', 'kya dikh raha hai', 'aspaas kya hai')."""
         nonlocal latest_camera_frame
         logger.info("Function tool 'describe_scene' invoked by agent")
 
@@ -555,7 +539,7 @@ async def entrypoint(ctx: JobContext) -> None:
                 logger.warning(f"Failed to request frame from client: {e}")
 
         if not latest_camera_frame:
-            return "The camera frame is not available yet. Please make sure the Drishti app is open and your phone camera is facing forward, then ask again."
+            return "Camera feed is connecting. Please point your phone forward and ask me again."
 
         try:
             description = await analyze_frame_with_vision(latest_camera_frame)
@@ -563,23 +547,21 @@ async def entrypoint(ctx: JobContext) -> None:
             return description
         except Exception as err:
             logger.error(f"Vision analysis failed: {err}")
-            return "I had trouble analyzing the camera view right now. Please try asking again in a moment."
+            return "I had trouble analyzing the scene right now. Please ask again in a moment."
 
     @function_tool
     async def switch_mode(target_mode: str) -> str:
-        """Switch the operational mode of Drishti (e.g. to assistant, navigation, ocr, or emergency).
+        """Switch the operational mode of Drishti ('assistant', 'navigation', 'ocr', or 'emergency'). Call this whenever the user asks to switch or change modes in English or Hindi ('mode badlo', 'मोड बदलो', 'switch to navigation', 'ocr mode', 'normal mode').
         Args:
             target_mode: Target mode ('assistant', 'navigation', 'ocr', or 'emergency').
         """
         logger.info(f"Function tool 'switch_mode' invoked with mode: {target_mode}")
         
         result = mode_manager.switch_mode(target_mode)
-        
         if not result["success"]:
             return result["error"]
             
         mode_name = result["mode"]
-        
         if not result["changed"]:
             return f"{mode_name.capitalize()} mode is already active."
 
@@ -596,12 +578,19 @@ async def entrypoint(ctx: JobContext) -> None:
 
     @function_tool
     async def start_navigation(destination: str) -> str:
-        """Initiate walking navigation to a destination or landmark.
+        """Initiate walking navigation to a destination or landmark. Call this whenever the user asks to navigate or walk somewhere in English or Hindi ('take me to ...', 'directions to ...', 'घर चलो', 'रास्ता दिखाओ', 'ghar chalo', 'rasta dikhao').
         Args:
             destination: Name of the destination (e.g., 'Metro station', 'Hospital', 'Home').
         """
+        # Automatically ensure navigation mode is active
         if mode_manager.active_mode != "navigation":
-            return "Error: Cannot navigate. You must call switch_mode('navigation') to switch to navigation mode first."
+            mode_manager.switch_mode("navigation")
+            agent.update_instructions(PromptManager.get_prompt("navigation"))
+            try:
+                packet = json.dumps({"type": "SWITCH_MODE", "target": "navigation"}).encode("utf-8")
+                await ctx.room.local_participant.publish_data(packet)
+            except Exception:
+                pass
 
         try:
             packet = json.dumps({"type": "REQUEST_NAVIGATION", "destination": destination}).encode("utf-8")
@@ -613,10 +602,17 @@ async def entrypoint(ctx: JobContext) -> None:
 
     @function_tool
     async def read_text_in_view() -> str:
-        """Call this tool whenever the user asks to read text, signs, labels, documents, or what is written in front of them using Vision LLM."""
+        """Call this tool whenever the user asks to read text, signs, labels, documents, or asks in Hindi ('kya likha hai', 'क्या लिखा है', 'padho', 'पढ़ो', 'text padho')."""
+        # Automatically ensure OCR mode is active
         if mode_manager.active_mode != "ocr":
-            return "Error: Cannot read text. You must call switch_mode('ocr') to switch to OCR mode first."
-            
+            mode_manager.switch_mode("ocr")
+            agent.update_instructions(PromptManager.get_prompt("ocr"))
+            try:
+                packet = json.dumps({"type": "SWITCH_MODE", "target": "ocr"}).encode("utf-8")
+                await ctx.room.local_participant.publish_data(packet)
+            except Exception:
+                pass
+
         nonlocal latest_camera_frame
         logger.info("Function tool 'read_text_in_view' invoked by agent")
 
@@ -642,32 +638,65 @@ async def entrypoint(ctx: JobContext) -> None:
             logger.error(f"Vision OCR failed: {err}")
             return "I couldn't read the text clearly. Please hold it steady and try asking again."
 
+    agent_tools = [describe_scene, switch_mode, start_navigation, read_text_in_view]
+
+    # ── Create AgentSession with Preemptive Generation, VAD Turn Detection & Zero AEC Warmup Lockout ──
+    session = AgentSession(
+        stt=stt_plugin,
+        llm=llm_plugin,
+        tts=tts_plugin,
+        vad=vad_plugin,
+        tools=agent_tools,
+        turn_detection="vad",
+        min_endpointing_delay=0.15,
+        max_endpointing_delay=0.55,
+        aec_warmup_duration=0.0,
+        allow_interruptions=True,
+        min_interruption_duration=0.25,
+        user_away_timeout=180.0,
+        preemptive_generation=True,
+    )
+
     # ── Create the Agent with the system prompt and tools ──
     agent = Agent(
         instructions=PromptManager.get_prompt(initial_mode),
-        tools=[describe_scene, switch_mode, start_navigation, read_text_in_view],
+        tools=agent_tools,
     )
 
     # ── Start the session ──
     await session.start(
         agent=agent,
         room=ctx.room,
-        room_input_options=RoomInputOptions(),
     )
 
     logger.info(f"Agent session started smoothly in '{initial_mode}' mode")
 
-    # ── Generate initial greeting ──
+    # ── Immediate initial greeting without LLM roundtrip delay or template errors ──
     try:
-        await session.generate_reply(
-            instructions="Greet the user warmly in 1 short sentence as Drishti, their voice companion. Ask how you can assist them today. Give answer in short."
+        await session.say(
+            "Hello! I am Drishti, your assistive companion. How can I help you?",
+            allow_interruptions=True,
         )
     except Exception as reply_err:
-        logger.error(f"Failed to generate initial greeting: {reply_err}")
+        logger.error(f"Failed to play initial greeting: {reply_err}")
+
+    # ── Keep session alive until participant leaves or room disconnects ──
+    disconnect_event = asyncio.Event()
+
+    @ctx.room.on("disconnected")
+    def on_disconnected():
+        disconnect_event.set()
+
+    try:
+        await disconnect_event.wait()
+    except (asyncio.CancelledError, Exception):
+        pass
+    finally:
+        logger.info("Room disconnected cleanly. Session ended.")
 
 
 if __name__ == "__main__":
     if LIVEKIT_AVAILABLE:
-        cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint, agent_name="drishti-agent"))
+        cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))
     else:
         print("LiveKit Agents SDK not installed. Run 'pip install -r requirements.txt'")
