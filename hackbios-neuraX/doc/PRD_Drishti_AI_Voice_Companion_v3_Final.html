@@ -1,0 +1,715 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PRD: Project Drishti — AI Voice Companion for the Visually Impaired (v3 Final)</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=Fira+Code:wght@400;500;600&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/mermaid@10/dist/mermaid.min.js"></script>
+  <style>
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1f2937;
+      --bg-card: rgba(31, 41, 55, 0.7);
+      --bg-card-hover: rgba(55, 65, 81, 0.85);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #10b981;
+      --accent-purple: #a855f7;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-blue: #3b82f6;
+      --glow-cyan: rgba(56, 189, 248, 0.25);
+      --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --bg-card: rgba(255, 255, 255, 0.9);
+      --bg-card-hover: rgba(241, 245, 249, 0.98);
+      --border-color: rgba(0, 0, 0, 0.1);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --glow-cyan: rgba(56, 189, 248, 0.15);
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+    
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-main);
+      line-height: 1.65;
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+
+    header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 28px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #0284c7, #6366f1);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 13px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 15px rgba(2, 132, 199, 0.35);
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px;
+      border-radius: 6px;
+      font-size: 12px;
+      font-weight: 600;
+      cursor: pointer;
+      text-decoration: none;
+      transition: var(--transition-smooth);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-cyan);
+    }
+
+    .container {
+      max-width: 960px;
+      margin: 0 auto;
+      padding: 36px 24px 60px;
+      width: 100%;
+    }
+
+    .hero-card {
+      background: linear-gradient(180deg, rgba(31, 41, 55, 0.7), rgba(17, 24, 39, 0.85));
+      border: 1px solid var(--border-color);
+      border-radius: 12px;
+      padding: 24px 28px;
+      margin-bottom: 30px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.25);
+    }
+
+    h1 {
+      font-size: 24px;
+      font-weight: 800;
+      color: #fff;
+      margin-bottom: 8px;
+      letter-spacing: -0.3px;
+    }
+
+    .meta-line {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-top: 12px;
+    }
+
+    .pill-badge {
+      font-size: 11px;
+      font-weight: 600;
+      padding: 4px 10px;
+      border-radius: 20px;
+      display: inline-flex;
+      align-items: center;
+      gap: 5px;
+    }
+
+    .badge-cyan { background: rgba(56, 189, 248, 0.15); color: var(--accent-cyan); border: 1px solid rgba(56, 189, 248, 0.3); }
+    .badge-emerald { background: rgba(16, 185, 129, 0.15); color: var(--accent-emerald); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .badge-amber { background: rgba(245, 158, 11, 0.15); color: var(--accent-amber); border: 1px solid rgba(245, 158, 11, 0.3); }
+    .badge-purple { background: rgba(168, 85, 247, 0.15); color: var(--accent-purple); border: 1px solid rgba(168, 85, 247, 0.3); }
+
+    h2 {
+      font-size: 19px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+      margin: 36px 0 16px;
+      border-bottom: 1px solid var(--border-color);
+      padding-bottom: 8px;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    h3 {
+      font-size: 15px;
+      font-weight: 600;
+      color: var(--accent-emerald);
+      margin: 22px 0 10px;
+    }
+
+    p {
+      margin-bottom: 12px;
+      font-size: 14px;
+      color: var(--text-main);
+    }
+
+    ul, ol {
+      padding-left: 24px;
+      margin-bottom: 16px;
+      font-size: 14px;
+    }
+
+    li {
+      margin-bottom: 6px;
+    }
+
+    strong {
+      color: #fff;
+    }
+
+    [data-theme="light"] strong {
+      color: #000;
+    }
+
+    .callout {
+      background: var(--bg-card);
+      border-left: 4px solid var(--accent-cyan);
+      border-radius: 0 8px 8px 0;
+      padding: 14px 18px;
+      margin: 18px 0;
+      font-size: 13.5px;
+    }
+
+    .callout.decision { border-left-color: var(--accent-purple); background: rgba(168, 85, 247, 0.08); }
+    .callout.risk { border-left-color: var(--accent-rose); background: rgba(244, 63, 94, 0.08); }
+    .callout.success { border-left-color: var(--accent-emerald); background: rgba(16, 185, 129, 0.08); }
+    .callout.warning { border-left-color: var(--accent-amber); background: rgba(245, 158, 11, 0.08); }
+
+    table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 18px 0 26px;
+      font-size: 13px;
+      border-radius: 8px;
+      overflow: hidden;
+      border: 1px solid var(--border-color);
+    }
+
+    th, td {
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      text-align: left;
+      vertical-align: top;
+    }
+
+    th {
+      background: var(--bg-tertiary);
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    tr:hover {
+      background: rgba(255, 255, 255, 0.02);
+    }
+
+    code {
+      font-family: 'Fira Code', monospace;
+      background: var(--bg-tertiary);
+      padding: 2px 6px;
+      border-radius: 4px;
+      font-size: 12px;
+      color: var(--accent-cyan);
+    }
+
+    pre {
+      background: #050811;
+      border: 1px solid var(--border-color);
+      padding: 16px;
+      border-radius: 8px;
+      overflow-x: auto;
+      font-family: 'Fira Code', monospace;
+      font-size: 12px;
+      color: #38bdf8;
+      margin: 16px 0;
+    }
+
+    .mermaid-container {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 24px;
+      margin: 20px 0;
+      text-align: center;
+      box-shadow: 0 4px 15px rgba(0, 0, 0, 0.2);
+    }
+
+    .mermaid {
+      display: flex;
+      justify-content: center;
+    }
+
+    footer {
+      border-top: 1px solid var(--border-color);
+      padding: 24px;
+      text-align: center;
+      font-size: 12px;
+      color: var(--text-muted);
+      margin-top: auto;
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <header>
+    <div class="brand-group">
+      <div class="logo-badge">DRISHTI PRD</div>
+      <div>
+        <div style="font-size: 14px; font-weight: 600;">Product Requirements Document (v3.0 Final)</div>
+        <div style="font-size: 11px; color: var(--text-muted);">Smart Sunglasses Architecture + Phased Edge Roadmap</div>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button class="btn" id="themeToggle">🌓 Theme</button>
+      <a class="btn" href="../../drishti_architecture_archify.html" target="_blank">🌐 Archify System Map</a>
+      <a class="btn" href="../../business_and_market_analysis/drishti_cost_and_business_calculator.html" target="_blank">💰 Cost Calculator</a>
+    </div>
+  </header>
+
+  <div class="container">
+
+    <div class="hero-card">
+      <h1>PRD: Drishti — AI Voice Companion for the Visually Impaired</h1>
+      <p style="color: var(--text-muted); font-size: 13.5px;">
+        An assistive smart glasses system coupling lightweight eyewear capture with edge reflex detection and conversational intelligence.
+      </p>
+      <div class="meta-line">
+        <span class="pill-badge badge-purple">Problem Statement: PS-05</span>
+        <span class="pill-badge badge-cyan">Status: Draft v3 — Final</span>
+        <span class="pill-badge badge-emerald">Form Factor: Smart Sunglasses (&lt;38g)</span>
+        <span class="pill-badge badge-amber">Build Target: Hackathon MVP + Production Roadmap</span>
+      </div>
+    </div>
+
+    <!-- Section 0 -->
+    <h2>0. Summary of Decisions</h2>
+    <div class="callout decision">
+      <ul style="margin-bottom: 0;">
+        <li><strong>Architecture & Product Integration:</strong> Drishti is integrated into <strong>Smart Sunglasses</strong> (<38g frame housing the camera, dual MEMS mic, and directional open-ear micro-speakers over the tragus). The sunglasses connect wirelessly over Wi-Fi SoftAP to the compute host. In the hackathon validation MVP, a laptop acts as the local testbed brain (running YOLOv8n + face_recognition + audio output); in production, this runs on the user's Android phone.</li>
+        <li><strong>Dual-Tier Reliability:</strong> A <strong>local-only pipeline is the non-negotiable guaranteed base</strong>. LiveKit conversational voice (STT → LLM → TTS) is a gated stretch layer added only if early proof-of-concept tests succeed.</li>
+        <li><strong>Operational Modes:</strong> <strong>Navigation Mode</strong> (proactive obstacle/hazard alerts) + <strong>Assistant Mode</strong> (on-demand conversational Q&amp;A, scene understanding, face recognition), switched via a physical button (primary) or voice command (secondary).</li>
+        <li><strong>Known-People Repo Check:</strong> The existing <code>agent-starter-embed</code> repo uses Pipecat + Daily.co, not LiveKit. Decision: keep LiveKit as planned; the Pipecat repo remains available as a proven fallback if LiveKit setup stalls.</li>
+        <li><strong>Feasibility Review Outcomes:</strong> ESP32-CAM requires an external FTDI programmer (no onboard USB); GPIO pin choice for the mode button matters (avoid GPIO16/0/4 and SD-card pins); <code>face_recognition</code>/dlib often fails on Windows; YOLOv8 is AGPL-3.0 licensed; and LiveKit's real-world roundtrip latency is commonly 1.4–1.7s. All constraints are accommodated in the phased roadmap.</li>
+      </ul>
+    </div>
+
+    <!-- Section 1 -->
+    <h2>1. Overview</h2>
+    <p>
+      Drishti is a wearable assistive system designed as <strong>Smart Sunglasses</strong> housing an ESP32-S3 / ESP32-CAM camera node, dual microphones, and open-ear speakers, paired over wireless SoftAP with a local computer vision pipeline (YOLOv8n + face_recognition) and directional audio output.
+    </p>
+    <p>
+      A <strong>local-only pipeline is the guaranteed base</strong>; an internet-connected LiveKit-powered conversational voice layer is a gated stretch enhancement.
+    </p>
+
+    <!-- Section 2 -->
+    <h2>2. Problem Statement</h2>
+    <p>Visually impaired individuals face two related challenges navigating unfamiliar environments:</p>
+    <ol>
+      <li><strong>Reactive hazard awareness:</strong> Knowing what is physically in their path before bodily contact (low branches, vehicles, open drains, curbs).</li>
+      <li><strong>Situational understanding:</strong> Knowing who/what is around them on demand (reading signs, identifying people, describing seating layouts).</li>
+    </ol>
+    <p>Drishti addresses both using local computer vision with an optional conversational AI layer.</p>
+
+    <!-- Section 3 -->
+    <h2>3. Target User</h2>
+    <ul>
+      <li><strong>Primary:</strong> Visually impaired individuals navigating semi-familiar indoor and outdoor environments hands-free.</li>
+      <li><strong>Secondary:</strong> Caregivers and family members who pre-register familiar faces and safety contacts.</li>
+    </ul>
+
+    <!-- Section 4 -->
+    <h2>4. Goals &amp; Success Metrics (Hackathon Demo)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Goal</th>
+          <th>Success Criteria</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Real-time obstacle awareness</strong></td>
+          <td>System announces a new close obstacle/person within a few seconds — exact threshold set after POC 1 timing.</td>
+        </tr>
+        <tr>
+          <td><strong>Known-person recognition</strong></td>
+          <td>Correctly distinguishes 2–3 pre-registered faces from strangers under actual demo lighting (POC 3).</td>
+        </tr>
+        <tr>
+          <td><strong>Usable mode switching</strong></td>
+          <td>Button press reliably cycles mode with spoken audio confirmation.</td>
+        </tr>
+        <tr>
+          <td><strong>Guaranteed live demo</strong></td>
+          <td>The <strong>local-only stack</strong> runs live without any internet dependency as the non-negotiable fallback.</td>
+        </tr>
+        <tr>
+          <td><strong>Stretch: conversational Q&amp;A</strong></td>
+          <td>If POC 2 succeeds, user can ask a question and get a spoken answer via LiveKit.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Section 5 -->
+    <h2>5. Scope</h2>
+    
+    <h3>MUST BUILD (Local-Only, Zero Internet Dependency)</h3>
+    <ul>
+      <li>Smart Sunglasses camera node → Wi-Fi → laptop frame pipeline (fallback: laptop webcam directly if POC 1 fails).</li>
+      <li>YOLOv8n (COCO pretrained) for obstacles, objects, and pedestrians, running locally on CPU.</li>
+      <li>Near / medium / far proximity from bounding-box size coverage (empirical distance mapping).</li>
+      <li>Local TTS (pyttsx3 / gTTS) — zero cloud dependency.</li>
+      <li>Physical push-button mode switch (Navigation ↔ Assistant) wired to a <strong>non-shared GPIO pin</strong> (13, 14, or 15 — avoiding GPIO16, 0, 4, and SD-card pins).</li>
+    </ul>
+
+    <h3>SHOULD BUILD — Gated Stretch Layer (Only After MUST BUILD is Stable)</h3>
+    <ul>
+      <li>LiveKit Agents voice pipeline (STT → LLM → TTS) for conversational Assistant-mode Q&amp;A — <strong>gated behind POC 2</strong>.</li>
+      <li>Face recognition (<code>face_recognition</code> / dlib) for known vs. unknown people — <strong>gated behind POC 3</strong>.</li>
+      <li>Voice-command mode switching as a secondary input to the physical button.</li>
+    </ul>
+
+    <h3>Explicitly Out of Scope (12-Hour Build Window)</h3>
+    <ul>
+      <li>Full edge text OCR reading (deferred to Phase 2 mobile integration).</li>
+      <li>True standalone glasses compute without external host (deferred to Phase 4).</li>
+      <li>Haptic vibration motors.</li>
+      <li>Precise step-calibration distance metrics.</li>
+      <li>Multi-person tracking and biometric re-identification.</li>
+    </ul>
+
+    <!-- Section 6 -->
+    <h2>6. System Architecture</h2>
+    <div class="mermaid-container">
+      <pre class="mermaid">
+flowchart LR
+    A["Smart Sunglasses: ESP32-CAM (or Laptop Webcam)"] -- "Wi-Fi MJPEG Frames" --> B["Laptop/Host: Vision Pipeline"]
+    B --> C["YOLOv8n: Objects / Obstacles / People"]
+    B -. "Optional (Gated)" .-> D["face_recognition: Known vs Unknown"]
+    C --> E["Context Builder"]
+    D -.- E
+    E --> F["Local TTS: pyttsx3 / gTTS"]
+    F --> G["Open-Ear Speaker / Headphone"]
+    E -. "Optional (Gated)" .-> H["LiveKit Voice Agent"]
+    H -.- I["STT: User Voice Query (Mic)"]
+    H -.- J["LLM: Contextual Scene Response"]
+    H -.- K["Cloud TTS: Spoken Output"]
+    K -.- G
+    L["Tactile Push Button on Sunglasses Frame"] -- "GPIO Mode Signal" --> B
+      </pre>
+    </div>
+
+    <!-- Section 7 -->
+    <h2>7. User Experience &amp; Interaction Flows</h2>
+    
+    <h3>Navigation Mode (Default)</h3>
+    <ul>
+      <li>Continuous obstacle scanning at 5–10 fps.</li>
+      <li><strong>Proximity alerts:</strong> Speaks object name and direction when bounding box exceeds threshold (e.g. <em>"Chair, close ahead"</em>, <em>"Person approaching, 12 o'clock"</em>).</li>
+      <li><strong>Cooldown / Anti-spam:</strong> Suppresses repeated alerts for the same stationary object within 3 seconds.</li>
+    </ul>
+
+    <h3>Assistant Mode</h3>
+    <ul>
+      <li>Continuous scanning is throttled to conserve compute and audio bandwidth.</li>
+      <li>User triggers query via button or push-to-talk voice prompt.</li>
+      <li>LiveKit STT → LLM → TTS composes an answer from live detection context.</li>
+      <li>Known-face names surface here if face recognition passes; otherwise reports generic <em>"a person is here."</em></li>
+    </ul>
+
+    <!-- Section 8 -->
+    <h2>8. Technology Stack</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Layer</th>
+          <th>Choice</th>
+          <th>Engineering Note</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>Capture Hardware</strong></td>
+          <td>Smart Sunglasses with ESP32-CAM (Fallback: Laptop Webcam)</td>
+          <td>Requires external FTDI/USB-TTL programmer to flash — no built-in USB port.</td>
+        </tr>
+        <tr>
+          <td><strong>Communications</strong></td>
+          <td>Wi-Fi 802.11 b/g/n (SoftAP / Local Hotspot)</td>
+          <td>Verify achievable fps on venue network in POC 1 before committing.</td>
+        </tr>
+        <tr>
+          <td><strong>Object Detection</strong></td>
+          <td>YOLOv8n (Ultralytics, COCO Pretrained)</td>
+          <td>AGPL-3.0 licensed — fine for hackathon demo; commercial product requires enterprise license.</td>
+        </tr>
+        <tr>
+          <td><strong>Face Recognition (Stretch)</strong></td>
+          <td><code>face_recognition</code> (dlib)</td>
+          <td>Officially Mac/Linux; Windows dlib compile requires CMake/Visual Studio build tools — test dev machine first.</td>
+        </tr>
+        <tr>
+          <td><strong>Local Audio (MUST BUILD)</strong></td>
+          <td>pyttsx3 or gTTS</td>
+          <td>Zero internet dependency, zero API cost.</td>
+        </tr>
+        <tr>
+          <td><strong>Voice Agent (Stretch)</strong></td>
+          <td>LiveKit Agents (STT + LLM + TTS)</td>
+          <td>Requires LiveKit server and API keys; published roundtrip latency is commonly 1.4–1.7s.</td>
+        </tr>
+        <tr>
+          <td><strong>Voice Fallback Reference</strong></td>
+          <td>Pipecat + Daily.co (<code>agent-starter-embed</code>)</td>
+          <td>Kept on hand as tested fallback if LiveKit setup stalls.</td>
+        </tr>
+        <tr>
+          <td><strong>Core Runtime</strong></td>
+          <td>Python 3.10+</td>
+          <td>Cross-platform coordinator.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Section 9 -->
+    <h2>9. Hardware Checklist</h2>
+    <ul>
+      <li><strong>Smart Sunglasses Frame:</strong> TR90 eyewear frame housing ESP32-CAM module, OV2640 lens, and open-ear speaker for hands-free eye-level capture.</li>
+      <li><strong>FTDI / USB-TTL Programmer:</strong> Required to flash code to the ESP32-CAM module.</li>
+      <li><strong>Push Button:</strong> Wired to a confirmed-safe GPIO pin (13, 14, or 15 — not 16, 0, 4, or SD-card pins).</li>
+      <li><strong>Portable Power Bank:</strong> Powers ESP32-CAM via 5V rail.</li>
+      <li><strong>Host Laptop:</strong> Runs YOLOv8n, local TTS, and optional LiveKit agent.</li>
+      <li><strong>Microphone:</strong> Built-in laptop mic or external headset for Assistant-mode voice queries.</li>
+      <li><strong>Audio Output:</strong> Open-ear directional speaker or wireless earbuds.</li>
+    </ul>
+
+    <!-- Section 10 -->
+    <h2>10. Proof-of-Concept Gates (Execute First)</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>POC Gate</th>
+          <th>Hypothesis</th>
+          <th>Test Procedure</th>
+          <th>Success Criteria</th>
+          <th>Fallback if Failed</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>1. Capture Pipeline</strong></td>
+          <td>ESP32-CAM streams usable video over venue Wi-Fi</td>
+          <td>Run stock CameraWebServer example for 5 min</td>
+          <td><strong>≥ 5 fps</strong> without repeated drops</td>
+          <td>Use laptop webcam directly as capture source</td>
+        </tr>
+        <tr>
+          <td><strong>2. Voice Latency</strong></td>
+          <td>LiveKit STT → LLM → TTS completes in usable time</td>
+          <td>Build minimal agent, time 10 round trips</td>
+          <td>Consistent, acceptable latency for live demo</td>
+          <td>Drop LiveKit; use local TTS only (or Pipecat fallback)</td>
+        </tr>
+        <tr>
+          <td><strong>3. Face Recognition</strong></td>
+          <td>3 known faces distinguishable from strangers</td>
+          <td>Register 3 faces, test 10 photos in demo light</td>
+          <td><strong>≥ 8/10 correct</strong></td>
+          <td>Drop identity claims; keep generic "person" from YOLO</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Section 11 -->
+    <h2>11. 12-Hour Build Timeline</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Time Window</th>
+          <th>Milestone &amp; Focus</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><strong>0–1h</strong></td>
+          <td>Run POC 1 (capture) and POC 2 (voice latency) in parallel; lock fallback paths immediately.</td>
+        </tr>
+        <tr>
+          <td><strong>1–3h</strong></td>
+          <td>Local pipeline: camera → YOLOv8n → proximity classification working.</td>
+        </tr>
+        <tr>
+          <td><strong>3–4h</strong></td>
+          <td>Local TTS wired to detections; Navigation mode cooldown/anti-spam logic implemented.</td>
+        </tr>
+        <tr>
+          <td><strong>4–5h</strong></td>
+          <td>Button wired to confirmed-safe GPIO pin; mode-switch state machine with spoken confirmation.</td>
+        </tr>
+        <tr>
+          <td><strong>5–6h</strong></td>
+          <td><strong>Decision Checkpoint:</strong> Local-only MUST BUILD stack is demo-ready. Freeze code as guaranteed fallback.</td>
+        </tr>
+        <tr>
+          <td><strong>6–7h</strong></td>
+          <td>Run POC 3 (face recognition); proceed only if installation and accuracy tests pass.</td>
+        </tr>
+        <tr>
+          <td><strong>7–9h</strong></td>
+          <td>If POC 2 passed: build LiveKit Assistant-mode voice Q&amp;A on top of working local stack.</td>
+        </tr>
+        <tr>
+          <td><strong>9–10h</strong></td>
+          <td>Integrate face recognition into Assistant-mode context if POC 3 passed.</td>
+        </tr>
+        <tr>
+          <td><strong>10–11h</strong></td>
+          <td>Voice-command mode switching (stretch), only if remaining time permits.</td>
+        </tr>
+        <tr>
+          <td><strong>11–12h</strong></td>
+          <td>End-to-end rehearsal on local-only fallback path first, then full stack.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Section 12 -->
+    <h2>12. Critical Risks &amp; Fallbacks</h2>
+    <div class="callout risk">
+      <ul style="margin-bottom: 0;">
+        <li><strong>LiveKit Voice Agent:</strong> If setup or latency fails → Fall back to Local TTS only with canned phrases (or Pipecat repo).</li>
+        <li><strong>face_recognition (dlib):</strong> If installation fails → Fall back to generic "person detected" from YOLO.</li>
+        <li><strong>ESP32-CAM Wi-Fi Streaming:</strong> If venue network is unstable → Fall back to Laptop Webcam directly.</li>
+        <li><strong>Venue Internet:</strong> If completely down → Local-only stack operates 100% offline with zero cloud dependency.</li>
+      </ul>
+    </div>
+
+    <!-- Section 13 -->
+    <h2>13. Risks &amp; Mitigations</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Risk</th>
+          <th>Mitigation Strategy</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td>Wi-Fi latency/instability between ESP32 and laptop</td>
+          <td>Use dedicated mobile hotspot; reduce resolution to $320	imes240$; laptop webcam fallback.</td>
+        </tr>
+        <tr>
+          <td>LiveKit + LLM latency overrun</td>
+          <td>Gate behind POC 2; treat as stretch; Pipecat/Daily.co repo as tested backup.</td>
+        </tr>
+        <tr>
+          <td>dlib / face_recognition install failure on Windows</td>
+          <td>Test on actual dev machine before committing; generic person fallback.</td>
+        </tr>
+        <tr>
+          <td>Missing FTDI programmer</td>
+          <td>Acquire prior to hackathon — no in-hackathon workaround for bare ESP32-CAM.</td>
+        </tr>
+        <tr>
+          <td>Integration time overrun</td>
+          <td>Build and test each piece independently (POCs); preserve local-only fallback.</td>
+        </tr>
+      </tbody>
+    </table>
+
+    <!-- Section 14 -->
+    <h2>14. Path to a Real Product (Post-Hackathon)</h2>
+    <p>
+      The hackathon build is a <strong>validated MVP, not a production system</strong>. The production roadmap spans 4 distinct phases:
+    </p>
+
+    <h3>Phase 1 — Hackathon MVP (This PRD)</h3>
+    <p>Smart sunglasses camera node + laptop brain, local-only fallback guaranteed, LiveKit as a gated stretch. Goal: prove concept viability hands-free.</p>
+
+    <h3>Phase 2 — Mobile Prototype (Android / iOS)</h3>
+    <ul>
+      <li>Re-export YOLOv8n to TFLite (Android) / CoreML (iOS) and validate on-device inference speed on actual smartphone NPUs/CPUs.</li>
+      <li>Replace <code>face_recognition</code>/dlib with Google ML Kit face detection and on-device MobileFaceNet embedding models.</li>
+      <li>Replace local TTS with native Android TextToSpeech and iOS AVSpeechSynthesizer.</li>
+      <li>Replace hardcoded Wi-Fi credentials with BLE provisioning or Wi-Fi SoftAP direct pairing.</li>
+      <li>Deploy LiveKit's native Android (Kotlin) SDK as implemented in the <code>hackbios-neuraX</code> mobile client.</li>
+    </ul>
+
+    <h3>Phase 3 — Pilot with Real Users</h3>
+    <ul>
+      <li>Conduct field trials with blind and visually impaired users in authentic urban pedestrian settings over multiple weeks.</li>
+      <li>Measure false negatives and false positives — missed obstacles are safety hazards, not software bugs.</li>
+      <li>Gather empirical data on frame weight, battery endurance, and thermal dissipation on skin.</li>
+    </ul>
+
+    <h3>Phase 4 — Scaled Production</h3>
+    <ul>
+      <li>Transition to custom rigid-flex 4-layer PCB inside custom TR90 sunglasses frames (BOM: $10.92 / ₹1,056.73).</li>
+      <li>Undergo privacy and regulatory review for camera capture and bystander data protection.</li>
+      <li>Align retail pricing (₹3,999) with India's ADIP scheme for 100% government-subsidized distribution.</li>
+    </ul>
+
+    <!-- Section 15 -->
+    <h2>15. Licensing Notes</h2>
+    <ul>
+      <li><strong>YOLOv8 (Ultralytics):</strong> AGPL-3.0. Compliant for hackathon open prototypes; commercial closed-source products require an Ultralytics Enterprise license.</li>
+      <li><strong>face_recognition / dlib:</strong> MIT / Boost Software License.</li>
+      <li><strong>LiveKit Server &amp; Agents:</strong> Apache 2.0.</li>
+    </ul>
+
+  </div>
+
+  <footer>
+    Project Drishti — Product Requirements Document (PRD v3.0 Final) · Confidential &amp; Proprietary Engineering Blueprint
+  </footer>
+
+  <script>
+    mermaid.initialize({ startOnLoad: true, theme: 'dark' });
+
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.addEventListener('click', () => {
+      const cur = document.body.getAttribute('data-theme');
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', next);
+      mermaid.initialize({ startOnLoad: true, theme: next === 'dark' ? 'dark' : 'default' });
+    });
+  </script>
+</body>
+</html>
