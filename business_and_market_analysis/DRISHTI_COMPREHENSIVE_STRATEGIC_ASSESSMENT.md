@@ -4,7 +4,7 @@
 **Prepared For:** Executive Leadership, Technical Engineering Leads, Accessibility Partners, and Investment Committees  
 **Perspective:** Combined McKinsey / BCG Strategy, Google / Meta Assistive Product Architecture, Hardware & Embedded Systems Engineering, and Financial Unit Economics  
 **Primary Currency:** Indian Rupee (INR, ₹) | **Secondary Currency:** US Dollar (USD, $)  
-**Exchange Rate Assumption:** $1.00 USD = ₹83.00 INR (Baseline October 2024–2026)  
+**Exchange Rate Assumption:** $1.00 USD = ₹96.77 INR (Spot Rate Baseline)  
 **Product Classification:** Bring-Your-Own-Device (BYOD) Smart Assistive Sunglasses for Blind and Visually Impaired (BVI) Individuals  
 
 ---
@@ -13,15 +13,15 @@
 
 ### 1.1 The Strategic Dilemma in Assistive Technology
 Globally, **2.2 billion people** live with visual impairment, including **43.3 million blind** individuals and **295 million** living with moderate-to-severe visual impairment (MSVI). In developing nations such as India (home to over **40 million** visually impaired citizens), assistive technology is constrained by a persistent market failure:
-1. **The Luxury Monolith Barrier:** Commercial smart glasses (e.g., OrCam MyEye 3 at \$4,200 / ₹3,50,000; Envision Glasses at \$2,650 / ₹2,20,000) package high-power processors, cellular modems, and batteries directly onto spectacle frames. This creates heavy, uncomfortably warm frames (`> 75g`), limits battery endurance to under 2 hours, and commands pricing that exceeds 15 to 40 times the average monthly household income of persons with disabilities in the Global South.
+1. **The Luxury Monolith Barrier:** Commercial smart glasses (e.g., OrCam MyEye 3 at \$4,200 / ₹4,06,434; Envision Glasses at \$2,650 / ₹2,56,440) package high-power processors, cellular modems, and batteries directly onto spectacle frames. This creates heavy, uncomfortably warm frames (`> 75g`), limits battery endurance to under 2 hours, and commands pricing that exceeds 15 to 40 times the average monthly household income of persons with disabilities in the Global South.
 2. **The Smartphone-Only Usability Barrier:** Handheld AI applications (e.g., Microsoft Seeing AI, Be My Eyes / Be My AI, Google Lookout) provide software intelligence but require users to hold their smartphone constantly in one hand. This compromises physical safety by monopolizing the hand required to sweep a white cane, exposes the phone to street snatching and drops, and suffers from continuous camera misaiming.
 
 ### 1.2 The Drishti Value Hypothesis
 Project Drishti resolves this dilemma through a **Bring-Your-Own-Device (BYOD) Decoupled Hardware Architecture**:
 - **The Physical Product:** A pair of **Smart Assistive Sunglasses** with an embedded micro-camera (OmniVision OV2640) and low-power Wi-Fi video streaming node (ESP32-CAM) integrated directly into a lightweight (`< 38g`), stylish TR90 sunglasses frame.
 - **The Compute Engine:** The user's existing Android smartphone (carried safely in a pocket or shoulder sling), which hosts on-device safety reflexes (sub-350ms TFLite INT8 inference) and manages conversational cloud intelligence via LiveKit WebRTC.
-- **Unit Economics Breakthrough:** Reduces initial hardware manufacturing cost to **₹536 – ₹653 (\$6.46 – \$7.87)** at volume, retailing at **₹1,199 (\$14.40)**—a **99.6% reduction in acquisition cost** compared to proprietary smart glasses.
-- **Operating Model:** Operating cost of **₹3.50 – ₹8.00 per active day (\$0.04 – \$0.10/day)**, subsidized through government welfare grants (ADIP scheme) or accessible B2C subscriptions (₹199/month).
+- **Unit Economics Breakthrough:** Reduces initial hardware manufacturing cost to **₹536 – ₹653 (\$5.54 – \$6.75)** at volume, retailing at **₹1,199 (\$12.39)**—a **99.7% reduction in acquisition cost** compared to proprietary smart glasses.
+- **Operating Model:** Operating cost of **₹3.50 – ₹8.00 per active day (\$0.036 – \$0.083/day)**, subsidized through government welfare grants (ADIP scheme) or accessible B2C subscriptions (₹199/month, ~\$2.06/month).
 
 ### 1.3 Executive Launch Verdict: "Gated Limited Pilot" (Do Not Launch Unrestricted)
 **Verdict:** **EXECUTE A PHASE-2 GATED LIMITED PILOT (300–500 UNITS); DEFER UNRESTRICTED COMMERCIAL LAUNCH.**
@@ -145,9 +145,9 @@ The assistive technology market comprises specialized assistive hardware, big-te
 | **Thermal Dissipation** | **Near-Zero (Phone cool)** | High (Warms temple) | Very High (Shuts down) | Moderate | Handheld warmth | Handheld warmth | Zero |
 | **Battery Life (Active)** | **6.0+ Hours (Phone)** | 1.5 – 2.0 Hours | 1.5 – 2.0 Hours | 3.5 – 4.0 Hours | Phone dependent | Phone dependent | 10+ Hours |
 | **Indian Languages** | **Full (Hindi/Regional)** | Poor (English/Hebrew) | Basic Hindi OCR | ❌ English/EU only | Basic Hindi | 15+ Languages | Beep vibrations only |
-| **Hardware Purchase Price**| **₹1,199 (\$14.40)** | **₹3,50,000 (\$4,200)** | **₹2,20,000 (\$2,650)** | **₹25,000 (\$299)** | **₹0 (App store)** | **₹0 (App store)** | **₹3,500 (\$42.00)** |
-| **Recurring Subscriptions**| ₹199/mo (\$2.40/mo) | ₹0 (Included) | €20/mo (₹1,800/mo) | ₹0 (Consumer AI) | ₹0 | ₹0 (B2C Free) | ₹0 |
-| **3-Year Total Cost (TCO)** | **₹8,363 (\$100.75)** | **₹3,50,000 (\$4,200)** | **₹2,84,800 (\$3,430)** | **₹25,000 (\$299)** | **₹0** | **₹0** | **₹3,500 (\$42.00)** |
+| **Hardware Purchase Price**| **₹1,199 (\$12.39)** | **₹4,06,434 (\$4,200)** | **₹2,56,440 (\$2,650)** | **₹28,934 (\$299)** | **₹0 (App store)** | **₹0 (App store)** | **₹3,500 (\$36.17)** |
+| **Recurring Subscriptions**| ₹199/mo (\$2.06/mo) | ₹0 (Included) | €20/mo (~₹2,100/mo) | ₹0 (Consumer AI) | ₹0 | ₹0 (B2C Free) | ₹0 |
+| **3-Year Total Cost (TCO)** | **₹8,363 (\$86.42)** | **₹4,06,434 (\$4,200)** | **₹3,32,040 (\$3,430)** | **₹28,934 (\$299)** | **₹0** | **₹0** | **₹3,500 (\$36.17)** |
 | **Market Accessibility** | **100% Scalable (ADIP)** | Top 0.05% Wealth | Top 0.1% Wealth | Urban Tech Enthusiast | Smartphone owners | Smartphone owners | Subsidized in India |
 | **Evidence / Verification** | Working Prototype (2026) | Commercial Product | Commercial Product | Commercial Product | Commercial App | Commercial App | Commercial Product |
 
@@ -299,8 +299,8 @@ Financial modeling is based on verified wholesale electronics pricing in India a
 │ Accessible Packaging & Braille Guide │ ₹35.00         │ ₹18.00         │
 │ Compliance Allocation (BIS/WPC/GST)  │ ₹50.00         │ ₹37.00         │
 ├──────────────────────────────────────┼────────────────┼────────────────┤
-│ TOTAL FACTORY COGS (Option A Tether) │ ₹778.00 ($9.37)│ ₹536.00 ($6.46)│
-│ TOTAL FACTORY COGS (Option B LiPo)   │ ₹958.00($11.54)│ ₹653.00 ($7.87)│
+│ TOTAL FACTORY COGS (Option A Tether) │ ₹778.00 ($8.04)│ ₹536.00 ($5.54)│
+│ TOTAL FACTORY COGS (Option B LiPo)   │ ₹958.00 ($9.90)│ ₹653.00 ($6.75)│
 └──────────────────────────────────────┴────────────────┴────────────────┘
 ```
 
@@ -319,13 +319,13 @@ Because Drishti executes its continuous safety reflex entirely on-device, zero A
 │ Cost Driver                            │ Usage Tier   │ Monthly Cost   │
 ├────────────────────────────────────────┼──────────────┼────────────────┤
 │ On-Device Safety Reflex (TFLite INT8)  │ Continuous   │ ₹0.00          │
-│ LiveKit WebRTC Cloud Audio Data        │ 20 hrs/month │ ₹12.50 ($0.15) │
-│ Gemini 2.0 Flash MLLM Visual Queries   │ 300 queries  │ ₹85.00 ($1.02) │
-│ Speech STT & TTS (Sarvam AI / Deepgram)│ 20 hrs audio │ ₹48.00 ($0.58) │
-│ Cloud Hosting & Telemetry (Vultr CPU)  │ Shared VM    │ ₹8.50 ($0.10)  │
-│ Support Allocation & Diagnostics OTA   │ Amortized    │ ₹25.00 ($0.30) │
+│ LiveKit WebRTC Cloud Audio Data        │ 20 hrs/month │ ₹12.50 ($0.13) │
+│ Gemini 2.0 Flash MLLM Visual Queries   │ 300 queries  │ ₹85.00 ($0.88) │
+│ Speech STT & TTS (Sarvam AI / Deepgram)│ 20 hrs audio │ ₹48.00 ($0.50) │
+│ Cloud Hosting & Telemetry (Vultr CPU)  │ Shared VM    │ ₹8.50 ($0.09)  │
+│ Support Allocation & Diagnostics OTA   │ Amortized    │ ₹25.00 ($0.26) │
 ├────────────────────────────────────────┼──────────────┼────────────────┤
-│ TOTAL MONTHLY OPEX PER ACTIVE USER     │ Blended Base │ ₹179.00 ($2.15)│
+│ TOTAL MONTHLY OPEX PER ACTIVE USER     │ Blended Base │ ₹179.00 ($1.85)│
 └────────────────────────────────────────┴──────────────┴────────────────┘
 ```
 
@@ -333,9 +333,9 @@ Because Drishti executes its continuous safety reflex entirely on-device, zero A
 
 ```
 Cost (INR)
-₹4,00,000 ┬─────────────────────────────────────────── [OrCam MyEye 3: ₹3,50,000]
+₹4,50,000 ┬─────────────────────────────────────────── [OrCam MyEye 3: ₹4,06,434]
           │
-₹3,00,000 ┼───────────────────────── [Envision Glasses: ₹2,84,800]
+₹3,50,000 ┼───────────────────────── [Envision Glasses: ₹3,32,040]
           │
 ₹2,00,000 ┤
           │
@@ -345,10 +345,10 @@ Cost (INR)
                Year 1: ₹3,587 | Year 2: ₹2,388 | Year 3: ₹2,388
 ```
 
-- **Project Drishti (3-Year TCO):** **₹8,363 (\$100.75)** (Hardware ₹1,199 + ₹199/month over 36 months).
-- **OrCam MyEye 3 (3-Year TCO):** **₹3,50,000 (\$4,200.00)**.
-- **Envision Glasses (3-Year TCO):** **₹2,84,800 (\$3,430.00)**.
-- **Strategic Impact:** Drishti delivers a **97.1% to 97.6% reduction in 3-year ownership cost** compared to existing commercial smart glasses.
+- **Project Drishti (3-Year TCO):** **₹8,363 (\$86.42)** (Hardware ₹1,199 + ₹199/month over 36 months).
+- **OrCam MyEye 3 (3-Year TCO):** **₹4,06,434 (\$4,200.00)**.
+- **Envision Glasses (3-Year TCO):** **₹3,32,040 (\$3,430.00)**.
+- **Strategic Impact:** Drishti delivers a **97.5% to 97.9% reduction in 3-year ownership cost** compared to existing commercial smart glasses.
 
 ---
 
@@ -360,16 +360,16 @@ Drishti utilizes a hybrid B2C, B2G, and CSR distribution model to ensure commerc
 ┌────────────────────────────────────────────────────────────────────────┐
 │                      THREE-TIER COMMERCIAL MODEL                       │
 ├───────────────────────────────────┬────────────────────────────────────┤
-│ Tier 1: Direct B2C Retail         │ Hardware: ₹1,199 ($14.40)          │
-│ (Individual Users & Families)     │ Subscription: ₹199/month ($2.40)   │
+│ Tier 1: Direct B2C Retail         │ Hardware: ₹1,199 ($12.39)          │
+│ (Individual Users & Families)     │ Subscription: ₹199/month ($2.06)   │
 │                                   │ Gross Margin: 42.0% Hardware       │
 ├───────────────────────────────────┼────────────────────────────────────┤
-│ Tier 2: Government ADIP Scheme    │ Bundled: ₹3,999 ($48.18)           │
+│ Tier 2: Government ADIP Scheme    │ Bundled: ₹3,999 ($41.32)           │
 │ (B2G Social Welfare Grants)       │ Includes Glasses + 3 Years Cloud   │
 │                                   │ 100% Free to user under grant      │
 ├───────────────────────────────────┼────────────────────────────────────┤
 │ Tier 3: Corporate CSR Cohorts     │ Sponsorship: ₹2,500/student/year   │
-│ (Companies Sponsoring Blind Youth)│ Includes Glasses + 1 Year Cloud    │
+│ (Companies Sponsoring Blind Youth)│ ($25.83 / student / year)          │
 │                                   │ Direct institutional procurement   │
 └───────────────────────────────────┴────────────────────────────────────┘
 ```
@@ -388,7 +388,7 @@ Drishti utilizes a hybrid B2C, B2G, and CSR distribution model to ensure commerc
   - Quality QA & Operations Lead: ₹8,00,000
   - Server Base Overhead & Office/Admin: ₹6,00,000
   - Regulatory, Legal, and Compliance Reserve: ₹4,00,000
-  - **Total Annual Fixed Overhead:** **₹42,00,000 (\$50,600)**
+  - **Total Annual Fixed Overhead:** **₹42,00,000 (\$43,402)**
 - **Hardware Unit Contribution:** ₹504.00
 - **Annual Subscription Contribution:** ₹240.00 / user
 - **Total First-Year Contribution Per Customer:** ₹744.00
@@ -412,11 +412,11 @@ Market sizing estimates must be realistic and grounded in verifiable demographic
 ├────────────────────────────────────────────────────────────────────────┤
 │ SERVICEABLE ADDRESSABLE MARKET (SAM - India Target)                    │
 │ 12.5 Million Smartphone-Owning Visually Impaired Individuals in India   │
-│ Market Opportunity: ~₹1,500 Crore ($180 Million)                       │
+│ Market Opportunity: ~₹1,500 Crore ($155.0 Million)                     │
 ├────────────────────────────────────────────────────────────────────────┤
 │ SERVICEABLE OBTAINABLE MARKET (SOM - 3-Year Target Horizon)            │
 │ 250,000 Active Users (via Blind Schools, NGOs, and ADIP Scheme)        │
-│ 3-Year Cumulative Revenue Potential: ~₹75 Crore ($9.0 Million)         │
+│ 3-Year Cumulative Revenue Potential: ~₹75 Crore ($7.75 Million)        │
 └────────────────────────────────────────────────────────────────────────┘
 ```
 
@@ -501,25 +501,25 @@ Phase: [ Ph 1 ]───>[ Ph 2 ]───>[ Ph 3 ]─────────>[
 ### Phase 1: Foundation Hardening & Safety Validation (Months 1–3)
 - **Primary Deliverables:** Implement IMU pitch compensation; develop negative obstacle heuristic; build alert suppression logic; benchmark 50-person controlled indoor test.
 - **Dependencies:** Android development, IMU sensor fusion, controlled testing track.
-- **Budget:** ₹6,50,000 (\$7,800).
+- **Budget:** ₹6,50,000 (\$6,717).
 - **Go/No-Go Gate:** Zero false distance jumps during walking gait; obstacle warning precision $> 90\%$; audio alert latency under 350ms.
 
 ### Phase 2: Gated Limited Pilot (Months 4–6)
 - **Primary Deliverables:** Produce 300 pilot sunglasses units using rapid tooling; deploy across 3 partner blind institutes (NAB Delhi, BPA Ahmedabad, NIVH Dehradun); measure usability and battery metrics.
 - **Dependencies:** Pilot PCB assembly, institutional MOUs, user onboarding team.
-- **Budget:** ₹18,00,000 (\$21,700).
+- **Budget:** ₹18,00,000 (\$18,601).
 - **Go/No-Go Gate:** 80%+ weekly retention over 60 days; $< 2\%$ hardware failure rate; user-reported reduction in head/chest collisions.
 
 ### Phase 3: Vernacular Optimization & Hardware Tooling (Months 7–10)
 - **Primary Deliverables:** Integrate Sarvam AI Hindi/Tamil voice pipeline; complete custom injection molds for TR90 temple enclosures; obtain WPC ETA and BIS certifications.
 - **Dependencies:** Indian speech APIs, optical frame tooling manufacturer, compliance labs.
-- **Budget:** ₹28,00,000 (\$33,700).
+- **Budget:** ₹28,00,000 (\$28,934).
 - **Go/No-Go Gate:** Regulatory certifications granted; vernacular voice task completion rate $> 88\%$.
 
 ### Phase 4: Institutional Scale & ADIP Empanelment (Months 11–16)
 - **Primary Deliverables:** Apply for empanelment under the Ministry of Social Justice's ADIP scheme; launch CSR sponsorship campaigns targeting 5,000 students; ramp contract manufacturing to 2,000 units/month.
 - **Dependencies:** ALIMCO empanelment, corporate CSR outreach, domestic contract manufacturer.
-- **Budget:** ₹55,00,000 (\$66,200).
+- **Budget:** ₹55,00,000 (\$56,836).
 - **Go/No-Go Gate:** Breakeven reached at unit level; initial 5,000-unit government/CSR orders booked.
 
 ### Phase 5: Commercial Scale & Global South Expansion (Months 17–24+)
@@ -546,7 +546,7 @@ Phase: [ Ph 1 ]───>[ Ph 2 ]───>[ Ph 3 ]─────────>[
 | **Usability** | Daily Active Engagement (DAU / MAU) | N/A | $> 65\%$ | $> 75\%$ |
 | **Cognitive Load** | User-Reported Alert Fatigue Score (1-10) | 6.8 (High) | $< 3.5\text{ (Low)}$ | $< 2.5\text{ (Calm)}$ |
 | **Language Support** | Vernacular Voice Recognition Error Rate | 22% (Generic) | $< 10\%\text{ (Hindi)}$ | $< 7\%\text{ (Regional)}$ |
-| **Unit Economics** | Hardware Factory COGS (10k volume) | ₹778 (Pilot) | ₹620 | ₹536 (\$6.46) |
+| **Unit Economics** | Hardware Factory COGS (10k volume) | ₹778 (Pilot) | ₹620 | ₹536 (\$5.54) |
 | **Unit Profitability** | Hardware Gross Margin (B2C Model) | 35.1% | 40.0% | 42.0% |
 | **Customer Success** | Monthly Subscription Churn Rate | N/A | $< 6.0\%$ | $< 3.5\%$ |
 
@@ -557,7 +557,7 @@ Phase: [ Ph 1 ]───>[ Ph 2 ]───>[ Ph 3 ]─────────>[
 ### Recommendation: Execute Gated Limited Pilot
 The strategic assessment team unanimously recommends **PROCEEDING WITH A PHASE-2 GATED LIMITED PILOT (300 UNITS)** while **DEFERRING UNRESTRICTED COMMERCIAL LAUNCH**.
 
-Drishti’s core value proposition—bringing hands-free smart sunglasses to market at \$14.40 with sub-350ms safety reflexes—is fundamentally sound and commercially disruptive. However, moving straight to an open commercial launch without resolving negative obstacle detection and walking pitch calibration exposes both visually impaired users to physical injury and the startup to severe liability.
+Drishti’s core value proposition—bringing hands-free smart sunglasses to market at \$12.39 with sub-350ms safety reflexes—is fundamentally sound and commercially disruptive. However, moving straight to an open commercial launch without resolving negative obstacle detection and walking pitch calibration exposes both visually impaired users to physical injury and the startup to severe liability.
 
 ### Go/No-Go Gate Criteria for Commercial Launch (Phase 4):
 1. **Safety Gate:** Documented zero false negative drop-offs on descending staircases across a 1,000-trial indoor/outdoor test track.

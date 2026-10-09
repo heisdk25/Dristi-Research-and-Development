@@ -166,7 +166,7 @@ Drishti eliminates this via **deterministic on-device filtering**:
 - **Pricing (Gemini 2.0 Flash):**
   - Input: \$0.10 per 1,000,000 tokens $\rightarrow$ \$0.054.
   - Output: \$0.40 per 1,000,000 tokens $\rightarrow$ \$0.019.
-  - Total LLM Cost = $\$0.073 \times ₹83 =$ **₹6.05 / month (\$0.07)**.
+  - Total LLM Cost = $\$0.073 \times ₹96.77 =$ **₹7.06 / month (\$0.073)**.
 
 #### 3. Vision Multimodal Processing (Scene Q&A & Reading Mode)
 - **Engine:** Gemini 2.0 Flash Vision (triggered only when user asks "what is in front of me?" or "read this").
@@ -174,7 +174,7 @@ Drishti eliminates this via **deterministic on-device filtering**:
 - **Image Specs:** 320x240 compressed JPEG (~12KB payload).
 - **Pricing:**
   - Gemini 2.0 Flash charges 258 tokens per image $\rightarrow$ $450 \times 258 = 116,100$ tokens.
-  - Cost = $0.1161 \times \$0.10 = \$0.0116 \times ₹83 =$ **₹0.96 / month (\$0.01)**.
+  - Cost = $0.1161 \times \$0.10 = \$0.0116 \times ₹96.77 =$ **₹1.12 / month (\$0.012)**.
 
 #### 4. Text-to-Speech (TTS)
 - **Engine:** Sarvam AI Bulbul v3 (Natural Indian cadence) + Local Android TTS for urgent obstacles.
