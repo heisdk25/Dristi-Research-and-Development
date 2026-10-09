@@ -67,6 +67,23 @@ class MainActivity : AppCompatActivity() {
                 }
             }
 
+            // Observe OCR real-time track updates for visual debug overlay
+            drishtiService?.onOcrTracksUpdated = { tracks ->
+                runOnUiThread {
+                    val isOcr = drishtiService?.modeManager?.currentMode is DrishtiMode.Ocr
+                    if (isOcr && tracks.isNotEmpty()) {
+                        binding.ocrDebugOverlay.visibility = View.VISIBLE
+                        val frame = drishtiService?.cameraManager?.latestFrame
+                        val fw = frame?.width ?: 640
+                        val fh = frame?.height ?: 480
+                        binding.ocrDebugOverlay.updateTracks(tracks, fw, fh)
+                    } else {
+                        binding.ocrDebugOverlay.clear()
+                        binding.ocrDebugOverlay.visibility = View.GONE
+                    }
+                }
+            }
+
             // ── Observe audio levels for the meter ──
             observeAudioLevels()
         }
@@ -76,6 +93,8 @@ class MainActivity : AppCompatActivity() {
             audioObserveJobs.clear()
             binding.viewAudioLevelMeter.setInputAudioLevel(0f)
             binding.viewAudioLevelMeter.setOutputAudioLevel(0f)
+            binding.ocrDebugOverlay.clear()
+            binding.ocrDebugOverlay.visibility = View.GONE
             binding.ivCameraPreview.setImageBitmap(null)
             binding.ivCameraPreview.visibility = View.GONE
             binding.layoutCameraPlaceholder.visibility = View.VISIBLE

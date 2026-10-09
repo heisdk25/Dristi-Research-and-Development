@@ -58,3 +58,12 @@
 29. **National Blindness Survey India:** AIIMS New Delhi & Ministry of Health and Family Welfare, *"National Blindness and Visual Impairment Survey India (2015-2019),"* 2019.
 30. **ADIP Welfare Scheme Guidelines:** Department of Empowerment of Persons with Disabilities, Ministry of Social Justice and Empowerment, Government of India, *"Scheme of Assistance to Disabled Persons for Purchase/Fitting of Aids and Appliances (ADIP Scheme),"* Gazette Guidelines. [https://disabilityaffairs.gov.in](https://disabilityaffairs.gov.in)
 31. **Indian Corporate CSR Mandate:** Ministry of Corporate Affairs, Government of India, *"Companies Rules, 2014 under Section 135 of the Companies Act, 2013."*
+
+---
+
+## 7. Cloud Infrastructure, Deployment & Edge Orchestration (hackbios-neuraX)
+32. **Vultr Cloud Compute Infrastructure:** Vultr Holdings LLC, *"Vultr Cloud Compute (VPS) & High-Frequency Compute Documentation,"* 2024. [https://docs.vultr.com/products](https://docs.vultr.com/products)
+33. **LiveKit WebRTC Media Server:** LiveKit, Inc., *"Real-Time Audio/Video Transport and DataChannel Protocol Specification,"* 2024. [https://docs.livekit.io](https://docs.livekit.io)
+34. **Caddy Automated Reverse Proxy & ACME TLS:** Caddy Web Server, *"Automatic HTTPS & Reverse Proxy Engine,"* RFC 8555 ACME Compliance, 2024. [https://caddyserver.com](https://caddyserver.com)
+35. **FastAPI Microservices Framework:** Ramírez, S. (tiangolo), *"FastAPI: Modern High-Performance ASGI Web Framework for Python,"* 2024. [https://fastapi.tiangolo.com](https://fastapi.tiangolo.com)
+36. **PaddleOCR Real-Time Vision Framework:** PaddlePaddle Authors, *"PP-OCRv4: A Compact and Ultra-Lightweight OCR System for Mobile Devices,"* PaddleOCR v2.7, 2023. [https://github.com/PaddlePaddle/PaddleOCR](https://github.com/PaddlePaddle/PaddleOCR)

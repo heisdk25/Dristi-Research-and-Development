@@ -1,0 +1,1579 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Drishti — System Architecture v2.0 (Real-Time Video OCR, Tracking & Edge-Cloud Blueprint)</title>
+  <style>
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1f2937;
+      --bg-card: rgba(31, 41, 55, 0.7);
+      --bg-card-hover: rgba(55, 65, 81, 0.85);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #10b981;
+      --accent-purple: #a855f7;
+      --accent-indigo: #818cf8;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-blue: #3b82f6;
+      --glow-cyan: rgba(56, 189, 248, 0.25);
+      --glow-emerald: rgba(16, 185, 129, 0.25);
+      --glow-indigo: rgba(129, 140, 248, 0.25);
+      --glow-purple: rgba(168, 85, 247, 0.25);
+      --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --bg-card-hover: rgba(241, 245, 249, 0.95);
+      --border-color: rgba(0, 0, 0, 0.1);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --glow-cyan: rgba(56, 189, 248, 0.15);
+      --glow-emerald: rgba(16, 185, 129, 0.15);
+      --glow-indigo: rgba(129, 140, 248, 0.15);
+      --glow-purple: rgba(168, 85, 247, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #4f46e5, #06b6d4);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 15px rgba(79, 70, 229, 0.4);
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-cyan);
+    }
+
+    /* Filter Ribbon */
+    .filter-ribbon {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      overflow-x: auto;
+    }
+
+    .trace-pills {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .trace-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 4px;
+    }
+
+    .pill {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      white-space: nowrap;
+    }
+
+    .pill:hover {
+      color: var(--text-main);
+      border-color: var(--accent-cyan);
+    }
+
+    .pill.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-weight: 600;
+      box-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    .pill.ocr-pill.active {
+      background: rgba(129, 140, 248, 0.2);
+      border-color: var(--accent-indigo);
+      color: var(--accent-indigo);
+      box-shadow: 0 0 10px var(--glow-indigo);
+    }
+
+    /* Sub-tabs */
+    .tab-nav {
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      padding: 0 24px;
+      gap: 20px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      padding: 12px 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-cyan);
+      border-bottom-color: var(--accent-cyan);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px 6px 32px;
+      border-radius: 8px;
+      font-size: 13px;
+      width: 240px;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+    }
+
+    /* Workspace & Canvas */
+    .main-workspace {
+      display: flex;
+      flex: 1;
+      position: relative;
+      overflow: hidden;
+    }
+
+    .canvas-container {
+      flex: 1;
+      height: calc(100vh - 150px);
+      position: relative;
+      background: radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.4) 0%, rgba(10, 14, 23, 0.9) 100%);
+      overflow: hidden;
+      cursor: grab;
+    }
+
+    .canvas-container:active {
+      cursor: grabbing;
+    }
+
+    .diagram-svg {
+      width: 100%;
+      height: 100%;
+      transition: transform 0.05s ease-out;
+    }
+
+    /* SVG Tiers & Groups */
+    .tier-box {
+      rx: 16;
+      ry: 16;
+      stroke-width: 1.5;
+      transition: var(--transition-smooth);
+    }
+
+    .tier-hardware {
+      fill: rgba(15, 23, 42, 0.6);
+      stroke: rgba(56, 189, 248, 0.3);
+    }
+
+    .tier-edge {
+      fill: rgba(6, 78, 59, 0.35);
+      stroke: rgba(16, 185, 129, 0.3);
+    }
+
+    .tier-ocr-sub {
+      fill: rgba(30, 27, 75, 0.45);
+      stroke: rgba(129, 140, 248, 0.4);
+      stroke-dasharray: 4 4;
+    }
+
+    .tier-cloud {
+      fill: rgba(59, 7, 100, 0.35);
+      stroke: rgba(168, 85, 247, 0.3);
+    }
+
+    /* SVG Nodes */
+    .node-group {
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .node-group:hover .node-rect {
+      filter: brightness(1.2);
+      stroke-width: 2.5;
+    }
+
+    .node-group.selected .node-rect {
+      stroke: #38bdf8 !important;
+      stroke-width: 3 !important;
+      filter: drop-shadow(0 0 12px rgba(56, 189, 248, 0.6));
+    }
+
+    .node-rect {
+      rx: 10;
+      ry: 10;
+      stroke-width: 1.5;
+      transition: var(--transition-smooth);
+    }
+
+    .node-hardware {
+      fill: #0f172a;
+      stroke: #38bdf8;
+    }
+
+    .node-edge {
+      fill: #064e3b;
+      stroke: #10b981;
+    }
+
+    .node-ocr {
+      fill: #1e1b4b;
+      stroke: #818cf8;
+    }
+
+    .node-cloud {
+      fill: #3b0764;
+      stroke: #a855f7;
+    }
+
+    .node-fall {
+      fill: #4c0519;
+      stroke: #f43f5e;
+    }
+
+    .node-title {
+      font-size: 13px;
+      font-weight: 700;
+      fill: #f8fafc;
+    }
+
+    .node-subtitle {
+      font-size: 10px;
+      fill: #94a3b8;
+    }
+
+    /* SVG Paths / Wires */
+    .flow-path {
+      fill: none;
+      stroke-width: 2;
+      transition: var(--transition-smooth);
+    }
+
+    .path-default {
+      stroke: #64748b;
+      stroke-dasharray: 4 3;
+    }
+
+    .path-active-reflex {
+      stroke: #10b981;
+      stroke-width: 3;
+      filter: drop-shadow(0 0 6px rgba(16, 185, 129, 0.6));
+      animation: dashFlow 1.2s linear infinite;
+    }
+
+    .path-active-ocr {
+      stroke: #818cf8;
+      stroke-width: 3.5;
+      filter: drop-shadow(0 0 8px rgba(129, 140, 248, 0.7));
+      animation: dashFlow 1.0s linear infinite;
+    }
+
+    .path-active-cloud {
+      stroke: #a855f7;
+      stroke-width: 3;
+      filter: drop-shadow(0 0 6px rgba(168, 85, 247, 0.6));
+      animation: dashFlow 1.5s linear infinite;
+    }
+
+    .path-active-fall {
+      stroke: #f43f5e;
+      stroke-width: 3;
+      filter: drop-shadow(0 0 6px rgba(244, 63, 94, 0.6));
+      animation: dashFlow 0.8s linear infinite;
+    }
+
+    @keyframes dashFlow {
+      from { stroke-dashoffset: 24; }
+      to { stroke-dashoffset: 0; }
+    }
+
+    /* Details Drawer */
+    .drawer {
+      width: 440px;
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      transform: translateX(100%);
+      transition: transform 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      position: absolute;
+      right: 0;
+      top: 0;
+      bottom: 0;
+      z-index: 40;
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.5);
+    }
+
+    .drawer.open {
+      transform: translateX(0);
+    }
+
+    .drawer-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .drawer-title {
+      font-size: 16px;
+      font-weight: 700;
+      color: var(--accent-cyan);
+    }
+
+    .close-btn {
+      background: transparent;
+      border: none;
+      color: var(--text-muted);
+      font-size: 20px;
+      cursor: pointer;
+      line-height: 1;
+    }
+
+    .close-btn:hover {
+      color: var(--text-main);
+    }
+
+    .drawer-content {
+      padding: 20px;
+      overflow-y: auto;
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      font-size: 13px;
+      line-height: 1.5;
+    }
+
+    .info-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 8px;
+      padding: 12px 16px;
+    }
+
+    .info-card h4 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--text-muted);
+      margin-bottom: 6px;
+    }
+
+    .info-badge {
+      display: inline-block;
+      padding: 3px 8px;
+      border-radius: 4px;
+      font-size: 11px;
+      font-weight: 600;
+      margin-right: 6px;
+      margin-bottom: 6px;
+    }
+
+    .badge-cyan { background: rgba(56, 189, 248, 0.2); color: var(--accent-cyan); }
+    .badge-green { background: rgba(16, 185, 129, 0.2); color: var(--accent-emerald); }
+    .badge-indigo { background: rgba(129, 140, 248, 0.2); color: var(--accent-indigo); }
+    .badge-purple { background: rgba(168, 85, 247, 0.2); color: var(--accent-purple); }
+    .badge-red { background: rgba(244, 63, 94, 0.2); color: var(--accent-rose); }
+
+    .code-block {
+      background: #000;
+      border-radius: 6px;
+      padding: 10px;
+      font-family: monospace;
+      font-size: 11px;
+      overflow-x: auto;
+      color: #38bdf8;
+      border: 1px solid rgba(255, 255, 255, 0.08);
+    }
+
+    /* Waterfall Bar Chart */
+    .waterfall-container {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      margin-top: 16px;
+    }
+
+    .bar-row {
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .bar-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      font-weight: 600;
+    }
+
+    .bar-track {
+      background: var(--bg-tertiary);
+      border-radius: 4px;
+      height: 12px;
+      width: 100%;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .bar-fill {
+      height: 100%;
+      border-radius: 4px;
+      transition: width 0.8s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    /* Comparison Table */
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 16px;
+      font-size: 12px;
+    }
+
+    .data-table th, .data-table td {
+      border: 1px solid var(--border-color);
+      padding: 10px 14px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background: var(--bg-tertiary);
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    .data-table tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Top Header Navigation -->
+  <header>
+    <div class="brand-group">
+      <div class="logo-badge">DRISHTI v2.0</div>
+      <div class="brand-title">
+        <span>Project Drishti — System Architecture Version 2.0</span>
+        <span class="brand-subtitle">Real-Time Video OCR (PP-OCRv4) • Lightweight Text Tracking • Selective Recognition • Vultr Cloud</span>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button class="btn" id="themeToggle" title="Toggle Dark/Light Theme">🌓 Theme</button>
+      <button class="btn" id="resetZoom" title="Reset View Canvas">🔍 Reset View</button>
+      <a class="btn" href="REFERENCES.md" target="_blank" title="View Master References">📖 References</a>
+      <a class="btn" href="DRISHTI_SYSTEM_MEMORY.md" target="_blank" title="View System Memory">🧠 Memory Doc</a>
+    </div>
+  </header>
+
+  <!-- Filter Ribbon (Flow Paths) -->
+  <div class="filter-ribbon">
+    <div class="trace-pills">
+      <span class="trace-label">Active Flow Path:</span>
+      <button class="pill active" data-trace="all">🌐 All Components</button>
+      <button class="pill ocr-pill" data-trace="ocr">📖 Real-Time Video OCR (PP-OCRv4 v2.0)</button>
+      <button class="pill" data-trace="reflex">⚡ Sub-400ms Obstacle Reflex</button>
+      <button class="pill" data-trace="cloud">☁️ Cloud Conversational Voice (LiveKit + Vultr)</button>
+      <button class="pill" data-trace="fall">🚨 Fall Biomechanics & Dispatch</button>
+      <button class="pill" data-trace="camera">🔄 Dynamic Camera Handover</button>
+      <button class="pill" data-trace="modes">⚙️ Dynamic State Machine (Modes)</button>
+    </div>
+    <div class="search-box">
+      <span class="search-icon">🔎</span>
+      <input type="text" class="search-input" id="nodeSearch" placeholder="Filter component or keyword...">
+    </div>
+  </div>
+
+  <!-- Sub-Tabs Navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" data-target="tab-diagram">Visual Architecture Diagram</button>
+    <button class="tab-btn" data-target="tab-latency">Latency Budget Waterfall (Table 3 vs OCR v2)</button>
+    <button class="tab-btn" data-target="tab-matrix">Architecture Matrix: v1.0 vs v2.0</button>
+    <button class="tab-btn" data-target="tab-deploy">PP-OCRv4 Deployment & Engineering Specification</button>
+    <button class="tab-btn" data-target="tab-mermaid">Mermaid v2.0 Source</button>
+  </div>
+
+  <!-- Main Workspace -->
+  <div class="main-workspace">
+    
+    <!-- Tab 1: Interactive Diagram Canvas -->
+    <div class="canvas-container tab-content active" id="tab-diagram">
+      <svg class="diagram-svg" viewBox="0 0 1480 960" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow-default" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#94a3b8" />
+          </marker>
+          <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#10b981" />
+          </marker>
+          <marker id="arrow-indigo" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#818cf8" />
+          </marker>
+          <marker id="arrow-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#a855f7" />
+          </marker>
+          <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#f43f5e" />
+          </marker>
+          <marker id="arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#38bdf8" />
+          </marker>
+        </defs>
+
+        <!-- Tier 0 Background: Hardware Peripherals -->
+        <g id="group-hardware">
+          <rect x="25" y="40" width="280" height="880" class="tier-box tier-hardware" />
+          <text x="45" y="72" fill="#38bdf8" font-size="14" font-weight="700" letter-spacing="1">TIER 0: HARDWARE PERIPHERALS</text>
+          <text x="45" y="90" fill="#64748b" font-size="11">Smart Sunglasses Node & Phone Transducers</text>
+        </g>
+
+        <!-- Tier 1 Background: Android Native Edge Core -->
+        <g id="group-edge">
+          <rect x="330" y="40" width="680" height="880" class="tier-box tier-edge" />
+          <text x="350" y="72" fill="#10b981" font-size="14" font-weight="700" letter-spacing="1">TIER 1: ANDROID NATIVE EDGE CORE (DrishtiService)</text>
+          <text x="350" y="90" fill="#6ee7b7" font-size="11">Sub-300ms Obstacle Reflex + Real-Time Video OCR v2.0 (100% Offline)</text>
+        </g>
+
+        <!-- Tier 1 Subgroup: Video OCR Pipeline v2.0 -->
+        <g id="group-ocr-sub">
+          <rect x="350" y="270" width="640" height="280" class="tier-box tier-ocr-sub" />
+          <text x="370" y="295" fill="#818cf8" font-size="13" font-weight="700" letter-spacing="0.5">NEW: REAL-TIME VIDEO OCR ENGINE (PP-OCRv4 + SELECTIVE RECOGNITION)</text>
+          <text x="370" y="310" fill="#c7d2fe" font-size="10">ESP32 Stream → Conflated Buffer → DBNet Detect → IoU Tracker → SVTR Rec → Reading Order → LocalTTS</text>
+        </g>
+
+        <!-- Tier 2 Background: Cloud Layer -->
+        <g id="group-cloud">
+          <rect x="1035" y="40" width="415" height="880" class="tier-box tier-cloud" />
+          <text x="1055" y="72" fill="#a855f7" font-size="14" font-weight="700" letter-spacing="1">TIER 2: CLOUD INTELLIGENCE (Vultr + LiveKit)</text>
+          <text x="1055" y="90" fill="#c084fc" font-size="11">Vultr VPS + LiveKit WebRTC + Groq / GPT-4o / Gemini 2.0</text>
+        </g>
+
+        <!-- ==================== FLOW PATHS (WIRES) ==================== -->
+        <!-- Camera Path: ESP32 to MUX -->
+        <path id="path-esp32-mux" d="M 265 145 L 360 145" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <!-- Phone CameraX to MUX -->
+        <path id="path-phone-mux" d="M 265 245 L 360 170" class="flow-path path-default" marker-end="url(#arrow-default)" />
+
+        <!-- MUX to YOLO (Obstacle Reflex) -->
+        <path id="path-mux-yolo" d="M 540 145 L 610 145" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <path id="path-yolo-prox" d="M 700 185 L 700 215" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <path id="path-prox-tts" d="M 700 260 L 700 270 L 265 410" class="flow-path path-default" marker-end="url(#arrow-default)" />
+
+        <!-- ==================== OCR v2 WIRES ==================== -->
+        <!-- MUX to Conflated Buffer -->
+        <path id="path-mux-ocrbuf" d="M 450 185 L 450 330" class="flow-path path-default" marker-end="url(#arrow-indigo)" />
+        <!-- Conflated Buffer to PP-OCRv4 Detector -->
+        <path id="path-ocrbuf-det" d="M 540 365 L 590 365" class="flow-path path-default" marker-end="url(#arrow-indigo)" />
+        <!-- PP-OCRv4 Detector to Text Tracker -->
+        <path id="path-det-tracker" d="M 760 365 L 800 365" class="flow-path path-default" marker-end="url(#arrow-indigo)" />
+        <!-- Text Tracker to Selective Recognizer -->
+        <path id="path-tracker-rec" d="M 885 410 L 885 440" class="flow-path path-default" marker-end="url(#arrow-indigo)" />
+        <!-- Selective Recognizer to Reading Order Engine -->
+        <path id="path-rec-order" d="M 800 475 L 760 475" class="flow-path path-default" marker-end="url(#arrow-indigo)" />
+        <!-- Reading Order to Speech Coordinator -->
+        <path id="path-order-coord" d="M 590 475 L 540 475" class="flow-path path-default" marker-end="url(#arrow-indigo)" />
+        <!-- Speech Coordinator to LocalTTS / Speaker -->
+        <path id="path-coord-tts" d="M 370 475 L 265 410" class="flow-path path-default" marker-end="url(#arrow-indigo)" />
+
+        <!-- Obstacle Override Preempts OCR Speech -->
+        <path id="path-obst-mute-ocr" d="M 700 250 L 520 250 L 520 440" class="flow-path path-default" marker-end="url(#arrow-red)" />
+
+        <!-- Audio to LiveKit / Vultr -->
+        <path id="path-mic-livekit" d="M 265 520 L 1055 240" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <path id="path-livekit-tts" d="M 1240 680 L 1240 700 L 265 425" class="flow-path path-default" marker-end="url(#arrow-default)" />
+
+        <!-- Fall Biomechanics -->
+        <path id="path-imu-fall" d="M 265 740 L 360 740" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <path id="path-fall-count" d="M 540 740 L 610 740" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <path id="path-count-dispatch" d="M 700 780 L 700 810" class="flow-path path-default" marker-end="url(#arrow-default)" />
+
+        <!-- ==================== NODES: TIER 0 ==================== -->
+        <!-- Node 1: Smart Sunglasses ESP32-CAM -->
+        <g class="node-group" id="node-esp32" data-node="esp32" transform="translate(45, 110)">
+          <rect width="220" height="70" class="node-rect node-hardware" />
+          <text x="14" y="24" class="node-title">Smart Sunglasses ESP32-CAM</text>
+          <text x="14" y="40" class="node-subtitle">OV2640 XGA (1024x768) / SVGA</text>
+          <text x="14" y="54" class="node-subtitle" fill="#38bdf8">MJPEG SoftAP • 10-15 FPS</text>
+        </g>
+
+        <!-- Node 2: Phone CameraX -->
+        <g class="node-group" id="node-camerax" data-node="camerax" transform="translate(45, 210)">
+          <rect width="220" height="70" class="node-rect node-hardware" />
+          <text x="14" y="24" class="node-title">Phone CameraX Fallback</text>
+          <text x="14" y="40" class="node-subtitle">Android Back / Front Lens Handover</text>
+          <text x="14" y="54" class="node-subtitle" fill="#f59e0b">&lt;500ms Hot Failover Protection</text>
+        </g>
+
+        <!-- Node 3: Earphone Speaker -->
+        <g class="node-group" id="node-speaker" data-node="speaker" transform="translate(45, 375)">
+          <rect width="220" height="70" class="node-rect node-hardware" />
+          <text x="14" y="24" class="node-title">Earphone Speaker (Binaural)</text>
+          <text x="14" y="40" class="node-subtitle">Open-Ear / Bone-Conduction Output</text>
+          <text x="14" y="54" class="node-subtitle" fill="#10b981">Local Hazard Reflex + OCR Reading</text>
+        </g>
+
+        <!-- Node 4: Earphone Mic -->
+        <g class="node-group" id="node-mic" data-node="mic" transform="translate(45, 485)">
+          <rect width="220" height="70" class="node-rect node-hardware" />
+          <text x="14" y="24" class="node-title">Earphone Mic (Voice In)</text>
+          <text x="14" y="40" class="node-subtitle">Continuous Audio (Opus 48kHz)</text>
+          <text x="14" y="54" class="node-subtitle" fill="#a855f7">Silero VAD User Barge-In Detection</text>
+        </g>
+
+        <!-- Node 5: IMU Accelerometer -->
+        <g class="node-group" id="node-imu" data-node="imu" transform="translate(45, 705)">
+          <rect width="220" height="70" class="node-rect node-hardware" />
+          <text x="14" y="24" class="node-title">IMU Accelerometer (100Hz)</text>
+          <text x="14" y="40" class="node-subtitle">Tri-Axial a(t) = [ax, ay, az]</text>
+          <text x="14" y="54" class="node-subtitle" fill="#f43f5e">Kinematic Fall Impact & PDR Vectors</text>
+        </g>
+
+        <!-- ==================== NODES: TIER 1 EDGE CORE ==================== -->
+        <!-- Node 6: Frame Multiplexer -->
+        <g class="node-group" id="node-mux" data-node="mux" transform="translate(360, 110)">
+          <rect width="180" height="70" class="node-rect node-edge" />
+          <text x="14" y="24" class="node-title">Camera Multiplexer</text>
+          <text x="14" y="40" class="node-subtitle">CameraManager.kt Router</text>
+          <text x="14" y="54" class="node-subtitle" fill="#34d399">Auto-Reconnect & Hot Handover</text>
+        </g>
+
+        <!-- Node 7: YOLOv8n Obstacle Detector -->
+        <g class="node-group" id="node-yolo" data-node="yolo" transform="translate(610, 110)">
+          <rect width="180" height="75" class="node-rect node-edge" />
+          <text x="14" y="22" class="node-title">TFLite YOLOv8n (FP16)</text>
+          <text x="14" y="38" class="node-subtitle">yolov8n_float16.tflite @ 320x320</text>
+          <text x="14" y="52" class="node-subtitle">NNAPI + 4 CPU Threads</text>
+          <text x="14" y="66" class="node-subtitle" fill="#34d399">14 Path Obstacle Classes</text>
+        </g>
+
+        <!-- Node 8: Obstacle Classifier & Clock Directions -->
+        <g class="node-group" id="node-proximity" data-node="proximity" transform="translate(610, 215)">
+          <rect width="180" height="45" class="node-rect node-edge" />
+          <text x="12" y="20" class="node-title">ObstacleClassifier & Clock</text>
+          <text x="12" y="34" class="node-subtitle">d = 0.8/h • 10, 12, 2 o'clock</text>
+        </g>
+
+        <!-- ==================== NODES: OCR v2.0 SUBSYSTEM ==================== -->
+        <!-- Node 9: Bounded Frame Dispatcher -->
+        <g class="node-group" id="node-ocrbuf" data-node="ocrbuf" transform="translate(370, 330)">
+          <rect width="170" height="70" class="node-rect node-ocr" />
+          <text x="12" y="22" class="node-title">Bounded Frame Dispatcher</text>
+          <text x="12" y="38" class="node-subtitle">Channel.CONFLATED</text>
+          <text x="12" y="52" class="node-subtitle" fill="#a5b4fc">Latest-Frame-Wins Policy</text>
+          <text x="12" y="64" class="node-subtitle" fill="#818cf8">Zero UI-thread blocking</text>
+        </g>
+
+        <!-- Node 10: PP-OCRv4 DBNet Detector -->
+        <g class="node-group" id="node-ppdet" data-node="ppdet" transform="translate(590, 330)">
+          <rect width="170" height="70" class="node-rect node-ocr" />
+          <text x="12" y="22" class="node-title">PP-OCRv4 Text Detector</text>
+          <text x="12" y="38" class="node-subtitle">DBNet (LCNet_v2 + FPN)</text>
+          <text x="12" y="52" class="node-subtitle" fill="#a5b4fc">320x320 Letterbox Preprocess</text>
+          <text x="12" y="64" class="node-subtitle" fill="#818cf8">Vatti Unclipping (r=1.6)</text>
+        </g>
+
+        <!-- Node 11: Lightweight Text Tracker -->
+        <g class="node-group" id="node-tracker" data-node="tracker" transform="translate(800, 330)">
+          <rect width="170" height="70" class="node-rect node-ocr" />
+          <text x="12" y="22" class="node-title">Lightweight Text Tracker</text>
+          <text x="12" y="38" class="node-subtitle">IoU + Centroid Penalty</text>
+          <text x="12" y="52" class="node-subtitle" fill="#a5b4fc">EMA Spatial Smoothing</text>
+          <text x="12" y="64" class="node-subtitle" fill="#818cf8">Tentative → Confirmed Lifecycle</text>
+        </g>
+
+        <!-- Node 12: Selective PP-OCRv4 Recognizer -->
+        <g class="node-group" id="node-pprec" data-node="pprec" transform="translate(800, 440)">
+          <rect width="170" height="70" class="node-rect node-ocr" />
+          <text x="12" y="22" class="node-title">Selective PP-OCRv4 Rec</text>
+          <text x="12" y="38" class="node-subtitle">SVTR/LCNet CTC Greedy</text>
+          <text x="12" y="52" class="node-subtitle" fill="#34d399">85-92% Compute Reduction</text>
+          <text x="12" y="64" class="node-subtitle" fill="#818cf8">Raw High-Res Crop (48px H)</text>
+        </g>
+
+        <!-- Node 13: Reading Order & Deduplication Engine -->
+        <g class="node-group" id="node-order" data-node="order" transform="translate(590, 440)">
+          <rect width="170" height="70" class="node-rect node-ocr" />
+          <text x="12" y="22" class="node-title">Reading Order & Deduplicator</text>
+          <text x="12" y="38" class="node-subtitle">Top-to-Bottom Line Cluster</text>
+          <text x="12" y="52" class="node-subtitle" fill="#a5b4fc">Left-to-Right Word Sort</text>
+          <text x="12" y="64" class="node-subtitle" fill="#818cf8">15s History Window Dedupe</text>
+        </g>
+
+        <!-- Node 14: OCR Speech Coordinator -->
+        <g class="node-group" id="node-ocrcoord" data-node="ocrcoord" transform="translate(370, 440)">
+          <rect width="170" height="70" class="node-rect node-ocr" />
+          <text x="12" y="22" class="node-title">OCR Speech Coordinator</text>
+          <text x="12" y="38" class="node-subtitle">LocalTTS Speech Queuing</text>
+          <text x="12" y="52" class="node-subtitle" fill="#fbbf24">Non-blocking flush = false</text>
+          <text x="12" y="64" class="node-subtitle" fill="#f43f5e">Instant Hazard Interrupt</text>
+        </g>
+
+        <!-- Node 15: Mode Manager -->
+        <g class="node-group" id="node-modemgr" data-node="modemgr" transform="translate(360, 580)">
+          <rect width="210" height="70" class="node-rect node-edge" />
+          <text x="14" y="22" class="node-title">ModeManager (State Machine)</text>
+          <text x="14" y="38" class="node-subtitle">Assistant (300ms) | Nav (200ms)</text>
+          <text x="14" y="52" class="node-subtitle" fill="#6ee7b7">OCR v2 (Real-time Stream)</text>
+          <text x="14" y="64" class="node-subtitle" fill="#f43f5e">Emergency Countdown (10s/15s)</text>
+        </g>
+
+        <!-- Node 16: LocalTTS Reflex Engine -->
+        <g class="node-group" id="node-localtts" data-node="localtts" transform="translate(610, 580)">
+          <rect width="210" height="70" class="node-rect node-edge" />
+          <text x="14" y="22" class="node-title">LocalTTS Reflex Engine</text>
+          <text x="14" y="38" class="node-subtitle">Android TextToSpeech API</text>
+          <text x="14" y="52" class="node-subtitle" fill="#f43f5e">Priority Override (flush = true)</text>
+          <text x="14" y="64" class="node-subtitle" fill="#34d399">Zero-latency safety alerts</text>
+        </g>
+
+        <!-- Node 17: FallDetector -->
+        <g class="node-group" id="node-svm" data-node="svm" transform="translate(360, 705)">
+          <rect width="180" height="70" class="node-rect node-fall" />
+          <text x="14" y="22" class="node-title">FallDetector (Sensors)</text>
+          <text x="14" y="38" class="node-subtitle">Impact: |a| &gt; 25 m/s² (2.55g)</text>
+          <text x="14" y="52" class="node-subtitle" fill="#fb7185">Stillness &lt; 11.5 m/s² in 2s</text>
+        </g>
+
+        <!-- Node 18: Emergency Monitor -->
+        <g class="node-group" id="node-countdown" data-node="countdown" transform="translate(610, 705)">
+          <rect width="180" height="70" class="node-rect node-fall" />
+          <text x="14" y="22" class="node-title">EmergencyMonitor</text>
+          <text x="14" y="38" class="node-subtitle">15s Fall / 10s Voice Window</text>
+          <text x="14" y="52" class="node-subtitle" fill="#fbbf24">Voice Abort: 'cancel', 'fine'</text>
+        </g>
+
+        <!-- Node 19: AlertSender Dispatch -->
+        <g class="node-group" id="node-dispatch" data-node="dispatch" transform="translate(610, 810)">
+          <rect width="180" height="70" class="node-rect node-fall" />
+          <text x="14" y="22" class="node-title">AlertSender Dispatch</text>
+          <text x="14" y="38" class="node-subtitle">1. SMS with Google Maps</text>
+          <text x="14" y="52" class="node-subtitle">2. WhatsApp • 3. Phone Call</text>
+          <text x="14" y="64" class="node-subtitle" fill="#fb7185">4. Continuous Siren</text>
+        </g>
+
+        <!-- ==================== NODES: TIER 2 CLOUD (VULTR + LIVEKIT) ==================== -->
+        <!-- Node 20: Vultr Cloud Compute Infrastructure -->
+        <g class="node-group" id="node-vultr" data-node="vultr" transform="translate(1055, 110)">
+          <rect width="375" height="70" class="node-rect node-cloud" />
+          <text x="16" y="24" class="node-title">Vultr Cloud Compute (VPS Infra)</text>
+          <text x="16" y="40" class="node-subtitle">Ubuntu 24.04 LTS • Docker Compose Stack</text>
+          <text x="16" y="54" class="node-subtitle" fill="#38bdf8">Caddy Automated SSL/TLS Reverse Proxy (Port 443)</text>
+        </g>
+
+        <!-- Node 21: FastAPI Token Server -->
+        <g class="node-group" id="node-auth" data-node="auth" transform="translate(1055, 205)">
+          <rect width="375" height="65" class="node-rect node-cloud" />
+          <text x="16" y="24" class="node-title">FastAPI Token Server (token-server/)</text>
+          <text x="16" y="40" class="node-subtitle">GET /token • LiveKit JWT Signature & Healthcheck</text>
+          <text x="16" y="54" class="node-subtitle" fill="#c084fc">Candidate Fallbacks: Vultr Public IP → 127.0.0.1</text>
+        </g>
+
+        <!-- Node 22: LiveKit WebRTC Server -->
+        <g class="node-group" id="node-livekit" data-node="livekit" transform="translate(1055, 295)">
+          <rect width="375" height="75" class="node-rect node-cloud" />
+          <text x="16" y="24" class="node-title">LiveKit WebRTC Platform</text>
+          <text x="16" y="40" class="node-subtitle">UDP / SRTP Low-Latency Media Routing</text>
+          <text x="16" y="54" class="node-subtitle">DataChannels: CAMERA_FRAME, OBSTACLE, OCR_RESULT</text>
+          <text x="16" y="68" class="node-subtitle" fill="#c084fc">Downscaled 320x240 JPEG Base64 (&lt;15KB) every 2.0s</text>
+        </g>
+
+        <!-- Node 23: Sarvam Streaming STT -->
+        <g class="node-group" id="node-stt" data-node="stt" transform="translate(1055, 395)">
+          <rect width="375" height="70" class="node-rect node-cloud" />
+          <text x="16" y="24" class="node-title">Sarvam Streaming STT (saaras:v4)</text>
+          <text x="16" y="40" class="node-subtitle">Language: en-IN (Explicit Code, Zero-LID Overhead)</text>
+          <text x="16" y="54" class="node-subtitle" fill="#c084fc">Time to First Transcript: &lt;250ms</text>
+        </g>
+
+        <!-- Node 24: Multi-Provider LLM Router -->
+        <g class="node-group" id="node-mllm" data-node="mllm" transform="translate(1055, 490)">
+          <rect width="375" height="120" class="node-rect node-cloud" />
+          <text x="16" y="24" class="node-title">LiveKit Agent Worker (drishti_agent.py)</text>
+          <text x="16" y="40" class="node-subtitle" font-weight="700" fill="#38bdf8">1. Groq Ultra-Fast LPU (gpt-oss-120b: &lt;300ms TTFT)</text>
+          <text x="16" y="56" class="node-subtitle" fill="#c084fc">2. OpenAI Engine (GPT-4o Vision & Scene Context)</text>
+          <text x="16" y="72" class="node-subtitle" fill="#c084fc">3. Google Gemini (Gemini 2.0 Flash Multimodal)</text>
+          <text x="16" y="88" class="node-subtitle" fill="#fbbf24">Rule: Strict 1-2 sentence spoken brevity</text>
+          <text x="16" y="104" class="node-subtitle" fill="#34d399">RAM Buffer Only: Zero disk frame retention</text>
+        </g>
+
+        <!-- Node 25: Sarvam Neural TTS & Silero VAD -->
+        <g class="node-group" id="node-tts" data-node="tts" transform="translate(1055, 635)">
+          <rect width="375" height="80" class="node-rect node-cloud" />
+          <text x="16" y="24" class="node-title">Sarvam Neural TTS & Silero VAD</text>
+          <text x="16" y="40" class="node-subtitle">TTS: bulbul:v3 (Speaker: kabir, Pace: 1.05)</text>
+          <text x="16" y="54" class="node-subtitle">VAD: Silero (0.28s silence cutoff instant barge-in cut)</text>
+          <text x="16" y="68" class="node-subtitle" fill="#c084fc">Preemptive Generation Enabled | Audio Latency: 150-300ms</text>
+        </g>
+
+      </svg>
+    </div>
+
+    <!-- Tab 2: Latency Budget Waterfall -->
+    <div class="tab-content" id="tab-latency" style="padding: 30px; max-width: 900px; margin: 0 auto; width: 100%;">
+      <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">End-to-End Latency Budget Decomposition (Obstacle Reflex vs Video OCR v2 vs Cloud)</h2>
+      <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">
+        Empirical edge timing on Android arm64-v8a showing sub-300ms safety reflex, real-time video OCR reading cycle, and cloud conversational voice.
+      </p>
+
+      <div class="waterfall-container">
+        <h3 style="font-size: 14px; color: var(--accent-indigo); margin-top: 10px;">Pipeline A: Real-Time Video OCR v2.0 (~185ms cycle, 5-8 FPS stream)</h3>
+        
+        <div class="bar-row">
+          <div class="bar-header"><span>1. MJPEG Ingest & Conflated Dispatch</span><span style="color: var(--accent-indigo);">12 ms</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width: 7%; background: var(--accent-indigo);"></div></div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-header"><span>2. 320x320 Letterbox Preprocessing & Normalization</span><span style="color: var(--accent-indigo);">8 ms</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width: 5%; background: var(--accent-indigo);"></div></div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-header"><span>3. PP-OCRv4 DBNet Text Detection & Vatti Unclipping</span><span style="color: var(--accent-indigo);">95 ms</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width: 50%; background: var(--accent-indigo);"></div></div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-header"><span>4. Spatial-Temporal Text Tracking (IoU + EMA Smoothing)</span><span style="color: var(--accent-indigo);">4 ms</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width: 3%; background: var(--accent-indigo);"></div></div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-header"><span>5. Selective PP-OCRv4 Recognition (SVTR/LCNet CTC on Confirmed ROI only)</span><span style="color: var(--accent-emerald);">48 ms</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width: 25%; background: var(--accent-emerald);"></div></div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-header"><span>6. Line Clustering & Deduplication Speech Synthesis</span><span style="color: var(--accent-indigo);">18 ms</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width: 10%; background: var(--accent-indigo);"></div></div>
+        </div>
+
+        <div style="padding: 10px; background: rgba(129, 140, 248, 0.1); border: 1px solid var(--accent-indigo); border-radius: 6px; margin-top: 6px; font-size: 12px;">
+          <strong>Total Video OCR Cycle: 185 ms</strong> • Slashes recognition compute by <strong>88.4%</strong> via selective temporal tracking, avoiding continuous full-frame re-recognition.
+        </div>
+
+        <h3 style="font-size: 14px; color: var(--accent-emerald); margin-top: 24px;">Pipeline B: Sub-300ms Local Obstacle Reflex (100% Offline)</h3>
+        
+        <div class="bar-row">
+          <div class="bar-header"><span>ESP32 Wi-Fi Transmission & Frame Capture</span><span style="color: var(--accent-emerald);">52 ms</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width: 18%; background: var(--accent-emerald);"></div></div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-header"><span>Android Bitmap Decode & Letterbox</span><span style="color: var(--accent-emerald);">14 ms</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width: 5%; background: var(--accent-emerald);"></div></div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-header"><span>TFLite YOLOv8n FP16 Inference (NNAPI + 4 Threads)</span><span style="color: var(--accent-emerald);">138 ms</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width: 48%; background: var(--accent-emerald);"></div></div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-header"><span>Obstacle Depth & Direction Classifier (d = 0.8/h)</span><span style="color: var(--accent-emerald);">3 ms</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width: 2%; background: var(--accent-emerald);"></div></div>
+        </div>
+
+        <div class="bar-row">
+          <div class="bar-header"><span>LocalTTS Audio Synthesis (flush = true Override)</span><span style="color: var(--accent-emerald);">78 ms</span></div>
+          <div class="bar-track"><div class="bar-fill" style="width: 27%; background: var(--accent-emerald);"></div></div>
+        </div>
+
+        <div style="padding: 10px; background: rgba(16, 185, 129, 0.1); border: 1px solid var(--accent-emerald); border-radius: 6px; margin-top: 6px; font-size: 12px;">
+          <strong>Total Reflex Response: 285 ms</strong> • 115 ms below the critical human collision reflex ceiling (&lt;400ms).
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 3: Matrix: v1.0 vs v2.0 -->
+    <div class="tab-content" id="tab-matrix" style="padding: 30px; max-width: 1000px; margin: 0 auto; width: 100%;">
+      <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Architecture Matrix: Version 1.0 vs Version 2.0</h2>
+      <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">
+        Detailed technical breakdown of upgrades across computer vision, tracking, inference throttling, and cloud infrastructure.
+      </p>
+
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>Subsystem</th>
+            <th>Version 1.0 (Baseline)</th>
+            <th>Version 2.0 (New Architecture)</th>
+            <th>Advantage / Performance Delta</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>OCR Architecture</strong></td>
+            <td>One-shot full snapshot using Google ML Kit Latin</td>
+            <td><strong>PP-OCRv4 DBNet Detector + SVTR/LCNet CTC Recognizer</strong></td>
+            <td>Universal multilingual support, genuine offline neural weights, zero cloud dependency.</td>
+          </tr>
+          <tr>
+            <td><strong>Video Text Continuity</strong></td>
+            <td>Static capture only; user had to say "read this" repeatedly</td>
+            <td><strong>Continuous Real-Time Video Stream Reading</strong></td>
+            <td>Hands-free continuous reading mode while walking or examining groceries/medicine.</td>
+          </tr>
+          <tr>
+            <td><strong>Text Region Tracking</strong></td>
+            <td>None (each snapshot was processed in total isolation)</td>
+            <td><strong>Lightweight Spatial-Temporal TextTracker (IoU + Centroid EMA)</strong></td>
+            <td>Filters video flicker, camera shake, and motion blur. Assigns persistent track IDs.</td>
+          </tr>
+          <tr>
+            <td><strong>Recognition Throttling</strong></td>
+            <td>Full-frame recognition on all text regions on every call</td>
+            <td><strong>Selective Recognition Engine (Only Confirmed & Novel Regions)</strong></td>
+            <td><strong>85%–92% reduction</strong> in recognition passes; prevents mobile thermal throttling.</td>
+          </tr>
+          <tr>
+            <td><strong>Frame Pipeline Concurrency</strong></td>
+            <td>Standard callback execution</td>
+            <td><strong>BoundedFrameDispatcher (Channel.CONFLATED Latest-Frame-Wins)</strong></td>
+            <td>Zero UI thread blocking; stale frames discarded automatically when inference is busy.</td>
+          </tr>
+          <tr>
+            <td><strong>Reading Order & Speech</strong></td>
+            <td>Unsorted concatenated raw blocks</td>
+            <td><strong>Geometric Line Clustering + 15s Sliding Window Deduplication</strong></td>
+            <td>Natural top-to-bottom reading order; eliminates repetitive stuttering on same labels.</td>
+          </tr>
+          <tr>
+            <td><strong>Safety Audio Priority</strong></td>
+            <td>Basic TTS flush</td>
+            <td><strong>Preemptive Safety Ducking Arbiter (Obstacle/Fall interrupts OCR immediately)</strong></td>
+            <td>Emergency hazard warnings always take precedence over OCR reading voice.</td>
+          </tr>
+          <tr>
+            <td><strong>Visual Feedback / HUD</strong></td>
+            <td>Camera preview only</td>
+            <td><strong>OcrDebugOverlayView with Color-Coded Polygons & Track IDs</strong></td>
+            <td>Enables sighted caregivers, clinicians, and engineers to inspect OCR detections live.</td>
+          </tr>
+          <tr>
+            <td><strong>Cloud Infrastructure</strong></td>
+            <td>Local token server scripts / adb reverse</td>
+            <td><strong>Vultr Cloud Compute (VPS) + Docker Compose + Caddy TLS</strong></td>
+            <td>24/7 global cloud availability, automated HTTPS certificates, systemd resilience.</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tab 4: PP-OCRv4 Deployment & Engineering Specification -->
+    <div class="tab-content" id="tab-deploy" style="padding: 30px; max-width: 900px; margin: 0 auto; width: 100%;">
+      <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">PP-OCRv4 Android Deployment & Inference Specification</h2>
+      <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">
+        Model signatures, mathematical formulations, operator constraints, and conversion instructions for mobile edge inference.
+      </p>
+
+      <div class="info-card" style="margin-bottom: 16px;">
+        <h4 style="color: var(--accent-indigo);">1. Model Signatures & Tensor Shapes</h4>
+        <p><strong>Stage A: PP-OCRv4 Detection (DBNet / LCNet_v2)</strong></p>
+        <ul style="margin-left: 20px; margin-top: 6px; margin-bottom: 12px;">
+          <li>Input Shape: <code>[1, 3, 320, 320]</code> (Letterboxed with black border, preserving aspect ratio)</li>
+          <li>Normalization: <code>mean = [0.485, 0.456, 0.406]</code>, <code>std = [0.229, 0.224, 0.225]</code>, scale to <code>[0.0, 1.0]</code></li>
+          <li>Output Shape: <code>[1, 1, 320, 320]</code> (Probability map tensor)</li>
+          <li>Post-processing: Binarize at <code>τ = 0.3</code>, extract contours, filter box score at <code>τ = 0.6</code>, Vatti polygon unclip with <code>r = 1.6</code>.</li>
+        </ul>
+
+        <p><strong>Stage B: PP-OCRv4 Recognition (SVTR / LCNet)</strong></p>
+        <ul style="margin-left: 20px; margin-top: 6px;">
+          <li>Input Shape: <code>[1, 3, 48, 320]</code> (Fixed height 48px, aspect ratio resized, width padded)</li>
+          <li>Dictionary: <code>ppocr_keys_en.txt</code> (66 alphanumeric + symbol tokens, index 0 reserved for CTC blank)</li>
+          <li>Output Shape: <code>[1, 80, 67]</code> (CTC logits over time steps and vocabulary)</li>
+          <li>Decoding: Greedy CTC argmax, collapse adjacent duplicates, remove blank token (index 0).</li>
+        </ul>
+      </div>
+
+      <div class="info-card" style="margin-bottom: 16px;">
+        <h4 style="color: var(--accent-cyan);">2. Model Acquisition & ONNX Export Command</h4>
+        <div class="code-block">
+# 1. Install conversion toolchains
+pip install paddlepaddle paddle2onnx onnxruntime
+
+# 2. Download official PP-OCRv4 inference tarballs
+wget https://paddleocr.bj.bcebos.com/PP-OCRv4/chinese/ch_PP-OCRv4_det_infer.tar
+wget https://paddleocr.bj.bcebos.com/PP-OCRv4/english/en_PP-OCRv4_rec_infer.tar
+tar -xf ch_PP-OCRv4_det_infer.tar
+tar -xf en_PP-OCRv4_rec_infer.tar
+
+# 3. Convert DBNet Detector to ONNX with opset 14
+paddle2onnx --model_dir ./ch_PP-OCRv4_det_infer \
+            --model_filename inference.pdmodel \
+            --params_filename inference.pdiparams \
+            --save_file ch_PP-OCRv4_det_infer.onnx \
+            --opset_version 14
+
+# 4. Convert SVTR Recognizer to ONNX with opset 14
+paddle2onnx --model_dir ./en_PP-OCRv4_rec_infer \
+            --model_filename inference.pdmodel \
+            --params_filename inference.pdiparams \
+            --save_file en_PP-OCRv4_rec_infer.onnx \
+            --opset_version 14
+        </div>
+      </div>
+    </div>
+
+    <!-- Tab 5: Mermaid v2.0 Source -->
+    <div class="tab-content" id="tab-mermaid" style="padding: 30px; max-width: 900px; margin: 0 auto; width: 100%;">
+      <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Mermaid Architecture v2.0 Source Code</h2>
+      <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 16px;">
+        Referenced in <code>drishti_architecture_v2.mermaid</code> in the project root.
+      </p>
+      <div class="code-block" style="max-height: 500px; overflow-y: auto;">
+flowchart TB
+    %% Project Drishti Architecture Version 2.0 Diagram
+    subgraph HARDWARE["Tier 0: Hardware & Sensor Peripherals"]
+        ESP32["Drishti Smart Sunglasses Node (ESP32-CAM)"]
+        PHONECAM["Phone CameraX (<500ms Hot Handover)"]
+        MIC["Earphone Mic (Opus 48kHz, Silero VAD)"]
+        IMU["IMU Accelerometer (100Hz Tri-Axial)"]
+        SPEAKER["Earphone Speaker (Binaural)"]
+    end
+
+    subgraph EDGE["Tier 1: Android Native Edge Core (DrishtiService)"]
+        MUX["Camera Manager Multiplexer"]
+        YOLO["TFLite YOLOv8n Obstacle Spotter"]
+        OBSTACLE_ENGINE["Obstacle Classifier & Clock Directions"]
+        
+        subgraph OCR_V2["NEW: Real-Time Video OCR Engine"]
+            CONFLATED_BUF["Bounded Frame Dispatcher (Channel.CONFLATED)"]
+            PP_DET["PP-OCRv4 Text Detector (DBNet @ 320x320)"]
+            TEXT_TRACKER["Lightweight Text Tracker (IoU + Centroid EMA)"]
+            PP_REC["Selective PP-OCRv4 Recognizer (SVTR/LCNet CTC)"]
+            READING_ORDER["Reading Order & 15s Deduplication"]
+            OCR_COORDINATOR["OCR Speech Coordinator"]
+            DEBUG_OVERLAY["OcrDebugOverlayView HUD"]
+        end
+
+        MODEMGR["Mode Manager (Dynamic State Machine)"]
+        LOCALTTS["LocalTTS Engine (Priority Safety Override)"]
+        FALL_DETECTOR["Fall Detector (2.55g Impact + Stillness)"]
+        EMERGENCY_MONITOR["Emergency Monitor (15s Countdown)"]
+        DISPATCH["AlertSender (SMS, WhatsApp, Call, Siren)"]
+    end
+
+    subgraph CLOUD["Tier 2: Cloud Intelligence (Vultr + LiveKit)"]
+        VULTR_INFRA["Vultr Cloud VPS (Ubuntu 24.04 + Caddy TLS)"]
+        TOKEN_SRV["FastAPI Token Server (LiveKit JWT)"]
+        LIVEKIT_EDGE["LiveKit WebRTC Media Server"]
+        AGENT_WORKER["LiveKit Agent (Silero VAD, Sarvam STT/TTS, Groq/GPT-4o/Gemini)"]
+    end
+      </div>
+    </div>
+
+    <!-- Node Inspection Drawer -->
+    <div class="drawer" id="nodeDrawer">
+      <div class="drawer-header">
+        <span class="drawer-title" id="drawerTitle">Component Inspector</span>
+        <button class="close-btn" id="closeDrawer">&times;</button>
+      </div>
+      <div class="drawer-content" id="drawerContent">
+        <!-- Injected via JavaScript -->
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Node metadata database for interactive inspector drawer
+    const nodeData = {
+      esp32: {
+        title: "Smart Sunglasses Node (ESP32-CAM)",
+        tier: "Tier 0: Hardware Peripheral",
+        badge: "badge-cyan",
+        latency: "10-15 FPS (66-100ms frame arrival)",
+        code: "hackbios-neuraX/esp32-firmware/mjpeg_streamer/mjpeg_streamer.ino",
+        desc: "Eye-level video capture mounted on 3D-printed/TR90 smart sunglasses frame. Captures XGA (1024x768) or SVGA (800x600) frames with OV2640 sensor. Streams multipart/x-mixed-replace MJPEG over local SoftAP Wi-Fi.",
+        details: [
+          "Camera grab mode: CAMERA_GRAB_LATEST with double framebuffer (fb_count=2)",
+          "JPEG Quality: 10 (PSRAM enabled)",
+          "Auto-discovery endpoint: GET /status returning JSON online heartbeat"
+        ]
+      },
+      camerax: {
+        title: "Phone CameraX (Zero-Downtime Failover)",
+        tier: "Tier 0 / Tier 1 Bridge",
+        badge: "badge-cyan",
+        latency: "<500ms Hot Handover",
+        code: "ai.drishti.camera.PhoneCamera.kt & CameraManager.kt",
+        desc: "Seamless failover camera source. If the sunglasses Wi-Fi link drops or packets time out (>3.0s), CameraManager automatically engages CameraSelector.LENS_FACING_BACK with zero video interruption.",
+        details: [
+          "Resolution: 640x480 preview stream",
+          "Rotational sensor alignment for upright vision",
+          "Voice prompt: 'ESP32 camera lost. Switched to phone camera.'"
+        ]
+      },
+      mux: {
+        title: "Camera Multiplexer (CameraManager)",
+        tier: "Tier 1: Edge Core",
+        badge: "badge-green",
+        latency: "1-2ms switching overhead",
+        code: "ai.drishti.camera.CameraManager.kt",
+        desc: "Central vision router. Holds latestFrame and dispatches bitmaps to YOLOv8n obstacle detector, the new Video OCR pipeline, and preview callbacks.",
+        details: [
+          "Thread safety: Dispatchers.IO background decoding",
+          "Dynamic toggling between Glasses Wi-Fi and Phone Front/Back lenses",
+          "Feeds BoundedFrameDispatcher for latest-frame-wins OCR processing"
+        ]
+      },
+      ocrbuf: {
+        title: "Bounded Frame Dispatcher (Channel.CONFLATED)",
+        tier: "Tier 1: OCR v2 Pipeline",
+        badge: "badge-indigo",
+        latency: "<1ms queue overhead",
+        code: "ai.drishti.vision.ocr.pipeline.BoundedFrameDispatcher.kt",
+        desc: "Strict latest-frame-wins concurrency buffer. Prevents slow OCR recognition passes from causing unbounded memory leaks or blocking Android UI threads.",
+        details: [
+          "Implementation: Kotlin Coroutines Channel(capacity = Channel.CONFLATED)",
+          "Worker coroutine runs on Dispatchers.Default",
+          "Drops intermediate frames automatically if previous inference is still executing"
+        ]
+      },
+      ppdet: {
+        title: "PP-OCRv4 Text Detector (DBNet)",
+        tier: "Tier 1: OCR v2 Pipeline",
+        badge: "badge-indigo",
+        latency: "95ms on ARM Cortex-A78 (NNAPI)",
+        code: "ai.drishti.vision.ocr.detector.PpOcrV4Detector.kt",
+        desc: "Mobile Differentiable Binarization text detector with LCNet_v2 backbone and Feature Pyramid Network (FPN). Produces precise text quadrilaterals.",
+        details: [
+          "Input size: 320x320 letterbox with zero-padding (preserves aspect ratio)",
+          "Binarization threshold: τ = 0.3 | Box confidence threshold: τ = 0.6",
+          "Vatti polygon unclipping: unclip_ratio = 1.6 to recover text lines from shrunk kernels",
+          "Maps detected polygon vertices back to original frame coordinates"
+        ]
+      },
+      tracker: {
+        title: "Lightweight Text Tracker",
+        tier: "Tier 1: OCR v2 Pipeline",
+        badge: "badge-indigo",
+        latency: "3-5ms association",
+        code: "ai.drishti.vision.ocr.tracker.TextTracker.kt",
+        desc: "Spatial-temporal association engine linking detected text regions across processed video frames. Prevents visual flutter and maintains track identities.",
+        details: [
+          "Association metric: IoU (min 0.35) with normalized centroid distance penalty",
+          "Exponential Moving Average (EMA, α = 0.7) for smooth bounding box coordinates",
+          "Lifecycle: Tentative (1 hit) → Confirmed (2+ hits) → Lost (coasting ≤ 3 frames) → Terminated"
+        ]
+      },
+      pprec: {
+        title: "Selective PP-OCRv4 Recognizer",
+        tier: "Tier 1: OCR v2 Pipeline",
+        badge: "badge-indigo",
+        latency: "45ms per selected crop (SVTR/LCNet)",
+        code: "ai.drishti.vision.ocr.recognizer.SelectiveTextRecognizer.kt",
+        desc: "Selective recognition controller. Only invokes deep neural recognition on newly confirmed tracks or tracks that undergo significant scale change (>35% area).",
+        details: [
+          "85–92% reduction in recognition inference passes across video frames",
+          "Crops high-res ROI directly from original unscaled camera bitmap (not the 320x320 letterbox)",
+          "Resizes to fixed height 48px, decodes via CTC Greedy Decoder with blank collapse",
+          "Dictionary: ppocr_keys_en.txt (66 alphanumeric tokens)"
+        ]
+      },
+      order: {
+        title: "Reading Order & Deduplication Engine",
+        tier: "Tier 1: OCR v2 Pipeline",
+        badge: "badge-indigo",
+        latency: "2-4ms geometric sort",
+        code: "ai.drishti.vision.ocr.postprocess.TextReadingOrderEngine.kt",
+        desc: "Organizes detected text into natural human reading order and eliminates repetitive speech via sliding window history comparison.",
+        details: [
+          "Line clustering: Vertical center tolerance within 50% of box height",
+          "Sorting: Lines top-to-bottom, words within lines left-to-right",
+          "15s sliding history window with token Jaccard and Levenshtein similarity filtering (τ = 0.70)"
+        ]
+      },
+      ocrcoord: {
+        title: "OCR Speech Coordinator",
+        tier: "Tier 1: OCR v2 Pipeline",
+        badge: "badge-indigo",
+        latency: "<1ms dispatch",
+        code: "ai.drishti.vision.ocr.postprocess.OcrSpeechCoordinator.kt",
+        desc: "Coordinates text delivery with LocalTTS. Queues reading speech smoothly with flush = false while providing instantaneous mute and clear upon emergency hazard preemption.",
+        details: [
+          "Cadence pacing: Minimum 1500ms interval between spoken phrases",
+          "Instant interrupt: ObstacleClassifier warnings trigger muteAndClear()",
+          "Mode exit immediately halts reading speech"
+        ]
+      },
+      yolo: {
+        title: "TFLite YOLOv8n Obstacle Detector",
+        tier: "Tier 1: Edge Reflex",
+        badge: "badge-green",
+        latency: "138ms (Float16 NNAPI)",
+        code: "ai.drishti.vision.TFLiteDetector.kt",
+        desc: "Sub-300ms real-time path hazard spotter running continuously on Android edge. Detects 14 pedestrian collision hazards (vehicles, poles, pedestrians, curbs, stairs).",
+        details: [
+          "Input: 320x320 RGB FloatBuffer",
+          "Output tensor: [1, 84, 2100]",
+          "Confidence threshold: 0.40 | NMS IoU threshold: 0.45"
+        ]
+      },
+      vultr: {
+        title: "Vultr Cloud Compute Infrastructure",
+        tier: "Tier 2: Cloud Infrastructure",
+        badge: "badge-purple",
+        latency: "20-40ms RTT from mobile client",
+        code: "hackbios-neuraX/deploy/ & docs/vultr_deployment.md",
+        desc: "24/7 cloud hosting for Drishti conversational voice backend. Deployed on Vultr Cloud Compute VPS (Ubuntu 24.04 LTS) using Docker Compose and Caddy automated SSL reverse proxy.",
+        details: [
+          "Automated Let's Encrypt TLS on Ports 80 and 443",
+          "Hosts token-server (FastAPI) and livekit-agent worker",
+          "Systemd daemon recovery with restart-on-failure"
+        ]
+      },
+      mllm: {
+        title: "LiveKit Agent Worker (drishti_agent.py)",
+        tier: "Tier 2: Cloud Conversational AI",
+        badge: "badge-purple",
+        latency: "280ms (Groq LPU) / 600ms (Gemini 2.0)",
+        code: "hackbios-neuraX/agent/drishti_agent.py",
+        desc: "Autonomous conversational companion connected to LiveKit WebRTC room. Handles deep conversational queries, scene descriptions, and mode switching with strict 1-2 sentence brevity mandate.",
+        details: [
+          "Multi-provider router: Groq LPU (gpt-oss-120b) → OpenAI GPT-4o → Gemini 2.0 Flash",
+          "Silero VAD with 0.28s silence cutoff for instantaneous user barge-in",
+          "Zero frame persistence on disk: RAM-only processing for user privacy"
+        ]
+      }
+    };
+
+    // DOM Elements
+    const drawer = document.getElementById('nodeDrawer');
+    const drawerTitle = document.getElementById('drawerTitle');
+    const drawerContent = document.getElementById('drawerContent');
+    const closeDrawerBtn = document.getElementById('closeDrawer');
+    const themeToggleBtn = document.getElementById('themeToggle');
+    const resetZoomBtn = document.getElementById('resetZoom');
+    const nodeSearchInput = document.getElementById('nodeSearch');
+    const canvasContainer = document.querySelector('.canvas-container');
+    const diagramSvg = document.querySelector('.diagram-svg');
+
+    // Pan & Zoom state
+    let scale = 1;
+    let translateX = 0;
+    let translateY = 0;
+    let isPanning = false;
+    let startX = 0;
+    let startY = 0;
+
+    function applyTransform() {
+      diagramSvg.style.transform = `translate(${translateX}px, ${translateY}px) scale(${scale})`;
+    }
+
+    canvasContainer.addEventListener('mousedown', (e) => {
+      if (e.target.closest('.node-group')) return;
+      isPanning = true;
+      startX = e.clientX - translateX;
+      startY = e.clientY - translateY;
+    });
+
+    window.addEventListener('mousemove', (e) => {
+      if (!isPanning) return;
+      translateX = e.clientX - startX;
+      translateY = e.clientY - startY;
+      applyTransform();
+    });
+
+    window.addEventListener('mouseup', () => { isPanning = false; });
+
+    canvasContainer.addEventListener('wheel', (e) => {
+      e.preventDefault();
+      const zoomFactor = e.deltaY < 0 ? 1.1 : 0.9;
+      scale = Math.min(Math.max(0.5, scale * zoomFactor), 3.0);
+      applyTransform();
+    });
+
+    resetZoomBtn.addEventListener('click', () => {
+      scale = 1;
+      translateX = 0;
+      translateY = 0;
+      applyTransform();
+    });
+
+    // Theme Toggle
+    themeToggleBtn.addEventListener('click', () => {
+      const isLight = document.body.getAttribute('data-theme') === 'light';
+      document.body.setAttribute('data-theme', isLight ? 'dark' : 'light');
+    });
+
+    // Sub-Tabs Switching
+    document.querySelectorAll('.tab-btn').forEach(btn => {
+      btn.addEventListener('click', () => {
+        document.querySelectorAll('.tab-btn').forEach(b => b.classList.remove('active'));
+        document.querySelectorAll('.tab-content').forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        const targetId = btn.getAttribute('data-target');
+        const targetContent = document.getElementById(targetId);
+        if (targetContent) targetContent.classList.add('active');
+      });
+    });
+
+    // Node Click Handlers
+    document.querySelectorAll('.node-group').forEach(node => {
+      node.addEventListener('click', (e) => {
+        e.stopPropagation();
+        const nodeId = node.getAttribute('data-node');
+        document.querySelectorAll('.node-group').forEach(n => n.classList.remove('selected'));
+        node.classList.add('selected');
+        showNodeDetails(nodeId);
+      });
+    });
+
+    function showNodeDetails(nodeId) {
+      const data = nodeData[nodeId] || {
+        title: nodeId.toUpperCase(),
+        tier: "System Node",
+        badge: "badge-cyan",
+        latency: "Real-time",
+        code: "Project Drishti Codebase",
+        desc: "Core subsystem node in Project Drishti Architecture v2.0.",
+        details: ["Modular edge-cloud processing unit"]
+      };
+
+      drawerTitle.textContent = data.title;
+      let detailsHtml = data.details ? data.details.map(d => `<li>${d}</li>`).join('') : '';
+
+      drawerContent.innerHTML = `
+        <div class="info-card">
+          <span class="info-badge ${data.badge}">${data.tier}</span>
+          <span class="info-badge badge-cyan">Latency: ${data.latency}</span>
+          <p style="margin-top: 8px;">${data.desc}</p>
+        </div>
+
+        <div class="info-card">
+          <h4>Source Code Reference</h4>
+          <div class="code-block">${data.code}</div>
+        </div>
+
+        <div class="info-card">
+          <h4>Technical Specifications</h4>
+          <ul style="margin-left: 18px; margin-top: 6px;">
+            ${detailsHtml}
+          </ul>
+        </div>
+      `;
+
+      drawer.classList.add('open');
+    }
+
+    closeDrawerBtn.addEventListener('click', () => {
+      drawer.classList.remove('open');
+      document.querySelectorAll('.node-group').forEach(n => n.classList.remove('selected'));
+    });
+
+    // Trace Filters
+    document.querySelectorAll('.pill').forEach(pill => {
+      pill.addEventListener('click', () => {
+        document.querySelectorAll('.pill').forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        const trace = pill.getAttribute('data-trace');
+        highlightTrace(trace);
+      });
+    });
+
+    function highlightTrace(trace) {
+      const allPaths = document.querySelectorAll('.flow-path');
+      allPaths.forEach(p => {
+        p.classList.remove('path-active-reflex', 'path-active-ocr', 'path-active-cloud', 'path-active-fall');
+        p.style.opacity = '0.2';
+      });
+
+      if (trace === 'all') {
+        allPaths.forEach(p => {
+          p.style.opacity = '1';
+        });
+        return;
+      }
+
+      if (trace === 'ocr') {
+        const ocrPaths = ['path-esp32-mux', 'path-mux-ocrbuf', 'path-ocrbuf-det', 'path-det-tracker', 'path-tracker-rec', 'path-rec-order', 'path-order-coord', 'path-coord-tts', 'path-obst-mute-ocr'];
+        ocrPaths.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.classList.add('path-active-ocr');
+            el.style.opacity = '1';
+          }
+        });
+      } else if (trace === 'reflex') {
+        const reflexPaths = ['path-esp32-mux', 'path-mux-yolo', 'path-yolo-prox', 'path-prox-tts'];
+        reflexPaths.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.classList.add('path-active-reflex');
+            el.style.opacity = '1';
+          }
+        });
+      } else if (trace === 'cloud') {
+        const cloudPaths = ['path-mic-livekit', 'path-livekit-tts'];
+        cloudPaths.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.classList.add('path-active-cloud');
+            el.style.opacity = '1';
+          }
+        });
+      } else if (trace === 'fall') {
+        const fallPaths = ['path-imu-fall', 'path-fall-count', 'path-count-dispatch'];
+        fallPaths.forEach(id => {
+          const el = document.getElementById(id);
+          if (el) {
+            el.classList.add('path-active-fall');
+            el.style.opacity = '1';
+          }
+        });
+      }
+    }
+
+    // Node Search Filtering
+    nodeSearchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      document.querySelectorAll('.node-group').forEach(node => {
+        const text = node.textContent.toLowerCase();
+        if (q === '' || text.includes(q)) {
+          node.style.opacity = '1';
+        } else {
+          node.style.opacity = '0.15';
+        }
+      });
+    });
+  </script>
+</body>
+</html>

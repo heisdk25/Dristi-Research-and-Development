@@ -1,0 +1,17 @@
+[Unit]
+Description=Drishti LiveKit Token Server (FastAPI)
+After=network.target
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/drishti/token-server
+EnvironmentFile=/opt/drishti/.env
+ExecStart=/usr/local/bin/uv run --with-requirements requirements.txt uvicorn main:app --host 0.0.0.0 --port 8000
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

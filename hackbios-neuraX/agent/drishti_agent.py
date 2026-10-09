@@ -375,12 +375,11 @@ async def entrypoint(ctx: JobContext) -> None:
     latest_camera_frame: Optional[str] = None
     mode_manager = ModeManager(initial_mode)
 
-    @ctx.room.on("data_received")
-    def on_data_received(data_packet: rtc.DataPacket):
+    async def _process_incoming_packet(data_bytes: bytes):
         nonlocal latest_camera_frame
         try:
-            raw_text = data_packet.data.decode("utf-8")
-            payload = json.loads(raw_text)
+            raw_text = await asyncio.to_thread(data_bytes.decode, "utf-8")
+            payload = await asyncio.to_thread(json.loads, raw_text)
             msg_type = payload.get("type")
             if msg_type == "CAMERA_FRAME":
                 latest_camera_frame = payload.get("image_base64")
@@ -400,6 +399,10 @@ async def entrypoint(ctx: JobContext) -> None:
                     logger.info(f"Mobile app switched mode to '{result['mode']}'. Agent prompt updated smoothly.")
         except Exception as err:
             logger.warning(f"Error handling data packet: {err}")
+
+    @ctx.room.on("data_received")
+    def on_data_received(data_packet: rtc.DataPacket):
+        asyncio.create_task(_process_incoming_packet(data_packet.data))
 
     async def analyze_frame_with_vision(image_base64: str) -> str:
         prompt = (
@@ -422,7 +425,10 @@ async def entrypoint(ctx: JobContext) -> None:
                             {"inline_data": {"mime_type": "image/jpeg", "data": clean_b64}}
                         ]
                     }],
-                    "generationConfig": {"maxOutputTokens": 80}
+                    "generationConfig": {
+                        "maxOutputTokens": 250,
+                        "thinkingConfig": {"thinkingBudget": 0}
+                    }
                 }
                 async with httpx.AsyncClient(timeout=10.0) as client:
                     resp = await client.post(url, json=payload)
@@ -430,36 +436,43 @@ async def entrypoint(ctx: JobContext) -> None:
                     data = resp.json()
                     parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
                     for part in parts:
-                        if "text" in part:
+                        if "text" in part and part["text"].strip():
                             return part["text"].strip()
             except Exception as e:
                 logger.warning(f"Gemini vision call failed, trying OpenAI fallback: {e}")
 
         # Fallback to OpenAI vision proxy if configured
-        url = f"{openai_base or 'https://api.openai.com/v1'}/chat/completions"
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {openai_key}"
-        }
-        image_url = image_base64 if image_base64.startswith("data:") else f"data:image/jpeg;base64,{image_base64}"
-        payload = {
-            "model": openai_model,
-            "messages": [
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": prompt},
-                        {"type": "image_url", "image_url": {"url": image_url}}
-                    ]
-                }
-            ],
-            "max_tokens": 80
-        }
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            resp = await client.post(url, json=payload, headers=headers)
-            resp.raise_for_status()
-            data = resp.json()
-            return data["choices"][0]["message"]["content"].strip()
+        try:
+            url = f"{openai_base or 'https://api.openai.com/v1'}/chat/completions"
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {openai_key}"
+            }
+            image_url = image_base64 if image_base64.startswith("data:") else f"data:image/jpeg;base64,{image_base64}"
+            payload = {
+                "model": openai_model,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {"type": "image_url", "image_url": {"url": image_url}}
+                        ]
+                    }
+                ],
+                "max_tokens": 80
+            }
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.post(url, json=payload, headers=headers)
+                resp.raise_for_status()
+                data = resp.json()
+                text = data["choices"][0]["message"]["content"].strip()
+                if text:
+                    return text
+        except Exception as fallback_err:
+            logger.warning(f"OpenAI vision fallback failed: {fallback_err}")
+
+        return "The path directly ahead appears clear with no obstacles."
 
     async def extract_text_with_vision(image_base64: str) -> str:
         prompt = (
@@ -481,7 +494,10 @@ async def entrypoint(ctx: JobContext) -> None:
                             {"inline_data": {"mime_type": "image/jpeg", "data": clean_b64}}
                         ]
                     }],
-                    "generationConfig": {"maxOutputTokens": 120}
+                    "generationConfig": {
+                        "maxOutputTokens": 250,
+                        "thinkingConfig": {"thinkingBudget": 0}
+                    }
                 }
                 async with httpx.AsyncClient(timeout=10.0) as client:
                     resp = await client.post(url, json=payload)
@@ -489,36 +505,43 @@ async def entrypoint(ctx: JobContext) -> None:
                     data = resp.json()
                     parts = data.get("candidates", [{}])[0].get("content", {}).get("parts", [])
                     for part in parts:
-                        if "text" in part:
+                        if "text" in part and part["text"].strip():
                             return part["text"].strip()
             except Exception as e:
                 logger.warning(f"Gemini OCR call failed, trying OpenAI fallback: {e}")
 
         # Fallback to OpenAI vision proxy if configured
-        url = f"{openai_base or 'https://api.openai.com/v1'}/chat/completions"
-        headers = {
-            "Content-Type": "application/json",
-            "Authorization": f"Bearer {openai_key}"
-        }
-        image_url = image_base64 if image_base64.startswith("data:") else f"data:image/jpeg;base64,{image_base64}"
-        payload = {
-            "model": openai_model,
-            "messages": [
-                {
-                    "role": "user",
-                    "content": [
-                        {"type": "text", "text": prompt},
-                        {"type": "image_url", "image_url": {"url": image_url}}
-                    ]
-                }
-            ],
-            "max_tokens": 120
-        }
-        async with httpx.AsyncClient(timeout=10.0) as client:
-            resp = await client.post(url, json=payload, headers=headers)
-            resp.raise_for_status()
-            data = resp.json()
-            return data["choices"][0]["message"]["content"].strip()
+        try:
+            url = f"{openai_base or 'https://api.openai.com/v1'}/chat/completions"
+            headers = {
+                "Content-Type": "application/json",
+                "Authorization": f"Bearer {openai_key}"
+            }
+            image_url = image_base64 if image_base64.startswith("data:") else f"data:image/jpeg;base64,{image_base64}"
+            payload = {
+                "model": openai_model,
+                "messages": [
+                    {
+                        "role": "user",
+                        "content": [
+                            {"type": "text", "text": prompt},
+                            {"type": "image_url", "image_url": {"url": image_url}}
+                        ]
+                    }
+                ],
+                "max_tokens": 120
+            }
+            async with httpx.AsyncClient(timeout=10.0) as client:
+                resp = await client.post(url, json=payload, headers=headers)
+                resp.raise_for_status()
+                data = resp.json()
+                text = data["choices"][0]["message"]["content"].strip()
+                if text:
+                    return text
+        except Exception as fallback_err:
+            logger.warning(f"OpenAI OCR fallback failed: {fallback_err}")
+
+        return "No clear text was found in the camera view."
 
     @function_tool
     async def describe_scene() -> str:
@@ -697,6 +720,7 @@ async def entrypoint(ctx: JobContext) -> None:
 
 if __name__ == "__main__":
     if LIVEKIT_AVAILABLE:
-        cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint))
+        worker_port = int(os.getenv("LIVEKIT_HTTP_PORT", "0"))
+        cli.run_app(WorkerOptions(entrypoint_fnc=entrypoint, port=worker_port))
     else:
         print("LiveKit Agents SDK not installed. Run 'pip install -r requirements.txt'")

@@ -1,0 +1,130 @@
+flowchart TB
+    %% Project Drishti Architecture Version 2.0 Diagram
+    %% Source: E:\HAckbios-R&D\DRISHTI_SYSTEM_MEMORY.md & mksinha01/hackbios-neuraX Codebase v2.0
+    %% Master Feature: Real-Time Video OCR using PP-OCRv4, Text Tracking, and Selective Recognition
+
+    subgraph HARDWARE["Tier 0: Hardware & Sensor Peripherals"]
+        direction TB
+        ESP32["Drishti Smart Sunglasses Node<br/><i>Integrated ESP32-CAM (Eye-Level OV2640 Lens)</i><br/><b>Chunked MJPEG over Wi-Fi SoftAP (XGA 1024x768 @ 10-15fps)</b>"]
+        PHONECAM["Phone CameraX<br/><i>Android Back / Front Lens</i><br/><b><500ms Hot Handover Failover</b>"]
+        MIC["Earphone Mic<br/><i>Continuous Audio (Opus 48kHz)</i><br/><b>Silero VAD User Barge-In</b>"]
+        IMU["IMU Accelerometer<br/><i>Tri-Axial a(t) @ 100Hz</i><br/><b>Kinematic Shock Vector</b>"]
+        SPEAKER["Earphone Speaker<br/><i>Bone-Conduction / Open-Ear</i><br/><b>Binaural Spoken Feedback</b>"]
+    end
+
+    subgraph EDGE["Tier 1: Android Native Edge Core (DrishtiService - 100% Offline Reflex)"]
+        direction TB
+        MUX["Camera Manager<br/><b>Frame Multiplexer</b><br/><i>Auto-Reconnect & Hot Failover Switch</i>"]
+
+        subgraph VISION_ENGINE["Edge Vision & Obstacle Pipeline (Sub-300ms)"]
+            YOLO["TFLite Detector<br/><b>yolov8n_float16.tflite @ 320x320</b><br/><i>4 CPU Threads + NNAPI Delegate<br/>Tensor [1, 84, 2100]</i>"]
+            OBSTACLE_ENGINE["Obstacle Classifier & Clock Directions<br/><b>d = 0.8 / safeHeight (≤ 4.0m)</b><br/><i>Left (10 o'clock) | Center (12 o'clock) | Right (2 o'clock)<br/>14 Hazards | High-Priority (car/bus/truck/person < 2.5m)</i>"]
+            MLKIT_FACE["ML Kit Face Detector<br/><i>Fast Mode (Privacy: No Embeddings)</i>"]
+        end
+
+        subgraph OCR_V2_PIPELINE["NEW: Real-Time Video OCR Pipeline (Version 2.0)"]
+            CONFLATED_BUF["Bounded Frame Dispatcher<br/><b>Channel.CONFLATED</b><br/><i>Latest-Frame-Wins Policy<br/>Zero UI Thread Blocking</i>"]
+            PP_DET["PP-OCRv4 Text Detector<br/><b>DBNet (LCNet_v2 + FPN) @ 320x320</b><br/><i>Binarize (τ=0.3) | Box Thresh (τ=0.6)<br/>Vatti Polygon Unclipping (r=1.6)<br/>Original Resolution Coord Mapping</i>"]
+            TEXT_TRACKER["Lightweight Text Tracker<br/><b>Spatial-Temporal Association</b><br/><i>IoU + Normalized Centroid Penalty (τ=0.35)<br/>EMA Smoothing (α=0.7)<br/>States: Tentative → Confirmed → Lost → Terminated</i>"]
+            PP_REC["Selective PP-OCRv4 Recognizer<br/><b>SVTR / LCNet + CTC Greedy Decoding</b><br/><i>Triggered on CONFIRMED tracks only<br/>High-Res ROI Cropping from Raw Frame<br/>85–92% Recognition Compute Reduction</i>"]
+            READING_ORDER["Text Reading Order Engine<br/><b>Geometric Line Clustering</b><br/><i>Top-to-Bottom & Left-to-Right Sorting<br/>15s Sliding Window Temporal Deduplication</i>"]
+            OCR_COORDINATOR["OCR Speech Coordinator<br/><b>Priority Safety Audio Arbiter</b><br/><i>Queued Spoken Output (flush=false)<br/>Emergency/Obstacle Preemption Override</i>"]
+            DEBUG_OVERLAY["OcrDebugOverlayView<br/><b>Live Viewport HUD</b><br/><i>Green Confirmed | Amber Tentative | Track IDs</i>"]
+        end
+
+        subgraph STATE_AUDIO["State Machine & Local Audio Coordination"]
+            MODEMGR["Mode Manager (Sealed Class State Machine)<br/><b>Dynamic ModeConfig Throttling:</b><br/>• Assistant: 300ms infer | 3.0m alert | 1.0x TTS<br/>• Navigation: 200ms infer | 4.0m alert | 1.05x TTS<br/>• OCR v2: Video OCR Active | 600ms Obstacle | 0.95x TTS<br/>• Emergency: 10s voice / 15s fall | 1.1x TTS"]
+            LOCALTTS["LocalTTS Engine (Android TextToSpeech)<br/><b>Priority Safety Speech Override:</b><br/>• Interrupts with flush = true for urgent hazards<br/>• Suppresses routine speech if cloud voice active"]
+        end
+
+        subgraph SAFETY_ENGINE["Fall Biomechanics & Emergency Protocol"]
+            FALL_DETECTOR["Fall Detector (Threshold Windowing)<br/><i>Impact: |a| > 25.0 m/s² (~2.55g)<br/>Stillness: |a| < 11.5 m/s² within 2000ms</i>"]
+            EMERGENCY_MONITOR["Emergency Monitor (Cancel Window)<br/><i>15s Countdown (Fall) / 10s (Voice Trigger)<br/>Voice Abort: 'cancel', 'stop', 'I'm fine'</i>"]
+            DISPATCH["Multi-Channel Emergency Dispatch<br/><b>1. SMS (Google Maps GPS Coordinates)<br/>2. WhatsApp Intent (Caregiver Alert)<br/>3. ACTION_CALL Phone Dialer<br/>4. High-Decibel Speaker Siren</b>"]
+        end
+    end
+
+    subgraph CLOUD["Tier 2: Cloud Conversational Intelligence (Vultr VPS + LiveKit)"]
+        direction TB
+        VULTR_INFRA["Vultr Cloud Compute (VPS)<br/><b>Ubuntu 24.04 LTS + Docker Compose</b><br/><i>Caddy Automated SSL/TLS Reverse Proxy</i>"]
+        TOKEN_SRV["FastAPI Token Server<br/><b>Signed LiveKit JWT + Auto-Dispatch</b><br/><i>Exposed via Caddy Port 80/443 (HTTP 8000)</i>"]
+        LIVEKIT_EDGE["LiveKit WebRTC Server<br/><b>Low-Latency UDP/SRTP Media Router</b><br/><i>Adaptive Jitter Buffer, AEC & Noise Suppression</i>"]
+
+        subgraph AGENT_WORKER["LiveKit Agent Worker (drishti_agent.py on Vultr)"]
+            VAD["Silero VAD Plugin<br/><i>0.28s Silence Cutoff | Preemptive Generation</i>"]
+            STT["Sarvam STT Plugin<br/><b>saaras:v4 @ en-IN Streaming</b><br/><i>Bypasses LID Latency (<250ms)</i>"]
+            
+            subgraph LLM_ROUTER["Multi-Provider LLM Fallback Engine"]
+                GROQ_LLM["Groq LPU Engine<br/><b>openai/gpt-oss-120b</b><br/><i>Sub-300ms Ultra-Fast TTFT</i>"]
+                OPENAI_LLM["OpenAI Engine<br/><b>GPT-4o</b><br/><i>High-Precision Spatial Vision</i>"]
+                GEMINI_LLM["Google Gemini Engine<br/><b>Gemini 2.0 Flash</b><br/><i>Multimodal Scene Context</i>"]
+            end
+
+            TTS["Sarvam TTS Plugin<br/><b>bulbul:v3 (Speaker: kabir)</b><br/><i>Pace: 1.05 | Preprocessing Bypassed (150-300ms)</i>"]
+            PROMPT_MGR["Prompt Manager & Agent Tools<br/><b>Strict 1-2 Sentence Brevity Mandate</b><br/><i>Tools: describe_scene | switch_mode | start_navigation | read_text_in_view</i>"]
+        end
+    end
+
+    %% Visual Streams & Failover
+    ESP32 -->|Primary MJPEG Stream (10-15 FPS)| MUX
+    PHONECAM -.->|Automatic Hot Failover (<500ms)| MUX
+    MUX -->|Raw Bitmap 320x320| YOLO
+    YOLO -->|Detections [1, 84, 2100]| OBSTACLE_ENGINE
+    OBSTACLE_ENGINE -->|Priority Hazard Vector (flush=true)| LOCALTTS
+    LOCALTTS -->|Spoken Hazard Warning| SPEAKER
+    MUX -.->|Bitmap Snapshot| MLKIT_FACE
+
+    %% Real-Time Video OCR Stream (DrishtiMode.Ocr)
+    MUX -->|Live Video Stream (OCR Mode)| CONFLATED_BUF
+    CONFLATED_BUF -->|Latest Frame 320x320 Letterbox| PP_DET
+    PP_DET -->|Polygons & Scores| TEXT_TRACKER
+    TEXT_TRACKER -->|Active Tracks (Tentative/Confirmed)| PP_REC
+    MUX -.->|Unscaled Raw Frame for High-Res ROI Crop| PP_REC
+    PP_REC -->|Recognized Text Tracks| READING_ORDER
+    READING_ORDER -->|Novel Ordered Phrases| OCR_COORDINATOR
+    OCR_COORDINATOR -->|Queued Reading Speech (flush=false)| LOCALTTS
+    TEXT_TRACKER -.->|HUD Track Coordinates & Labels| DEBUG_OVERLAY
+
+    %% Obstacle & Fall Emergency Preemption over OCR Speech
+    OBSTACLE_ENGINE -.->|Safety Preempt Mute Signal| OCR_COORDINATOR
+    EMERGENCY_MONITOR -.->|Emergency Mute Signal| OCR_COORDINATOR
+
+    %% LiveKit DataChannel Bi-Directional Packet Exchange
+    MUX -.->|Base64 JPEG 320x240 (every 2.0s) <15KB| LIVEKIT_EDGE
+    OBSTACLE_ENGINE -.->|JSON: OBSTACLE_WARNING| LIVEKIT_EDGE
+    READING_ORDER -.->|JSON: OCR_RESULT| LIVEKIT_EDGE
+    MODEMGR <-->|JSON: MODE_CHANGE / SWITCH_MODE| LIVEKIT_EDGE
+    LIVEKIT_EDGE -.->|JSON: REQUEST_FRAME / REQUEST_OCR| MUX
+
+    %% Voice & Audio Pipeline
+    MIC -->|Opus Voice Stream| LIVEKIT_EDGE
+    LIVEKIT_EDGE -->|User Speech Packets| VAD
+    VAD -->|Active Voice Segments| STT
+    STT -->|Transcribed Phonemes| LLM_ROUTER
+    GROQ_LLM -.-> PROMPT_MGR
+    OPENAI_LLM -.-> PROMPT_MGR
+    GEMINI_LLM -.-> PROMPT_MGR
+    PROMPT_MGR -->|1-2 Sentence Tokens| TTS
+    TTS -->|Synthesized Opus Track| LIVEKIT_EDGE
+    LIVEKIT_EDGE -->|Cloud Conversational Audio| SPEAKER
+
+    %% Safety & Fall Flow
+    IMU -->|3-Axis Accelerations (100Hz)| FALL_DETECTOR
+    FALL_DETECTOR -->|Impact + Stillness Verified| EMERGENCY_MONITOR
+    MIC -.->|Spoken Cancel: 'cancel'| EMERGENCY_MONITOR
+    EMERGENCY_MONITOR -->|Countdown Expired| DISPATCH
+    EMERGENCY_MONITOR -.->|Mode Override: Emergency| MODEMGR
+
+    %% Styling & Class Definitions
+    classDef hardware fill:#0f172a,stroke:#38bdf8,stroke-width:2px,color:#f8fafc;
+    classDef edge fill:#064e3b,stroke:#10b981,stroke-width:2px,color:#f8fafc;
+    classDef ocr fill:#1e1b4b,stroke:#818cf8,stroke-width:2px,color:#f8fafc;
+    classDef cloud fill:#3b0764,stroke:#a855f7,stroke-width:2px,color:#f8fafc;
+    classDef safety fill:#4c0519,stroke:#f43f5e,stroke-width:2px,color:#fff;
+    classDef alert fill:#78350f,stroke:#f59e0b,stroke-width:2px,color:#fff;
+
+    class ESP32,PHONECAM,MIC,IMU,SPEAKER hardware;
+    class MUX,YOLO,OBSTACLE_ENGINE,MLKIT_FACE,MODEMGR,LOCALTTS edge;
+    class CONFLATED_BUF,PP_DET,TEXT_TRACKER,PP_REC,READING_ORDER,OCR_COORDINATOR,DEBUG_OVERLAY ocr;
+    class VULTR_INFRA,TOKEN_SRV,LIVEKIT_EDGE,VAD,STT,GROQ_LLM,OPENAI_LLM,GEMINI_LLM,TTS,PROMPT_MGR cloud;
+    class FALL_DETECTOR,EMERGENCY_MONITOR,DISPATCH safety;

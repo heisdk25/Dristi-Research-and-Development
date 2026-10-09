@@ -226,6 +226,13 @@
                 android:contentDescription="Live Camera Feed"
                 android:visibility="gone" />
 
+            <!-- OCR Real-Time Video Track & Text Debug Overlay -->
+            <ai.drishti.vision.ocr.ui.OcrDebugOverlayView
+                android:id="@+id/ocrDebugOverlay"
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:visibility="gone" />
+
             <!-- Standby / Inactive Placeholder -->
             <LinearLayout
                 android:id="@+id/layoutCameraPlaceholder"

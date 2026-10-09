@@ -48,7 +48,7 @@ android {
     }
 
     aaptOptions {
-        noCompress("tflite")
+        noCompress("tflite", "onnx")
     }
 }
 
@@ -75,11 +75,14 @@ dependencies {
     implementation("androidx.camera:camera-lifecycle:$cameraxVersion")
     implementation("androidx.camera:camera-view:$cameraxVersion")
 
+    // ONNX Runtime Android (PP-OCRv4 on-device offline inference)
+    implementation("com.microsoft.onnxruntime:onnxruntime-android:1.18.0")
+
     // TensorFlow Lite (On-device YOLOv8n obstacle detection)
     implementation("org.tensorflow:tensorflow-lite:2.16.1")
     implementation("org.tensorflow:tensorflow-lite-support:0.4.4")
 
-    // Google ML Kit (Face detection & OCR text recognition)
+    // Google ML Kit (Face detection & OCR text recognition fallback)
     implementation("com.google.mlkit:text-recognition:16.0.1")
     implementation("com.google.mlkit:face-detection:16.1.7")
 

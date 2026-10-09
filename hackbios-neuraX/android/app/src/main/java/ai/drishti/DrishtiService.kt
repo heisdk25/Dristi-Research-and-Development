@@ -26,6 +26,8 @@ import ai.drishti.sensors.FallDetector
 import ai.drishti.sensors.LocationProvider
 import ai.drishti.utils.PreferenceManager
 import ai.drishti.vision.*
+import ai.drishti.vision.ocr.models.TrackedText
+import ai.drishti.vision.ocr.pipeline.VideoOcrPipeline
 import android.util.Base64
 import java.io.ByteArrayOutputStream
 import kotlinx.coroutines.Dispatchers
@@ -59,6 +61,7 @@ class DrishtiService : LifecycleService() {
     lateinit var tfliteDetector: TFLiteDetector
     lateinit var faceDetector: FaceDetector
     lateinit var ocrEngine: OcrEngine
+    lateinit var videoOcrPipeline: VideoOcrPipeline
     lateinit var navigationEngine: NavigationEngine
     lateinit var emergencyMonitor: EmergencyMonitor
     lateinit var alertSender: AlertSender
@@ -70,6 +73,7 @@ class DrishtiService : LifecycleService() {
     var onVoiceConnectionChanged: ((Boolean) -> Unit)? = null
     var onCameraSourceChanged: ((CameraSource, message: String) -> Unit)? = null
     var onFrameForPreview: ((Bitmap) -> Unit)? = null
+    var onOcrTracksUpdated: ((List<TrackedText>) -> Unit)? = null
 
     val isVoiceConnected: Boolean
         get() = ::liveKitClient.isInitialized && liveKitClient.isConnected
@@ -197,8 +201,20 @@ class DrishtiService : LifecycleService() {
             localTTS.speak("Welcome to Drishti. Assistant mode active. How can I help you?", flush = true)
         }
 
+        // Real-Time Video OCR Pipeline (Version 2.0: PP-OCRv4, Tracking, Selective Recognition)
+        videoOcrPipeline = VideoOcrPipeline(this, lifecycleScope, localTTS).apply {
+            onTracksUpdated = { tracks -> onOcrTracksUpdated?.invoke(tracks) }
+        }
+
         // Mode Manager Listener
-        modeManager.addListener { _, newMode, spokenText ->
+        modeManager.addListener { oldMode, newMode, spokenText ->
+            if (newMode is DrishtiMode.Ocr) {
+                videoOcrPipeline.start()
+            } else if (oldMode is DrishtiMode.Ocr) {
+                videoOcrPipeline.stop()
+                onOcrTracksUpdated?.invoke(emptyList())
+            }
+
             // Prevent speech collision: if cloud voice agent is active, the agent already speaks the confirmation over WebRTC.
             // Only speak locally via Android TTS if voice agent is disconnected or during emergency.
             if (!isVoiceConnected || newMode is DrishtiMode.Emergency) {
@@ -228,6 +244,9 @@ class DrishtiService : LifecycleService() {
         // Fall Detector
         fallDetector = FallDetector(this) {
             Log.w(tag, "Fall detected by sensor! Initiating emergency protocol.")
+            if (::videoOcrPipeline.isInitialized) {
+                videoOcrPipeline.speechCoordinator.muteAndClear()
+            }
             modeManager.switchTo(DrishtiMode.Emergency("fall_detected", 15))
             emergencyMonitor.triggerEmergency("fall_detected", 15)
         }

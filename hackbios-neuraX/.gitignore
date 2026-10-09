@@ -73,4 +73,6 @@ livekit-frontend-with-backend-for-use-anywhere-/
 
 # ── Scratch & Temporary Agent Files ──
 scratch/
+models_ppocrv4/
+ocr_verification_output/
 

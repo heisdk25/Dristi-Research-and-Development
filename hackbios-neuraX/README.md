@@ -187,3 +187,23 @@ Double-click or run:
 ### 4. Android App
 Open the `android/` directory in Android Studio and run on a connected device or emulator.
 Ensure the phone has microphone, camera, and location permissions granted.
+
+---
+
+## 7. Cloud Deployment (Vultr)
+
+Deploy the Drishti backend to **Vultr Cloud Compute** using Docker Compose:
+
+```bash
+# 1. Copy environment template and configure API keys
+cp .env.example .env
+
+# 2. Launch token-server and livekit-agent containers
+docker compose up -d --build
+
+# 3. Optional: Launch with Caddy automatic Let's Encrypt SSL
+docker compose --profile ssl up -d --build
+```
+
+For complete cloud-init automation, Vultr firewall configuration, and domain setup, see the [Vultr Deployment Guide](docs/vultr_deployment.md).
+

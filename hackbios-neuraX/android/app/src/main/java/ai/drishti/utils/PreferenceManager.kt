@@ -20,6 +20,8 @@ class PreferenceManager(context: Context) {
         private const val KEY_SPEECH_RATE = "pref_speech_rate"
         private const val KEY_USE_ESP32 = "pref_use_esp32"
 
+        const val CLOUD_VULTR_URL = "http://65.20.74.192:8000"
+
         val isEmulator: Boolean
             get() = (Build.BRAND.startsWith("generic") && Build.DEVICE.startsWith("generic"))
                     || Build.FINGERPRINT.startsWith("generic")
@@ -32,7 +34,7 @@ class PreferenceManager(context: Context) {
     }
 
     val defaultTokenServerUrl: String
-        get() = if (isEmulator) "http://10.0.2.2:8000" else "http://127.0.0.1:8000"
+        get() = CLOUD_VULTR_URL
 
     var liveKitServerUrl: String
         get() = prefs.getString(KEY_LIVEKIT_SERVER_URL, "wss://mks-g7jf2zqv.livekit.cloud") ?: "wss://mks-g7jf2zqv.livekit.cloud"
@@ -45,11 +47,11 @@ class PreferenceManager(context: Context) {
     var tokenServerUrl: String
         get() {
             val saved = prefs.getString(KEY_TOKEN_SERVER_URL, null)
-            // On a physical device, automatically fix legacy 10.0.2.2 setting to localhost (adb reverse)
-            if (!isEmulator && (saved == null || saved.contains("10.0.2.2"))) {
-                return "http://127.0.0.1:8000"
+            // Automatically upgrade legacy local IP settings to the deployed 24/7 Vultr cloud URL
+            if (saved == null || saved.contains("10.0.2.2") || saved.contains("127.0.0.1") || saved.contains("10.113.162") || saved.contains("10.121.179") || saved.contains("10.131.108")) {
+                return CLOUD_VULTR_URL
             }
-            return saved ?: defaultTokenServerUrl
+            return saved.ifEmpty { CLOUD_VULTR_URL }
         }
         set(value) = prefs.edit().putString(KEY_TOKEN_SERVER_URL, value.trim()).apply()
 
