@@ -1,0 +1,1694 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Project Drishti — Interactive System Architecture & Production Codebase Blueprint</title>
+  <style>
+    :root {
+      --bg-primary: #0a0e17;
+      --bg-secondary: #111827;
+      --bg-tertiary: #1f2937;
+      --bg-card: rgba(31, 41, 55, 0.7);
+      --bg-card-hover: rgba(55, 65, 81, 0.85);
+      --border-color: rgba(255, 255, 255, 0.1);
+      --text-main: #f3f4f6;
+      --text-muted: #9ca3af;
+      --accent-cyan: #38bdf8;
+      --accent-emerald: #10b981;
+      --accent-purple: #a855f7;
+      --accent-amber: #f59e0b;
+      --accent-rose: #f43f5e;
+      --accent-blue: #3b82f6;
+      --glow-cyan: rgba(56, 189, 248, 0.25);
+      --glow-emerald: rgba(16, 185, 129, 0.25);
+      --glow-purple: rgba(168, 85, 247, 0.25);
+      --transition-smooth: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-primary: #f8fafc;
+      --bg-secondary: #ffffff;
+      --bg-tertiary: #f1f5f9;
+      --bg-card: rgba(255, 255, 255, 0.85);
+      --bg-card-hover: rgba(241, 245, 249, 0.95);
+      --border-color: rgba(0, 0, 0, 0.1);
+      --text-main: #0f172a;
+      --text-muted: #64748b;
+      --glow-cyan: rgba(56, 189, 248, 0.15);
+      --glow-emerald: rgba(16, 185, 129, 0.15);
+      --glow-purple: rgba(168, 85, 247, 0.15);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      background: var(--bg-primary);
+      color: var(--text-main);
+      min-height: 100vh;
+      display: flex;
+      flex-direction: column;
+      overflow-x: hidden;
+    }
+
+    /* Top Navigation Bar */
+    header {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 12px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      backdrop-filter: blur(12px);
+    }
+
+    .brand-group {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+    }
+
+    .logo-badge {
+      background: linear-gradient(135deg, #0284c7, #6366f1);
+      color: #fff;
+      padding: 6px 12px;
+      border-radius: 8px;
+      font-weight: 700;
+      font-size: 14px;
+      letter-spacing: 0.5px;
+      box-shadow: 0 0 15px rgba(2, 132, 199, 0.4);
+    }
+
+    .brand-title {
+      font-size: 16px;
+      font-weight: 600;
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-subtitle {
+      font-size: 11px;
+      color: var(--text-muted);
+      font-weight: 400;
+    }
+
+    .header-controls {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .btn {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 7px 14px;
+      border-radius: 8px;
+      font-size: 13px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      text-decoration: none;
+    }
+
+    .btn:hover {
+      background: var(--bg-card-hover);
+      border-color: var(--accent-cyan);
+    }
+
+    /* Filter Ribbon */
+    .filter-ribbon {
+      background: var(--bg-secondary);
+      border-bottom: 1px solid var(--border-color);
+      padding: 10px 24px;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 16px;
+      overflow-x: auto;
+    }
+
+    .trace-pills {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      flex-wrap: wrap;
+    }
+
+    .trace-label {
+      font-size: 12px;
+      font-weight: 600;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-right: 4px;
+    }
+
+    .pill {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-muted);
+      padding: 5px 12px;
+      border-radius: 20px;
+      font-size: 12px;
+      font-weight: 500;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+      white-space: nowrap;
+    }
+
+    .pill:hover {
+      color: var(--text-main);
+      border-color: var(--accent-cyan);
+    }
+
+    .pill.active {
+      background: rgba(56, 189, 248, 0.15);
+      border-color: var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-weight: 600;
+      box-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    /* Sub-tabs */
+    .tab-nav {
+      background: var(--bg-primary);
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      padding: 0 24px;
+      gap: 20px;
+    }
+
+    .tab-btn {
+      background: transparent;
+      border: none;
+      border-bottom: 2px solid transparent;
+      color: var(--text-muted);
+      padding: 12px 4px;
+      font-size: 13px;
+      font-weight: 600;
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .tab-btn:hover {
+      color: var(--text-main);
+    }
+
+    .tab-btn.active {
+      color: var(--accent-cyan);
+      border-bottom-color: var(--accent-cyan);
+    }
+
+    .tab-content {
+      display: none;
+    }
+
+    .tab-content.active {
+      display: block;
+    }
+
+    .search-box {
+      position: relative;
+      display: flex;
+      align-items: center;
+    }
+
+    .search-input {
+      background: var(--bg-tertiary);
+      border: 1px solid var(--border-color);
+      color: var(--text-main);
+      padding: 6px 12px 6px 32px;
+      border-radius: 8px;
+      font-size: 13px;
+      width: 240px;
+      outline: none;
+      transition: var(--transition-smooth);
+    }
+
+    .search-input:focus {
+      border-color: var(--accent-cyan);
+      box-shadow: 0 0 10px var(--glow-cyan);
+    }
+
+    .search-icon {
+      position: absolute;
+      left: 10px;
+      top: 50%;
+      transform: translateY(-50%);
+      color: var(--text-muted);
+      pointer-events: none;
+    }
+
+    /* Main Workspace Layout */
+    .main-workspace {
+      display: flex;
+      flex: 1;
+      height: calc(100vh - 110px);
+      position: relative;
+      overflow: hidden;
+    }
+
+    /* Left / Center Diagram Canvas */
+    .canvas-container {
+      flex: 1;
+      position: relative;
+      overflow: auto;
+      background: radial-gradient(circle at 50% 50%, rgba(30, 41, 59, 0.4) 0%, rgba(10, 14, 23, 1) 100%);
+      display: flex;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .diagram-svg {
+      width: 100%;
+      max-width: 1340px;
+      height: auto;
+      min-height: 900px;
+      filter: drop-shadow(0 10px 25px rgba(0, 0, 0, 0.5));
+    }
+
+    /* SVG Elements Styling */
+    .tier-box {
+      rx: 16;
+      stroke-width: 1.5;
+      transition: var(--transition-smooth);
+    }
+
+    .tier-hardware { fill: rgba(15, 23, 42, 0.6); stroke: rgba(56, 189, 248, 0.4); }
+    .tier-edge { fill: rgba(6, 78, 59, 0.25); stroke: rgba(16, 185, 129, 0.5); }
+    .tier-cloud { fill: rgba(88, 28, 135, 0.25); stroke: rgba(168, 85, 247, 0.5); }
+    .tier-fall { fill: rgba(136, 19, 55, 0.25); stroke: rgba(244, 63, 94, 0.5); }
+
+    .node-group {
+      cursor: pointer;
+      transition: var(--transition-smooth);
+    }
+
+    .node-group:hover .node-rect {
+      stroke-width: 2.5;
+      filter: drop-shadow(0 0 10px currentColor);
+    }
+
+    .node-rect {
+      rx: 10;
+      stroke-width: 1.5;
+      transition: var(--transition-smooth);
+    }
+
+    .node-hardware { fill: #1e293b; stroke: #38bdf8; }
+    .node-edge { fill: #064e3b; stroke: #10b981; }
+    .node-cloud { fill: #3b0764; stroke: #a855f7; }
+    .node-fall { fill: #4c0519; stroke: #f43f5e; }
+    .node-alert { fill: #78350f; stroke: #f59e0b; }
+
+    .node-title {
+      font-size: 13px;
+      font-weight: 700;
+      fill: #f8fafc;
+      font-family: inherit;
+    }
+
+    .node-subtitle {
+      font-size: 11px;
+      fill: #94a3b8;
+      font-family: inherit;
+    }
+
+    .flow-path {
+      fill: none;
+      stroke-width: 2;
+      transition: var(--transition-smooth);
+    }
+
+    .path-default { stroke: #475569; stroke-dasharray: 4, 4; }
+    .path-reflex { stroke: #10b981; stroke-width: 2.5; }
+    .path-cloud { stroke: #a855f7; stroke-width: 2.5; }
+    .path-fall { stroke: #f43f5e; stroke-width: 2.5; }
+    .path-camera { stroke: #38bdf8; stroke-width: 2.5; }
+    .path-datachannel { stroke: #f59e0b; stroke-width: 2.5; stroke-dasharray: 5, 5; }
+
+    .flow-animated {
+      stroke-dasharray: 8, 4;
+      animation: dash 1.2s linear infinite;
+    }
+
+    @keyframes dash {
+      to { stroke-dashoffset: -24; }
+    }
+
+    .dimmed { opacity: 0.15 !important; filter: grayscale(80%); }
+    .highlighted { opacity: 1 !important; }
+
+    /* Right Node Inspector Drawer */
+    .inspector-panel {
+      width: 440px;
+      background: var(--bg-secondary);
+      border-left: 1px solid var(--border-color);
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      z-index: 20;
+      box-shadow: -10px 0 30px rgba(0, 0, 0, 0.4);
+    }
+
+    .panel-header {
+      padding: 16px 20px;
+      border-bottom: 1px solid var(--border-color);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      position: sticky;
+      top: 0;
+      background: var(--bg-secondary);
+      z-index: 10;
+    }
+
+    .panel-title {
+      font-size: 14px;
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .evidence-badge {
+      background: rgba(56, 189, 248, 0.15);
+      border: 1px solid var(--accent-cyan);
+      color: var(--accent-cyan);
+      font-size: 10px;
+      font-weight: 700;
+      padding: 3px 8px;
+      border-radius: 6px;
+      letter-spacing: 0.5px;
+    }
+
+    .panel-body {
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .section-card {
+      background: var(--bg-card);
+      border: 1px solid var(--border-color);
+      border-radius: 10px;
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    .section-card h4 {
+      font-size: 12px;
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      color: var(--accent-cyan);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .metric-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+    }
+
+    .metric-item {
+      background: var(--bg-tertiary);
+      padding: 8px 10px;
+      border-radius: 6px;
+      border: 1px solid var(--border-color);
+    }
+
+    .metric-val {
+      font-size: 15px;
+      font-weight: 700;
+      color: var(--text-main);
+    }
+
+    .metric-lbl {
+      font-size: 10px;
+      color: var(--text-muted);
+    }
+
+    .formula-block {
+      background: #050811;
+      border: 1px solid rgba(56, 189, 248, 0.2);
+      border-radius: 6px;
+      padding: 10px 12px;
+      font-family: "Fira Code", monospace;
+      font-size: 12px;
+      color: #38bdf8;
+      overflow-x: auto;
+    }
+
+    .waterfall-track {
+      margin-bottom: 12px;
+    }
+
+    .waterfall-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      margin-bottom: 4px;
+    }
+
+    .waterfall-bar-bg {
+      background: var(--bg-tertiary);
+      height: 22px;
+      border-radius: 6px;
+      overflow: hidden;
+      position: relative;
+    }
+
+    .waterfall-bar-fill {
+      height: 100%;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      padding-left: 8px;
+      font-size: 11px;
+      font-weight: 700;
+      color: #000;
+    }
+
+    .data-table {
+      width: 100%;
+      border-collapse: collapse;
+      margin-top: 10px;
+      font-size: 12px;
+    }
+
+    .data-table th, .data-table td {
+      border: 1px solid var(--border-color);
+      padding: 8px 12px;
+      text-align: left;
+    }
+
+    .data-table th {
+      background: var(--bg-tertiary);
+      color: var(--accent-cyan);
+      font-weight: 600;
+    }
+
+    .data-table tr:hover {
+      background: rgba(255, 255, 255, 0.03);
+    }
+  </style>
+</head>
+<body data-theme="dark">
+
+  <!-- Header -->
+  <header>
+    <div class="brand-group">
+      <div class="logo-badge">DRISHTI ARCHIFY 2.0</div>
+      <div class="brand-title">
+        <span>Dual-Tier Assistive Architecture & Codebase System Map</span>
+        <span class="brand-subtitle">Literature Blueprint (a (1).pdf) + Production Realization (mksinha01/hackbios-neuraX)</span>
+      </div>
+    </div>
+    <div class="header-controls">
+      <button class="btn" id="themeToggle" title="Toggle Theme">🌓 Theme</button>
+      <button class="btn" id="resetZoom" title="Reset View">🔍 Reset View</button>
+      <a class="btn" href="DRISHTI_SYSTEM_MEMORY.md" target="_blank" title="View Full System Memory">📖 Memory Doc</a>
+    </div>
+  </header>
+
+  <!-- Filter Ribbon -->
+  <div class="filter-ribbon">
+    <div class="trace-pills">
+      <span class="trace-label">Active Flow Path:</span>
+      <button class="pill active" data-trace="all">🌐 All Components</button>
+      <button class="pill" data-trace="reflex">⚡ Sub-400ms Obstacle Reflex</button>
+      <button class="pill" data-trace="cloud">☁️ Cloud Conversational Voice</button>
+      <button class="pill" data-trace="fall">🚨 Fall Biomechanics & Dispatch</button>
+      <button class="pill" data-trace="camera">🔄 Dynamic Camera Handover</button>
+      <button class="pill" data-trace="datachannel">📡 DataChannel 2.0s Frame Uplink</button>
+      <button class="pill" data-trace="modes">⚙️ Dynamic State Machine (Modes)</button>
+    </div>
+    <div class="search-box">
+      <span class="search-icon">🔎</span>
+      <input type="text" class="search-input" id="nodeSearch" placeholder="Filter component or keyword...">
+    </div>
+  </div>
+
+  <!-- Sub-Tabs Navigation -->
+  <div class="tab-nav">
+    <button class="tab-btn active" data-target="tab-diagram">Visual Architecture Diagram</button>
+    <button class="tab-btn" data-target="tab-latency">Latency Budget Waterfall (Table 3)</button>
+    <button class="tab-btn" data-target="tab-benchmarks">Benchmarking & Blueprint vs. Codebase Matrix</button>
+    <button class="tab-btn" data-target="tab-mermaid">Mermaid Source Code</button>
+  </div>
+
+  <!-- Main Workspace -->
+  <div class="main-workspace">
+    
+    <!-- Tab 1: Interactive Diagram Canvas -->
+    <div class="canvas-container tab-content active" id="tab-diagram">
+      <svg class="diagram-svg" viewBox="0 0 1340 900" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <marker id="arrow-default" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#94a3b8" />
+          </marker>
+          <marker id="arrow-green" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#10b981" />
+          </marker>
+          <marker id="arrow-purple" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#a855f7" />
+          </marker>
+          <marker id="arrow-red" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#f43f5e" />
+          </marker>
+          <marker id="arrow-cyan" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#38bdf8" />
+          </marker>
+          <marker id="arrow-amber" viewBox="0 0 10 10" refX="8" refY="5" markerWidth="6" markerHeight="6" orient="auto-start-reverse">
+            <path d="M 0 1 L 9 5 L 0 9 z" fill="#f59e0b" />
+          </marker>
+        </defs>
+
+        <!-- Tier 0 Background: Hardware Peripherals -->
+        <g id="group-hardware">
+          <rect x="25" y="40" width="300" height="830" class="tier-box tier-hardware" />
+          <text x="45" y="72" fill="#38bdf8" font-size="14" font-weight="700" letter-spacing="1">TIER 0: HARDWARE PERIPHERALS</text>
+          <text x="45" y="90" fill="#64748b" font-size="11">Sub-10ms Sensor Capture & Transducers</text>
+        </g>
+
+        <!-- Tier 1 Background: Android Native Edge Core -->
+        <g id="group-edge">
+          <rect x="350" y="40" width="500" height="830" class="tier-box tier-edge" />
+          <text x="370" y="72" fill="#10b981" font-size="14" font-weight="700" letter-spacing="1">TIER 1: ANDROID NATIVE EDGE CORE (DrishtiService)</text>
+          <text x="370" y="90" fill="#6ee7b7" font-size="11">Sub-300ms Local Reflex (100% Offline Foreground Resilience)</text>
+        </g>
+
+        <!-- Tier 2 Background: Cloud Layer -->
+        <g id="group-cloud">
+          <rect x="875" y="40" width="440" height="830" class="tier-box tier-cloud" />
+          <text x="895" y="72" fill="#a855f7" font-size="14" font-weight="700" letter-spacing="1">TIER 2: CLOUD CONVERSATIONAL INTELLIGENCE</text>
+          <text x="895" y="90" fill="#c084fc" font-size="11">LiveKit WebRTC + Multi-Provider (Groq LPU / GPT-4o / Gemini 2.0)</text>
+        </g>
+
+        <!-- ==================== FLOW PATHS (WIRES) ==================== -->
+        <!-- Camera Path: ESP32 to MUX -->
+        <path id="path-esp32-mux" d="M 280 150 L 380 150" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <!-- Camera Failover Path: Phone CameraX to MUX -->
+        <path id="path-phone-mux" d="M 280 260 L 380 175" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        
+        <!-- MUX to YOLO (320x320) -->
+        <path id="path-mux-yolo" d="M 590 160 L 630 160" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <!-- YOLO to Obstacle Classifier & Clock Directions -->
+        <path id="path-yolo-prox" d="M 725 205 L 725 245" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <!-- Proximity to LocalTTS -->
+        <path id="path-prox-localtts" d="M 725 325 L 725 365" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <!-- LocalTTS to Speaker -->
+        <path id="path-localtts-speaker" d="M 625 405 L 280 405" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <!-- LocalTTS Ducking Signal to LiveKit Voice -->
+        <path id="path-localtts-duck" d="M 750 445 L 750 480 L 980 480 L 980 230" class="flow-path path-default" marker-end="url(#arrow-default)" />
+
+        <!-- WebRTC DataChannel: MUX to LiveKit (2.0s 320x240 Base64 JPEG) -->
+        <path id="path-datachannel-frame" d="M 485 120 L 485 100 L 980 100 L 980 190" class="flow-path path-datachannel" marker-end="url(#arrow-amber)" />
+
+        <!-- Audio In: Earphone Mic to LiveKit WebRTC -->
+        <path id="path-mic-livekit" d="M 280 520 L 980 520 L 980 240" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <!-- LiveKit to STT (saaras:v4 en-IN) -->
+        <path id="path-livekit-stt" d="M 980 240 L 980 280" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <!-- STT to Multi-Provider LLM Router -->
+        <path id="path-stt-mllm" d="M 980 355 L 980 395" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <!-- MLLM to TTS (bulbul:v3) -->
+        <path id="path-mllm-tts" d="M 980 535 L 980 575" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <!-- TTS to LiveKit to Speaker -->
+        <path id="path-tts-speaker" d="M 980 650 L 980 670 L 280 670 L 280 440" class="flow-path path-default" marker-end="url(#arrow-default)" />
+
+        <!-- Fall Detection: IMU to FallDetector Threshold Window -->
+        <path id="path-imu-svm" d="M 280 750 L 380 750" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <!-- FallDetector to EmergencyMonitor Countdown -->
+        <path id="path-fall-countdown" d="M 590 750 L 630 750" class="flow-path path-default" marker-end="url(#arrow-default)" />
+        <!-- Countdown to Multi-Channel Dispatch -->
+        <path id="path-countdown-dispatch" d="M 625 610 L 490 610" class="flow-path path-default" marker-end="url(#arrow-default)" />
+
+
+        <!-- ==================== NODES: HARDWARE ==================== -->
+        <!-- Node 1: ESP32-CAM -->
+        <g class="node-group" id="node-esp32" data-node="esp32" transform="translate(50, 115)">
+          <rect width="230" height="75" class="node-rect node-hardware" />
+          <text x="16" y="26" class="node-title">ESP32-CAM Node</text>
+          <text x="16" y="44" class="node-subtitle">OV2640 VGA (640x480) @ 10-15fps</text>
+          <text x="16" y="58" class="node-subtitle" fill="#38bdf8">Chunked HTTP MJPEG (mjpeg_streamer.ino)</text>
+        </g>
+
+        <!-- Node 2: Phone CameraX -->
+        <g class="node-group" id="node-camerax" data-node="camerax" transform="translate(50, 225)">
+          <rect width="230" height="75" class="node-rect node-hardware" />
+          <text x="16" y="26" class="node-title">Phone CameraX</text>
+          <text x="16" y="44" class="node-subtitle">Android Back / Front Lens Handover</text>
+          <text x="16" y="58" class="node-subtitle" fill="#f59e0b">&lt;500ms Zero-Downtime Hot Failover</text>
+        </g>
+
+        <!-- Node 3: Earphone Speaker -->
+        <g class="node-group" id="node-speaker" data-node="speaker" transform="translate(50, 370)">
+          <rect width="230" height="75" class="node-rect node-hardware" />
+          <text x="16" y="26" class="node-title">Earphone Speaker</text>
+          <text x="16" y="44" class="node-subtitle">Open-Ear / Bone-Conduction Buds</text>
+          <text x="16" y="58" class="node-subtitle" fill="#10b981">Local Priority Hazard Reflex + Cloud Voice</text>
+        </g>
+
+        <!-- Node 4: Earphone Mic -->
+        <g class="node-group" id="node-mic" data-node="mic" transform="translate(50, 485)">
+          <rect width="230" height="75" class="node-rect node-hardware" />
+          <text x="16" y="26" class="node-title">Earphone Mic (Voice In)</text>
+          <text x="16" y="44" class="node-subtitle">Continuous Audio (Opus 48kHz)</text>
+          <text x="16" y="58" class="node-subtitle" fill="#a855f7">Silero VAD Barge-In Interruption</text>
+        </g>
+
+        <!-- Node 5: IMU / Accelerometer -->
+        <g class="node-group" id="node-imu" data-node="imu" transform="translate(50, 715)">
+          <rect width="230" height="75" class="node-rect node-hardware" />
+          <text x="16" y="26" class="node-title">IMU Accelerometer</text>
+          <text x="16" y="44" class="node-subtitle">Tri-Axial a(t) = [ax, ay, az] (100Hz)</text>
+          <text x="16" y="58" class="node-subtitle" fill="#f43f5e">Kinematic Fall Impact & PDR Vectors</text>
+        </g>
+
+
+        <!-- ==================== NODES: TIER 1 EDGE CORE ==================== -->
+        <!-- Node 6: Frame Multiplexer -->
+        <g class="node-group" id="node-mux" data-node="mux" transform="translate(380, 120)">
+          <rect width="210" height="75" class="node-rect node-edge" />
+          <text x="14" y="26" class="node-title">Camera Multiplexer</text>
+          <text x="14" y="44" class="node-subtitle">CameraManager.kt Dynamic Router</text>
+          <text x="14" y="58" class="node-subtitle" fill="#34d399">Auto-Reconnect & Hot Switch (&lt;500ms)</text>
+        </g>
+
+        <!-- Node 7: YOLOv8n Float16 Detector -->
+        <g class="node-group" id="node-yolo" data-node="yolo" transform="translate(620, 115)">
+          <rect width="210" height="85" class="node-rect node-edge" />
+          <text x="14" y="24" class="node-title">TFLite YOLOv8n (Float16)</text>
+          <text x="14" y="42" class="node-subtitle">yolov8n_float16.tflite @ 320x320</text>
+          <text x="14" y="56" class="node-subtitle">4 CPU Threads + NNAPI Delegate</text>
+          <text x="14" y="70" class="node-subtitle" fill="#34d399">Output Tensor [1, 84, 2100]</text>
+        </g>
+
+        <!-- Node 8: Obstacle Classifier & Clock Directions -->
+        <g class="node-group" id="node-proximity" data-node="proximity" transform="translate(620, 240)">
+          <rect width="210" height="85" class="node-rect node-edge" />
+          <text x="14" y="24" class="node-title">ObstacleClassifier & Clock Face</text>
+          <text x="14" y="42" class="node-subtitle">d = 0.8 / safeHeight (≤ 4.0m)</text>
+          <text x="14" y="56" class="node-subtitle">10 o'clock | 12 o'clock | 2 o'clock</text>
+          <text x="14" y="70" class="node-subtitle" fill="#34d399">14 Hazards | High-Priority &lt; 2.5m</text>
+        </g>
+
+        <!-- Node 9: LocalTTS Reflex Engine -->
+        <g class="node-group" id="node-localtts" data-node="localtts" transform="translate(620, 365)">
+          <rect width="210" height="78" class="node-rect node-edge" />
+          <text x="14" y="24" class="node-title">LocalTTS Reflex Engine</text>
+          <text x="14" y="42" class="node-subtitle">Zero-Latency Safety Audio Alert</text>
+          <text x="14" y="56" class="node-subtitle" fill="#fbbf24">Interrupted Speech (flush = true)</text>
+          <text x="14" y="70" class="node-subtitle" fill="#34d399">Suppresses routine speech if cloud voice active</text>
+        </g>
+
+        <!-- Node 10: Mode Manager -->
+        <g class="node-group" id="node-modemgr" data-node="modemgr" transform="translate(380, 240)">
+          <rect width="210" height="85" class="node-rect node-edge" />
+          <text x="14" y="24" class="node-title">ModeManager (Sealed Class)</text>
+          <text x="14" y="42" class="node-subtitle">Assistant (300ms) | Nav (200ms)</text>
+          <text x="14" y="56" class="node-subtitle">OCR (600ms) | Emergency (10s/15s)</text>
+          <text x="14" y="70" class="node-subtitle" fill="#6ee7b7">Dynamic ModeConfig Throttling</text>
+        </g>
+
+        <!-- Node 11: Emergency Multi-Channel Dispatch -->
+        <g class="node-group" id="node-dispatch" data-node="dispatch" transform="translate(380, 565)">
+          <rect width="210" height="85" class="node-rect node-fall" />
+          <text x="14" y="22" class="node-title">AlertSender Multi-Channel</text>
+          <text x="14" y="38" class="node-subtitle">1. SMS with Google Maps Link</text>
+          <text x="14" y="52" class="node-subtitle">2. WhatsApp Caregiver Intent</text>
+          <text x="14" y="66" class="node-subtitle">3. Direct Phone Call (ACTION_CALL)</text>
+          <text x="14" y="78" class="node-subtitle" fill="#fb7185">4. Continuous Offline Siren</text>
+        </g>
+
+        <!-- Node 12: Emergency Countdown Monitor -->
+        <g class="node-group" id="node-countdown" data-node="countdown" transform="translate(620, 565)">
+          <rect width="210" height="80" class="node-rect node-fall" />
+          <text x="14" y="24" class="node-title">EmergencyMonitor Countdown</text>
+          <text x="14" y="42" class="node-subtitle">15s Fall Window / 10s Voice Window</text>
+          <text x="14" y="56" class="node-subtitle" fill="#fbbf24">Voice Abort: 'cancel', 'stop', 'fine'</text>
+          <text x="14" y="70" class="node-subtitle" fill="#fb7185">Spoken tick alert every 1.0s</text>
+        </g>
+
+        <!-- Node 13: FallDetector Threshold Windowing -->
+        <g class="node-group" id="node-svm" data-node="svm" transform="translate(380, 715)">
+          <rect width="210" height="75" class="node-rect node-edge" />
+          <text x="14" y="24" class="node-title">FallDetector (Sensors)</text>
+          <text x="14" y="42" class="node-subtitle">Impact: |a| &gt; 25.0 m/s² (~2.55g)</text>
+          <text x="14" y="56" class="node-subtitle">Stillness: &lt; 11.5 m/s² in 2000ms</text>
+          <text x="14" y="70" class="node-subtitle" fill="#34d399">Low-Overhead Threshold State Machine</text>
+        </g>
+
+        <!-- Node 14: Google ML Kit Vision (OCR & Face) -->
+        <g class="node-group" id="node-biofilter" data-node="biofilter" transform="translate(620, 715)">
+          <rect width="210" height="75" class="node-rect node-edge" />
+          <text x="14" y="24" class="node-title">Google ML Kit Engines</text>
+          <text x="14" y="42" class="node-subtitle">OcrEngine (Latin/Indic Text Blocks)</text>
+          <text x="14" y="56" class="node-subtitle">FaceDetector (Fast Tracking)</text>
+          <text x="14" y="70" class="node-subtitle" fill="#34d399">Zero-Storage Privacy Compliance</text>
+        </g>
+
+
+        <!-- ==================== NODES: TIER 2 CLOUD LAYER ==================== -->
+        <!-- Node 15: FastAPI Auth & Auto-Dispatch -->
+        <g class="node-group" id="node-auth" data-node="auth" transform="translate(900, 115)">
+          <rect width="390" height="65" class="node-rect node-cloud" />
+          <text x="16" y="26" class="node-title">FastAPI Token Server & Auto-Dispatch</text>
+          <text x="16" y="44" class="node-subtitle">Signed LiveKit JWT + CreateAgentDispatchRequest</text>
+          <text x="16" y="56" class="node-subtitle" fill="#c084fc">Candidate Chain: Primary → 127.0.0.1 → 10.113.162.33 → 10.0.2.2</text>
+        </g>
+
+        <!-- Node 16: LiveKit WebRTC Server -->
+        <g class="node-group" id="node-livekit" data-node="livekit" transform="translate(900, 190)">
+          <rect width="390" height="75" class="node-rect node-cloud" />
+          <text x="16" y="24" class="node-title">LiveKit WebRTC Platform</text>
+          <text x="16" y="42" class="node-subtitle">UDP / SRTP Low-Latency Media Routing</text>
+          <text x="16" y="56" class="node-subtitle">DataChannels: CAMERA_FRAME, OBSTACLE_WARNING, OCR_RESULT</text>
+          <text x="16" y="68" class="node-subtitle" fill="#c084fc">Downscaled 320x240 JPEG Base64 (&lt;15KB) every 2.0s</text>
+        </g>
+
+        <!-- Node 17: Sarvam Streaming STT -->
+        <g class="node-group" id="node-stt" data-node="stt" transform="translate(900, 280)">
+          <rect width="390" height="75" class="node-rect node-cloud" />
+          <text x="16" y="24" class="node-title">Sarvam Streaming STT (saaras:v4)</text>
+          <text x="16" y="42" class="node-subtitle">Model: saaras:v4 | Language: en-IN (Explicit Code)</text>
+          <text x="16" y="56" class="node-subtitle">Bypasses Heavy Language Identification (LID) Delay</text>
+          <text x="16" y="68" class="node-subtitle" fill="#c084fc">TTFT: &lt;250ms | Real-Time Voice Streaming</text>
+        </g>
+
+        <!-- Node 18: Multi-Provider LLM Router -->
+        <g class="node-group" id="node-mllm" data-node="mllm" transform="translate(900, 395)">
+          <rect width="390" height="135" class="node-rect node-cloud" />
+          <text x="16" y="24" class="node-title">LiveKit Agent Worker (drishti_agent.py)</text>
+          <text x="16" y="42" class="node-subtitle" font-weight="700" fill="#38bdf8">1. Groq Ultra-Fast LPU (openai/gpt-oss-120b: &lt;300ms TTFT)</text>
+          <text x="16" y="58" class="node-subtitle" fill="#c084fc">2. OpenAI Engine (GPT-4o Vision & OCR)</text>
+          <text x="16" y="74" class="node-subtitle" fill="#c084fc">3. Google Gemini (Gemini 2.0 Flash Multimodal Fallback)</text>
+          <text x="16" y="92" class="node-subtitle" fill="#fbbf24">CRITICAL RULE: Always give answers in short! 1-2 sentences.</text>
+          <text x="16" y="108" class="node-subtitle" fill="#94a3b8">Tools: describe_scene | switch_mode | start_navigation | read_text_in_view</text>
+          <text x="16" y="122" class="node-subtitle" fill="#34d399">RAM Buffer Only: Zero Video Frame Disk Retention</text>
+        </g>
+
+        <!-- Node 19: Sarvam Streaming TTS & Silero VAD -->
+        <g class="node-group" id="node-tts" data-node="tts" transform="translate(900, 565)">
+          <rect width="390" height="80" class="node-rect node-cloud" />
+          <text x="16" y="24" class="node-title">Sarvam Neural TTS & Silero VAD</text>
+          <text x="16" y="42" class="node-subtitle">TTS: bulbul:v3 (Speaker: kabir, Pace: 1.05, Skip Preprocessing)</text>
+          <text x="16" y="56" class="node-subtitle">VAD: Silero (0.28s silence cutoff for instant barge-in cut)</text>
+          <text x="16" y="70" class="node-subtitle" fill="#c084fc">Preemptive Generation Enabled | Audio Latency: 150-300ms</text>
+        </g>
+
+      </svg>
+    </div>
+
+    <!-- Tab 2: Latency Waterfall Chart -->
+    <div class="tab-content" id="tab-latency" style="padding: 30px; max-width: 900px; margin: 0 auto; width: 100%;">
+      <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">End-to-End Latency Budget Decomposition (Table 3 & Codebase)</h2>
+      <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 24px;">
+        Comparing Tier 1 (100% Offline Edge Safety Reflex: 160–305 ms) versus Tier 2 (Cloud Conversational Q&A: 1.1–2.2 s).
+      </p>
+
+      <h3 style="font-size: 14px; text-transform: uppercase; color: #10b981; letter-spacing: 1px; margin-bottom: 14px;">
+        ⚡ Tier 1: Local Obstacle Reflex (Edge Only — Budget Target: &lt;400 ms)
+      </h3>
+
+      <div class="waterfall-track">
+        <div class="waterfall-header"><span>Frame Capture (ESP32 OV2640 / CameraX)</span><span>40 – 80 ms</span></div>
+        <div class="waterfall-bar-bg"><div class="waterfall-bar-fill" style="width: 26%; background: #38bdf8;">40-80ms</div></div>
+      </div>
+      <div class="waterfall-track">
+        <div class="waterfall-header"><span>MJPEG Byte Stream Parsing (Android Coroutines)</span><span>15 – 30 ms</span></div>
+        <div class="waterfall-bar-bg"><div class="waterfall-bar-fill" style="width: 12%; background: #34d399;">15-30ms</div></div>
+      </div>
+      <div class="waterfall-track">
+        <div class="waterfall-header"><span>Neural Inference (YOLOv8n Float16 @ 320x320 on NNAPI/CPU)</span><span>20 – 38 ms</span></div>
+        <div class="waterfall-bar-bg"><div class="waterfall-bar-fill" style="width: 16%; background: #10b981;">20-38ms</div></div>
+      </div>
+      <div class="waterfall-track">
+        <div class="waterfall-header"><span>Proximity & Clock Direction Heuristics (d = 0.8 / safeHeight)</span><span>&lt; 2 ms</span></div>
+        <div class="waterfall-bar-bg"><div class="waterfall-bar-fill" style="width: 3%; background: #a7f3d0;">&lt;2ms</div></div>
+      </div>
+      <div class="waterfall-track">
+        <div class="waterfall-header"><span>Local Speech Hazard Alert (Android Native TTS)</span><span>80 – 150 ms</span></div>
+        <div class="waterfall-bar-bg"><div class="waterfall-bar-fill" style="width: 45%; background: #fbbf24;">80-150ms</div></div>
+      </div>
+
+      <div style="background: rgba(16, 185, 129, 0.15); border: 1px solid #10b981; padding: 12px 16px; border-radius: 8px; margin: 16px 0 30px; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 700; color: #6ee7b7;">TOTAL TIER 1 HAZARD DETECTION TO EARPHONE</span>
+        <span style="font-size: 18px; font-weight: 800; color: #34d399;">≈ 155 – 300 ms (PASS: &lt;400ms target)</span>
+      </div>
+
+      <h3 style="font-size: 14px; text-transform: uppercase; color: #a855f7; letter-spacing: 1px; margin-bottom: 14px;">
+        ☁️ Tier 2: Conversational Scene Q&A (Cloud MLLM Pipeline with Groq LPU)
+      </h3>
+
+      <div class="waterfall-track">
+        <div class="waterfall-header"><span>Audio Capture (Earphone Mic + Opus Encoder)</span><span>20 – 40 ms</span></div>
+        <div class="waterfall-bar-bg"><div class="waterfall-bar-fill" style="width: 3%; background: #c084fc;">20-40ms</div></div>
+      </div>
+      <div class="waterfall-track">
+        <div class="waterfall-header"><span>WebRTC Uplink (LiveKit Edge Server over UDP/SRTP)</span><span>30 – 70 ms</span></div>
+        <div class="waterfall-bar-bg"><div class="waterfall-bar-fill" style="width: 5%; background: #a855f7;">30-70ms</div></div>
+      </div>
+      <div class="waterfall-track">
+        <div class="waterfall-header"><span>Streaming STT (Sarvam saaras:v4 Streaming @ en-IN)</span><span>180 – 280 ms</span></div>
+        <div class="waterfall-bar-bg"><div class="waterfall-bar-fill" style="width: 18%; background: #c084fc;">180-280ms</div></div>
+      </div>
+      <div class="waterfall-track">
+        <div class="waterfall-header"><span>Camera Frame Uplink (DataChannel 320x240 JPEG Base64)</span><span>60 – 120 ms</span></div>
+        <div class="waterfall-bar-bg"><div class="waterfall-bar-fill" style="width: 9%; background: #f59e0b;">60-120ms</div></div>
+      </div>
+      <div class="waterfall-track">
+        <div class="waterfall-header"><span>LLM TTFT (Groq LPU / GPT-4o / Gemini 2.0 Flash)</span><span>250 – 850 ms</span></div>
+        <div class="waterfall-bar-bg"><div class="waterfall-bar-fill" style="width: 45%; background: #a855f7;">250-850ms</div></div>
+      </div>
+      <div class="waterfall-track">
+        <div class="waterfall-header"><span>Streaming TTS (Sarvam bulbul:v3 with Fast Mode)</span><span>140 – 250 ms</span></div>
+        <div class="waterfall-bar-bg"><div class="waterfall-bar-fill" style="width: 15%; background: #c084fc;">140-250ms</div></div>
+      </div>
+      <div class="waterfall-track">
+        <div class="waterfall-header"><span>WebRTC Downlink & Earphone Audio Playback Buffer</span><span>30 – 60 ms</span></div>
+        <div class="waterfall-bar-bg"><div class="waterfall-bar-fill" style="width: 5%; background: #38bdf8;">30-60ms</div></div>
+      </div>
+
+      <div style="background: rgba(168, 85, 247, 0.15); border: 1px solid #a855f7; padding: 12px 16px; border-radius: 8px; margin: 16px 0; display: flex; justify-content: space-between; align-items: center;">
+        <span style="font-weight: 700; color: #c084fc;">TOTAL TIER 2 SPOKEN QUERY TO SPOKEN ANSWER</span>
+        <span style="font-size: 18px; font-weight: 800; color: #d8b4fe;">≈ 710 ms – 1.67 s (Target: &lt;2.0s)</span>
+      </div>
+    </div>
+
+    <!-- Tab 3: Benchmarks & Comparative Matrix -->
+    <div class="tab-content" id="tab-benchmarks" style="padding: 30px; max-width: 1000px; margin: 0 auto; width: 100%; overflow-y: auto;">
+      <h2 style="font-size: 20px; font-weight: 700; margin-bottom: 8px;">Literature Blueprint vs. Production Codebase Matrix</h2>
+      <p style="color: var(--text-muted); font-size: 13px; margin-bottom: 20px;">
+        Empirical engineering refinements between the theoretical manuscript (a (1).pdf) and the actual hackbios-neuraX implementation.
+      </p>
+
+      <table class="data-table" style="margin-bottom: 30px;">
+        <thead>
+          <tr>
+            <th>Dimension</th>
+            <th>Theoretical Blueprint (a (1).pdf)</th>
+            <th>Production Codebase (hackbios-neuraX)</th>
+            <th>Technical Rationale & Impact</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>YOLOv8 Model & Size</strong></td>
+            <td>YOLOv8n INT8 @ 640x640 (26.4ms)</td>
+            <td><strong>yolov8n_float16.tflite @ 320x320</strong></td>
+            <td>320x320 cuts compute by 4x, preventing mobile thermal throttling while maintaining near-field obstacle recall.</td>
+          </tr>
+          <tr>
+            <td><strong>Distance Estimation</strong></td>
+            <td>Pinhole camera height formula: d ≈ (fy·Hobj) / (hbbox·Iheight)</td>
+            <td><strong>Empirical inverse height: d = 0.8 / safeHeight</strong></td>
+            <td>Eliminates camera calibration errors and tilt dependencies; maps vertical bounding box coverage to distance.</td>
+          </tr>
+          <tr>
+            <td><strong>Azimuth Sectors</strong></td>
+            <td>Abstract cones (xc &lt; 0.35, 0.35-0.65, xc &gt; 0.65)</td>
+            <td><strong>Clock-face directions: 10 o'clock, 12 o'clock, 2 o'clock</strong></td>
+            <td>Intuitive mental spatial coordinate model for visually impaired individuals.</td>
+          </tr>
+          <tr>
+            <td><strong>Fall Verification</strong></td>
+            <td>4-phase model: Descent &lt;0.5g, Impact &gt;2.5g, Stillness Var &lt;0.05g² over 3s</td>
+            <td><strong>Impact &gt; 25.0 m/s² + Stillness &lt; 11.5 m/s² within 2000ms</strong></td>
+            <td>Replaces rolling variance calculations with instant threshold windowing, reducing CPU cycles on sensor thread.</td>
+          </tr>
+          <tr>
+            <td><strong>Emergency Countdown</strong></td>
+            <td>Static 15-second countdown</td>
+            <td><strong>15s for physical fall, 10s for voice trigger</strong></td>
+            <td>Voice trigger presumes conscious user needing faster dispatch; falls allow 15s for disorientation recovery.</td>
+          </tr>
+          <tr>
+            <td><strong>Audio Priority</strong></td>
+            <td>80% volume ducking calculation</td>
+            <td><strong>Collision prevention suppression</strong></td>
+            <td>Suppresses routine mode announcements when cloud voice is active; reserves local TTS strictly for emergency reflexes.</td>
+          </tr>
+          <tr>
+            <td><strong>DataChannel Uplink</strong></td>
+            <td>Generic WebRTC video tracks</td>
+            <td><strong>Downscaled 320x240 JPEG Base64 (&lt;15KB) every 2.0s</strong></td>
+            <td>Avoids video encoder overhead on Android; prevents WebRTC data buffer overflows while feeding fresh frames to LLM.</td>
+          </tr>
+          <tr>
+            <td><strong>Cloud LLM Prioritization</strong></td>
+            <td>Standard GPT-4o / Gemini 2.0 Flash</td>
+            <td><strong>Groq LPU (gpt-oss-120b) → GPT-4o → Gemini 2.0 Flash</strong></td>
+            <td>Prioritizes Groq LPU for sub-300ms time-to-first-token (TTFT), critical for real-time voice conversational flow.</td>
+          </tr>
+          <tr>
+            <td><strong>Agent Brevity Rule</strong></td>
+            <td>General conversational assistant</td>
+            <td><strong>Strict Mandate: Always answer in 1 to 2 short sentences</strong></td>
+            <td>Prevents cognitive overload and preserves VIP auditory awareness of ambient street sounds.</td>
+          </tr>
+        </tbody>
+      </table>
+
+      <h3 style="font-size: 14px; text-transform: uppercase; color: var(--accent-cyan); margin: 20px 0 10px;">
+        Systematic Comparative Analysis of Assistive Mobility Systems (Table 4)
+      </h3>
+      <table class="data-table">
+        <thead>
+          <tr>
+            <th>System / Project</th>
+            <th>Form Factor</th>
+            <th>Vision Pipeline</th>
+            <th>Interaction Mode</th>
+            <th>Cloud Dependency</th>
+            <th>Obstacle Reflex Latency</th>
+            <th>Key Trade-offs / Limitations</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr>
+            <td><strong>OrCam MyEye 2</strong></td>
+            <td>Eyeglass clip (22g)</td>
+            <td>Proprietary Edge CV</td>
+            <td>Touch-bar tap / Pointing</td>
+            <td>100% Offline (Zero cloud)</td>
+            <td>&lt; 1.0 s reading (No Nav)</td>
+            <td>High cost ($4,000); rigid menu prompts; no conversational depth</td>
+          </tr>
+          <tr>
+            <td><strong>Envision Glasses</strong></td>
+            <td>Google Glass EE2</td>
+            <td>MobileNet + Cloud OCR</td>
+            <td>Touchpad / Voice triggers</td>
+            <td>Hybrid (Edge + Cloud)</td>
+            <td>1.5 – 4.0 s over Wi-Fi</td>
+            <td>Expensive ($2,500); &lt;2 hr battery; temple thermal heating</td>
+          </tr>
+          <tr>
+            <td><strong>Microsoft Seeing AI</strong></td>
+            <td>iPhone App</td>
+            <td>CoreML + Azure Vision</td>
+            <td>Touchscreen / VoiceOver</td>
+            <td>Hybrid</td>
+            <td>Not designed for transit</td>
+            <td>Requires manual handheld aiming; no hands-free continuous reflex</td>
+          </tr>
+          <tr>
+            <td><strong>Be My AI (GPT-4o)</strong></td>
+            <td>Smartphone App</td>
+            <td>GPT-4o Cloud API</td>
+            <td>Touchscreen snapshot</td>
+            <td>100% Cloud Dependent</td>
+            <td>3.0 – 6.0 s per frame</td>
+            <td>Fails completely in subway/cell dead zones; dangerous for dynamic walking</td>
+          </tr>
+          <tr style="background: rgba(56, 189, 248, 0.15); font-weight: bold; border: 1px solid #38bdf8;">
+            <td style="color: #38bdf8;"><strong>Project Drishti</strong></td>
+            <td>Chest ESP32 + Phone</td>
+            <td>YOLOv8n Float16 + LiveKit + Groq/GPT-4o</td>
+            <td>Hands-Free Voice-First</td>
+            <td>Dual-Tier Hybrid</td>
+            <td>Sub-300 ms (20-38ms infer)</td>
+            <td>Low-cost (&lt;$60); sub-300ms offline reflex; conversational MLLM; fall dispatch</td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Tab 4: Mermaid Source Code -->
+    <div class="tab-content" id="tab-mermaid" style="padding: 30px; max-width: 1000px; margin: 0 auto; width: 100%;">
+      <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 12px;">
+        <h2 style="font-size: 18px; font-weight: 700;">Mermaid Architecture Diagram Definition (Updated)</h2>
+        <button class="btn" id="copyMermaidBtn">📋 Copy Mermaid Code</button>
+      </div>
+      <p style="color: var(--text-muted); font-size: 12px; margin-bottom: 16px;">
+        Synchronized with <code>drishti_architecture.mermaid</code> in the project directory.
+      </p>
+      <pre style="background: #050811; border: 1px solid var(--border-color); padding: 18px; border-radius: 8px; overflow-x: auto; font-family: 'Fira Code', monospace; font-size: 12px; color: #38bdf8;"><code id="mermaidCode">flowchart TB
+    %% Project Drishti Architecture Diagram
+    %% Source: E:\HAckbios-R&D\DRISHTI_SYSTEM_MEMORY.md & mksinha01/hackbios-neuraX Codebase
+
+    subgraph HARDWARE["Tier 0: Hardware & Sensor Peripherals"]
+        direction TB
+        ESP32["ESP32-CAM Node<br/><i>OV2640 VGA 640x480 @ 10-15fps</i><br/><b>Chunked MJPEG over Wi-Fi SoftAP</b>"]
+        PHONECAM["Phone CameraX<br/><i>Android Back / Front Lens</i><br/><b><500ms Hot Handover Failover</b>"]
+        MIC["Earphone Mic<br/><i>Continuous Audio (Opus 48kHz)</i><br/><b>Silero VAD User Barge-In</b>"]
+        IMU["IMU Accelerometer<br/><i>Tri-Axial a(t) @ 100Hz</i><br/><b>Kinematic Shock Vector</b>"]
+        SPEAKER["Earphone Speaker<br/><i>Bone-Conduction / Open-Ear</i><br/><b>Binaural Spoken Feedback</b>"]
+    end
+
+    subgraph EDGE["Tier 1: Android Native Edge Core (DrishtiService - 100% Offline Reflex)"]
+        direction TB
+        MUX["Camera Manager<br/><b>Frame Multiplexer</b><br/><i>Auto-Reconnect & Failover Switch</i>"]
+
+        subgraph VISION_ENGINE["Edge Vision & Obstacle Pipeline (Sub-300ms)"]
+            YOLO["TFLite Detector<br/><b>yolov8n_float16.tflite @ 320x320</b><br/><i>4 CPU Threads + NNAPI Delegate<br/>Tensor [1, 84, 2100]</i>"]
+            OBSTACLE_ENGINE["Obstacle Classifier & Clock Directions<br/><b>d = 0.8 / safeHeight (≤ 4.0m)</b><br/><i>Left (10 o'clock) | Center (12 o'clock) | Right (2 o'clock)<br/>14 Hazards | High-Priority (car/bus/truck/person < 2.5m)</i>"]
+            MLKIT_OCR["ML Kit OCR Engine<br/><i>On-Device Text Recognition</i>"]
+            MLKIT_FACE["ML Kit Face Detector<br/><i>Fast Mode (Privacy: No Embeddings)</i>"]
+        end
+
+        subgraph STATE_AUDIO["State Machine & Local Audio Coordination"]
+            MODEMGR["Mode Manager (Sealed Class State Machine)<br/><b>Dynamic ModeConfig Throttling:</b><br/>• Assistant: 300ms infer | 3.0m alert | 1.0x TTS<br/>• Navigation: 200ms infer | 4.0m alert | 1.05x TTS<br/>• OCR: 600ms infer | 0.95x TTS<br/>• Emergency: 10s voice / 15s fall | 1.1x TTS"]
+            LOCALTTS["LocalTTS Engine (Android TextToSpeech)<br/><b>Priority Safety Speech Override:</b><br/>• Interrupts with flush = true for urgent hazards<br/>• Suppresses routine speech if cloud voice active"]
+        end
+
+        subgraph SAFETY_ENGINE["Fall Biomechanics & Emergency Protocol"]
+            FALL_DETECTOR["Fall Detector (Threshold Windowing)<br/><i>Impact: |a| > 25.0 m/s² (~2.55g)<br/>Stillness: |a| < 11.5 m/s² within 2000ms</i>"]
+            EMERGENCY_MONITOR["Emergency Monitor (Cancel Window)<br/><i>15s Countdown (Fall) / 10s (Voice Trigger)<br/>Voice Abort: 'cancel', 'stop', 'I'm fine'</i>"]
+            DISPATCH["Multi-Channel Emergency Dispatch<br/><b>1. SMS (Google Maps GPS Coordinates)<br/>2. WhatsApp Intent (Caregiver Alert)<br/>3. ACTION_CALL Phone Dialer<br/>4. High-Decibel Speaker Siren</b>"]
+        end
+    end
+
+    subgraph CLOUD["Tier 2: Cloud Conversational Intelligence (LiveKit Platform)"]
+        direction TB
+        TOKEN_SRV["FastAPI Token Server<br/><b>Signed LiveKit JWT + Auto-Dispatch</b><br/><i>Candidate Chain: Primary → 127.0.0.1 → 10.113.162.33 → 10.0.2.2</i>"]
+        LIVEKIT_EDGE["LiveKit WebRTC Server<br/><b>Low-Latency UDP/SRTP Media Router</b><br/><i>Adaptive Jitter Buffer, AEC & Noise Suppression</i>"]
+
+        subgraph AGENT_WORKER["LiveKit Agent Worker (drishti_agent.py)"]
+            VAD["Silero VAD Plugin<br/><i>0.28s Silence Cutoff | Preemptive Generation</i>"]
+            STT["Sarvam STT Plugin<br/><b>saaras:v4 @ en-IN Streaming</b><br/><i>Bypasses LID Latency (<250ms)</i>"]
+            
+            subgraph LLM_ROUTER["Multi-Provider LLM Fallback Engine"]
+                GROQ_LLM["Groq LPU Engine<br/><b>openai/gpt-oss-120b</b><br/><i>Sub-300ms Ultra-Fast TTFT</i>"]
+                OPENAI_LLM["OpenAI Engine<br/><b>GPT-4o</b><br/><i>High-Precision Spatial Vision</i>"]
+                GEMINI_LLM["Google Gemini Engine<br/><b>Gemini 2.0 Flash</b><br/><i>Multimodal Scene Context</i>"]
+            end
+
+            TTS["Sarvam TTS Plugin<br/><b>bulbul:v3 (Speaker: kabir)</b><br/><i>Pace: 1.05 | Preprocessing Bypassed (150-300ms)</i>"]
+
+            PROMPT_MGR["Prompt Manager & Agent Tools<br/><b>Strict 1-2 Sentence Brevity Mandate</b><br/><i>Tools: describe_scene | switch_mode | start_navigation | read_text_in_view</i>"]
+        end
+    end
+
+    ESP32 -->|Primary MJPEG Stream| MUX
+    PHONECAM -.->|Automatic Hot Failover (<500ms)| MUX
+    MUX -->|Raw Bitmap 320x320| YOLO
+    YOLO -->|Detections [1, 84, 2100]| OBSTACLE_ENGINE
+    OBSTACLE_ENGINE -->|Priority Hazard Vector| LOCALTTS
+    LOCALTTS -->|Spoken Warning (flush=true)| SPEAKER
+    MUX -.->|Bitmap Snapshot| MLKIT_OCR
+    MUX -.->|Bitmap Snapshot| MLKIT_FACE
+
+    MUX -.->|Base64 JPEG 320x240 (every 2.0s) <15KB| LIVEKIT_EDGE
+    OBSTACLE_ENGINE -.->|JSON: OBSTACLE_WARNING| LIVEKIT_EDGE
+    MLKIT_OCR -.->|JSON: OCR_RESULT| LIVEKIT_EDGE
+    MODEMGR <-->|JSON: MODE_CHANGE / SWITCH_MODE| LIVEKIT_EDGE
+    LIVEKIT_EDGE -.->|JSON: REQUEST_FRAME / REQUEST_OCR| MUX
+
+    MIC -->|Opus Voice Stream| LIVEKIT_EDGE
+    LIVEKIT_EDGE -->|User Speech Packets| VAD
+    VAD -->|Active Voice Segments| STT
+    STT -->|Transcribed Phonemes| LLM_ROUTER
+    GROQ_LLM -.-> PROMPT_MGR
+    OPENAI_LLM -.-> PROMPT_MGR
+    GEMINI_LLM -.-> PROMPT_MGR
+    PROMPT_MGR -->|1-2 Sentence Tokens| TTS
+    TTS -->|Synthesized Opus Track| LIVEKIT_EDGE
+    LIVEKIT_EDGE -->|Cloud Conversational Audio| SPEAKER
+
+    IMU -->|3-Axis Accelerations| FALL_DETECTOR
+    FALL_DETECTOR -->|Impact + Stillness Verified| EMERGENCY_MONITOR
+    MIC -.->|Spoken Cancel: 'cancel'| EMERGENCY_MONITOR
+    EMERGENCY_MONITOR -->|Countdown Expired| DISPATCH
+    EMERGENCY_MONITOR -.->|Mode Override: Emergency| MODEMGR</code></pre>
+    </div>
+
+    <!-- Right Node Inspector Drawer -->
+    <div class="inspector-panel" id="inspectorPanel">
+      <div class="panel-header">
+        <div class="panel-title">
+          <span>🔍 Component Inspector</span>
+        </div>
+        <span class="evidence-badge" id="inspTier">TIER 1: EDGE</span>
+      </div>
+      <div class="panel-body">
+        <div>
+          <h2 id="inspTitle" style="font-size: 18px; font-weight: 800; color: var(--accent-cyan); margin-bottom: 4px;">
+            TFLite YOLOv8n (Float16 @ 320x320)
+          </h2>
+          <div id="inspSub" style="font-size: 12px; color: var(--text-muted); margin-bottom: 12px;">
+            On-Device Deep Learning Model in hackbios-neuraX Android Core
+          </div>
+          <div class="evidence-badge" id="inspSection">
+            TFLiteDetector.kt | assets/yolov8n_float16.tflite
+          </div>
+        </div>
+
+        <div class="section-card">
+          <h4>📊 Performance & Runtime Specs</h4>
+          <div class="metric-grid" id="inspMetrics">
+            <div class="metric-item">
+              <div class="metric-val" id="metric1">20 - 38 ms</div>
+              <div class="metric-lbl" id="label1">Inference Latency</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val" id="metric2">320 × 320</div>
+              <div class="metric-lbl" id="label2">Input Resolution</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val" id="metric3">4 Threads</div>
+              <div class="metric-lbl" id="label3">CPU + NNAPI Enabled</div>
+            </div>
+            <div class="metric-item">
+              <div class="metric-val" id="metric4">[1, 84, 2100]</div>
+              <div class="metric-lbl" id="label4">Output Tensor</div>
+            </div>
+          </div>
+        </div>
+
+        <div class="section-card">
+          <h4>📐 Governing Mathematical Formulation</h4>
+          <div class="formula-block" id="inspFormula">
+            yolov8n_float16.tflite @ 320x320  (NNAPI Delegate / 4 Threads)
+          </div>
+          <p id="inspFormulaDesc" style="font-size: 11px; color: var(--text-muted); margin-top: 6px;">
+            Evaluates 80 COCO classes + 4 bounding box coordinates across 2100 anchor predictions in a single pass.
+          </p>
+        </div>
+
+        <div class="section-card">
+          <h4>🛠️ Architectural Role & Protocol Details</h4>
+          <p id="inspRole" style="font-size: 12px; line-height: 1.6; color: var(--text-main);">
+            Executes single-stage anchor-free convolutional detection on camera frames. Runs in DrishtiService at dynamic intervals (200ms in Navigation, 300ms in Assistant, 600ms in OCR) to conserve battery.
+          </p>
+        </div>
+
+        <div class="section-card">
+          <h4>🛡️ Resilience & Fail-Safe Mechanisms</h4>
+          <p id="inspSafety" style="font-size: 12px; line-height: 1.6; color: #a7f3d0;">
+            100% offline capacity. Operates independently of cellular connectivity with fallback to 4 CPU threads if NNAPI fails.
+          </p>
+        </div>
+      </div>
+    </div>
+
+  </div>
+
+  <script>
+    // Node Specifications Database (Enriched with hackbios-neuraX Production Implementation)
+    const nodeData = {
+      esp32: {
+        title: "ESP32-CAM Microcontroller Node",
+        sub: "Wearable Chest/Lanyard Camera Capture Unit",
+        tier: "TIER 0: HARDWARE",
+        tierColor: "#38bdf8",
+        section: "esp32-firmware/mjpeg_streamer.ino",
+        m1: "VGA (640x480)", l1: "Sensor Capture",
+        m2: "10 – 15 FPS", l2: "Frame Rate",
+        m3: "$6.00", l3: "BOM Cost",
+        m4: "4 MB PSRAM", l4: "Memory Buffer",
+        formula: "GET /stream  →  multipart/x-mixed-replace (mjpeg_streamer.ino)",
+        formulaDesc: "OV2640 hardware DMA JPEG encoder directly streams byte chunks over HTTP TCP with status endpoints at /status.",
+        role: "Chest-mounted to stabilize forward field-of-view against body sway. Provides continuous MJPEG stream over Wi-Fi SoftAP to Android app.",
+        safety: "Auto-reconnects on Wi-Fi loss. If connection drops, Android CameraManager switches instantly to phone camera."
+      },
+      camerax: {
+        title: "Android Native CameraX",
+        sub: "Secondary Visual Fallback Sensor",
+        tier: "TIER 0: HARDWARE",
+        tierColor: "#38bdf8",
+        section: "android/ai/drishti/camera/PhoneCamera.kt",
+        m1: "< 500 ms", l1: "Failover Threshold",
+        m2: "Zero Loss", l2: "Frame Downtime",
+        m3: "Back & Front", l3: "Lens Switchable",
+        m4: "Native OS", l4: "Camera2 Pipeline",
+        formula: "onStreamError()  →  switchToPhoneBack('ESP32 camera lost')",
+        formulaDesc: "Automatic coroutine watcher switches capture feed without restarting detection loops.",
+        role: "Mission-critical backup if chest camera battery drains or Wi-Fi is jammed. Captures forward imagery from phone body or lanyard.",
+        safety: "Spoken alert: 'ESP32 camera lost. Switched to phone camera' keeps user informed."
+      },
+      speaker: {
+        title: "Earphone Speaker Transducer",
+        sub: "Open-Ear / Bone-Conduction Binaural Output",
+        tier: "TIER 0: HARDWARE",
+        tierColor: "#38bdf8",
+        section: "Section 2.3 & LocalTTS.kt",
+        m1: "Binaural", l1: "Audio Channel",
+        m2: "Bone Vibrator", l2: "Transducer Type",
+        m3: "flush = true", l3: "Emergency Override",
+        m4: "Collision Free", l4: "Audio Coordination",
+        formula: "LocalTTS.speak(warning, flush = true)  [Emergency Preemption]",
+        formulaDesc: "Emergency hazard speech flushes existing queues, preempting conversational speech immediately.",
+        role: "Delivers both rapid local obstacle warnings ('Caution, car very close on your right') and cloud conversational guidance without blocking ear canals.",
+        safety: "Suppresses non-urgent local confirmations if cloud LiveKit voice is active to eliminate double-speaking."
+      },
+      mic: {
+        title: "Earphone Microphone & Voice In",
+        sub: "Hands-Free Voice Interface with VAD",
+        tier: "TIER 0: HARDWARE",
+        tierColor: "#38bdf8",
+        section: "LiveKitClient.kt & drishti_agent.py",
+        m1: "Opus 48kHz", l1: "Audio Codec",
+        m2: "0.28s Cutoff", l2: "Silero VAD Silence",
+        m3: "< 50 ms", l3: "Barge-In Truncation",
+        m4: "SRTP / UDP", l4: "Transport Protocol",
+        formula: "silero.VAD(min_silence_duration=0.28s, activation_threshold=0.5)",
+        formulaDesc: "Fast turn detection window triggers prompt completion without conversational hesitation.",
+        role: "Captures natural spoken queries. Silero VAD monitors user speech in real time to instantly truncate agent speech during barge-in interruptions.",
+        safety: "Voice cancellation during emergencies listens for 'cancel', 'stop', or 'I'm fine' to abort alerts."
+      },
+      imu: {
+        title: "Tri-Axial IMU Accelerometer",
+        sub: "Kinematic Motion & Biomechanical Sensor",
+        tier: "TIER 0: HARDWARE",
+        tierColor: "#38bdf8",
+        section: "android/ai/drishti/sensors/FallDetector.kt",
+        m1: "100 Hz", l1: "Sampling Rate",
+        m2: "3-Axis", l2: "Channels [ax, ay, az]",
+        m3: "25.0 m/s²", l3: "Impact Spike (~2.55g)",
+        m4: "11.5 m/s²", l4: "Stillness Window",
+        formula: "|a| = √(ax² + ay² + az²)  (FallDetector.kt)",
+        formulaDesc: "Calculates 3D acceleration magnitude on every SensorEvent with zero orientation bias.",
+        role: "Supplies kinematic shock telemetry to FallDetector. Triggers emergency protocol upon high impact followed by stillness.",
+        safety: "Runs 100% on-device in background foreground service without network requirement."
+      },
+      mux: {
+        title: "Camera Manager (CameraManager.kt)",
+        sub: "Android Coroutine Frame Multiplexer",
+        tier: "TIER 1: EDGE",
+        tierColor: "#10b981",
+        section: "android/ai/drishti/camera/CameraManager.kt",
+        m1: "15 – 30 ms", l1: "Parsing Latency",
+        m2: "< 500 ms", l2: "Failover Handover",
+        m3: "3 Sources", l3: "ESP32, Back, Front",
+        m4: "20 FPS", l4: "Preview Stream",
+        formula: "Esp32StreamClient(onStreamError) → PhoneCamera.start()",
+        formulaDesc: "Seamless coroutine failover preserves bitmap pipeline without interrupting TFLite.",
+        role: "Parses MJPEG stream from ESP32-CAM and provides latestFrame bitmaps to TFLite detector, ML Kit OCR, and cloud DataChannels.",
+        safety: "Guarantees zero optical downtime by falling back to CameraX instantly when external frames stall."
+      },
+      yolo: {
+        title: "TFLite YOLOv8n (Float16 @ 320x320)",
+        sub: "Edge Deep Learning Hazard Segmentation",
+        tier: "TIER 1: EDGE",
+        tierColor: "#10b981",
+        section: "android/ai/drishti/vision/TFLiteDetector.kt",
+        m1: "20 – 38 ms", l1: "Inference Latency",
+        m2: "320 × 320", l2: "Input Dimensions",
+        m3: "Float16", l3: "Model Precision",
+        m4: "4 Threads", l4: "CPU + NNAPI",
+        formula: "TFLite Interpreter(yolov8n_float16.tflite, numThreads=4, NNAPI=true)",
+        formulaDesc: "Processes 320x320 scaled bitmaps and extracts [1, 84, 2100] output tensor.",
+        role: "Detects 80 object classes and returns bounding boxes, center coordinates, and confidence scores in real-time.",
+        safety: "Completely offline; operates continuously during network dropouts."
+      },
+      proximity: {
+        title: "ObstacleClassifier & Clock Face Engine",
+        sub: "Empirical Distance & Spatial Clock Directions",
+        tier: "TIER 1: EDGE",
+        tierColor: "#10b981",
+        section: "android/ai/drishti/vision/ObstacleClassifier.kt",
+        m1: "< 2 ms", l1: "Execution Time",
+        m2: "0.8 / safeH", l2: "Distance Formula",
+        m3: "14 Hazards", l3: "Filtered Classes",
+        m4: "10, 12, 2", l4: "Clock Orientations",
+        formula: "d = 0.8 / safeHeight  [safeHeight = clamp(h, 0.05, 1.0)]",
+        formulaDesc: "Maps vertical bounding box ratio directly to real-world meters (rounded to 0.1m, max 4.0m).",
+        role: "Partitions frame into 10 o'clock (<0.35), 12 o'clock (0.35-0.65), and 2 o'clock (>0.65). Flags priority hazards (car, bus, truck, motorcycle, person < 2.5m).",
+        safety: "Generates natural spoken warning: 'Caution, car very close on your right' within 2ms."
+      },
+      localtts: {
+        title: "LocalTTS Reflex Engine",
+        sub: "Zero-Latency Android Native Audio Reflex",
+        tier: "TIER 1: EDGE",
+        tierColor: "#10b981",
+        section: "android/ai/drishti/audio/LocalTTS.kt",
+        m1: "80 – 150 ms", l1: "Speech Latency",
+        m2: "flush = true", l2: "Hazard Preemption",
+        m3: "Sub-300 ms", l3: "End-to-End Reflex",
+        m4: "Collision Free", l4: "Cloud Voice Sync",
+        formula: "if (!isVoiceConnected || isEmergency) speak(text, flush=true)",
+        formulaDesc: "Prevents speech collision between local Android TTS and remote WebRTC voice agent.",
+        role: "Speaks urgent obstacle warnings and emergency countdowns. Suppresses routine confirmations when cloud agent is active.",
+        safety: "Critical safety commands override all background audio immediately."
+      },
+      modemgr: {
+        title: "ModeManager (Sealed Class State Machine)",
+        sub: "Context Management with Dynamic ModeConfig",
+        tier: "TIER 1: EDGE",
+        tierColor: "#10b981",
+        section: "android/ai/drishti/mode/ModeManager.kt",
+        m1: "4 States", l1: "Assistant/Nav/OCR/Emerg",
+        m2: "200-600ms", l2: "Dynamic Inference Interval",
+        m3: "3.0-4.0m", l3: "Alert Range Throttling",
+        m4: "0.95-1.1x", l4: "Adaptive Speech Rates",
+        formula: "ModeConfig: Assistant(300ms, 3m) | Nav(200ms, 4m) | OCR(600ms) | Emerg(10s)",
+        formulaDesc: "Kotlin sealed class hierarchy (DrishtiMode) guarantees deterministic state transitions.",
+        role: "Coordinates operational context, throttles obstacle inference to save power during OCR, and broadcasts MODE_CHANGE packets to LiveKit agent.",
+        safety: "Restores previous non-emergency mode upon successful emergency cancellation."
+      },
+      dispatch: {
+        title: "AlertSender Multi-Channel Dispatch",
+        sub: "Automated Safety Escalation & Telephony",
+        tier: "TIER 1: EDGE (SAFETY)",
+        tierColor: "#f43f5e",
+        section: "android/ai/drishti/emergency/AlertSender.kt",
+        m1: "4 Channels", l1: "Dispatch Routes",
+        m2: "SMS GPS", l2: "Google Maps Link",
+        m3: "WhatsApp", l3: "Direct Intent",
+        m4: "ACTION_CALL", l4: "Phone Dialer",
+        formula: "Alert = {SMS(MapsURL), WhatsApp(Caregiver), Call(Phone), Siren(Speaker)}",
+        formulaDesc: "Dispatches SMS to all contacts, sends WhatsApp intent, dials primary contact, and triggers siren if offline.",
+        role: "Dispatches emergency notifications with reverse-geocoded coordinates when countdown window expires.",
+        safety: "Ensures rescue notification is delivered even in areas with spotty data coverage."
+      },
+      countdown: {
+        title: "EmergencyMonitor Countdown Window",
+        sub: "Fail-Safe Verification & Intent Cancel",
+        tier: "TIER 1: EDGE (SAFETY)",
+        tierColor: "#f43f5e",
+        section: "android/ai/drishti/emergency/EmergencyMonitor.kt",
+        m1: "15s / 10s", l1: "Fall / Voice Window",
+        m2: "Voice Abort", l2: "Spoken 'cancel' / 'stop'",
+        m3: "1s Ticks", l3: "Spoken Countdown",
+        m4: "< 0.5%", l4: "False Alarm Rate",
+        formula: "triggerEmergency(reason, durationSeconds=10 or 15)",
+        formulaDesc: "Provides verbal warning window allowing user to abort alert before contacts are messaged.",
+        role: "Speaks: 'Emergency in X seconds. Say cancel to stop.' If user says 'cancel' or 'I am fine', aborts immediately.",
+        safety: "Prevents false alarms caused by dropping phone on bed or sitting down abruptly."
+      },
+      svm: {
+        title: "FallDetector (Threshold Windowing)",
+        sub: "Kinetic Impact Biomechanics Engine",
+        tier: "TIER 1: EDGE",
+        tierColor: "#10b981",
+        section: "android/ai/drishti/sensors/FallDetector.kt",
+        m1: "25.0 m/s²", l1: "Impact Threshold (~2.55g)",
+        m2: "11.5 m/s²", l2: "Stillness Threshold (~1g)",
+        m3: "2000 ms", l3: "Verification Window",
+        m4: "Sub-10 ms", l4: "Processing Overhead",
+        formula: "Impact > 25.0 m/s²  THEN  Stillness < 11.5 m/s² in 2000ms  →  Fall Verified",
+        formulaDesc: "Instant threshold state machine avoids CPU-heavy variance math on the continuous sensor listener.",
+        role: "Monitors accelerometer stream. Flags impact shock followed by static gravity stillness, triggering EmergencyMonitor.",
+        safety: "Zero network dependency; runs 24/7 in foreground service."
+      },
+      biofilter: {
+        title: "Google ML Kit Engines (OCR & Face)",
+        sub: "On-Device Text & Facial Privacy Processing",
+        tier: "TIER 1: EDGE",
+        tierColor: "#10b981",
+        section: "OcrEngine.kt & FaceDetector.kt",
+        m1: "ML Kit OCR", l1: "Latin/Indic Engine",
+        m2: "Fast Mode", l2: "Face Detection",
+        m3: "No Storage", l3: "Zero Face Embeddings",
+        m4: "Sub-100ms", l4: "Text Extraction",
+        formula: "OcrEngine.extractText(bitmap)  +  FaceDetector.detectFaces(bitmap)",
+        formulaDesc: "Extracts text blocks for local TTS and sends OCR_RESULT JSON to cloud agent for summarization.",
+        role: "Reads medicine boxes, street signs, and documents. Detects face presence without storing biometric face embeddings.",
+        safety: "Strict bystander privacy: no face crops or identity embeddings stored."
+      },
+      auth: {
+        title: "FastAPI Token Server & Auto-Dispatch",
+        sub: "Cloud Security & Handshake Gateway",
+        tier: "TIER 2: CLOUD",
+        tierColor: "#a855f7",
+        section: "token-server/main.py",
+        m1: "LiveKit JWT", l1: "Token Protocol",
+        m2: "Auto-Dispatch", l2: "CreateAgentDispatchRequest",
+        m3: "4 Candidates", l3: "Failover Fallback URLs",
+        m4: "< 50 ms", l4: "Handshake Time",
+        formula: "GET /token?room=...&user=...  →  JWT + Agent Auto-Dispatch",
+        formulaDesc: "Issues cryptographically signed tokens and spins up drishti_agent.py worker immediately.",
+        role: "Authenticates client app and automatically assigns agent worker to room. Android client cycles 4 candidate URLs.",
+        safety: "Ephemeral room access ensures privacy and prevents session eavesdropping."
+      },
+      livekit: {
+        title: "LiveKit WebRTC Media Server",
+        sub: "Ultra-Low-Latency Bidirectional Streaming Router",
+        tier: "TIER 2: CLOUD",
+        tierColor: "#a855f7",
+        section: "android/ai/drishti/audio/LiveKitClient.kt",
+        m1: "30 – 70 ms", l1: "Uplink Latency",
+        m2: "UDP / SRTP", l2: "Streaming Protocol",
+        m3: "DataChannel", l3: "JSON & Base64 JPEG",
+        m4: "Adaptive", l4: "Jitter Buffering",
+        formula: "DataChannel: CAMERA_FRAME (320x240 JPEG <15KB) every 2.0s",
+        formulaDesc: "Bi-directional WebRTC audio and data channel communication prevents REST connection churn.",
+        role: "Transmits user audio to python agent and relays synthesized speech back. Streams Base64 camera frames and obstacle alerts.",
+        safety: "Dynamic acoustic echo cancellation (AEC) and noise suppression for high street noise tolerance."
+      },
+      stt: {
+        title: "Sarvam Streaming STT (saaras:v4)",
+        sub: "Multilingual Continuous Speech Recognition",
+        tier: "TIER 2: CLOUD",
+        tierColor: "#a855f7",
+        section: "agent/drishti_agent.py",
+        m1: "saaras:v4", l1: "Model Version",
+        m2: "en-IN", l2: "Explicit Language Code",
+        m3: "< 250 ms", l3: "Time-to-First-Token",
+        m4: "Streaming", l4: "flush_signal = True",
+        formula: "sarvam.STT(language='en-IN', model='saaras:v4', mode='transcribe')",
+        formulaDesc: "Setting explicit language code bypasses the heavy Language Identification (LID) latency.",
+        role: "Converts incoming user phonemes into text tokens with high resilience to Indian accents and street traffic noise.",
+        safety: "Streaming architecture reduces Time-to-First-Token by over 1.2s compared to batch Whisper."
+      },
+      mllm: {
+        title: "LiveKit Agent Worker (drishti_agent.py)",
+        sub: "Multi-Provider LLM Fallback & Prompt Management",
+        tier: "TIER 2: CLOUD",
+        tierColor: "#a855f7",
+        section: "agent/drishti_agent.py",
+        m1: "< 300 ms TTFT", l1: "Groq LPU Engine",
+        m2: "GPT-4o Vision", l2: "OpenAI Foundation",
+        m3: "Gemini 2.0", l3: "Google Fallback",
+        m4: "1-2 Sentences", l4: "Strict Brevity Rule",
+        formula: "Groq LPU (gpt-oss-120b) → OpenAI (gpt-4o) → Google (gemini-2.0-flash)",
+        formulaDesc: "Priority fallback cascade guarantees sub-300ms time-to-first-token with full vision reasoning.",
+        role: "Responds to scene queries ('what is in front of me?'), navigates walking routes, and reads OCR text in 1-2 concise sentences.",
+        safety: "RAM buffer only: camera frames are processed in volatile memory and never saved to persistent storage."
+      },
+      tts: {
+        title: "Sarvam Streaming TTS & Silero VAD",
+        sub: "Expressive Conversational Speech Synthesis",
+        tier: "TIER 2: CLOUD",
+        tierColor: "#a855f7",
+        section: "agent/drishti_agent.py",
+        m1: "bulbul:v3", l1: "Model Version",
+        m2: "kabir", l2: "Speaker Voice",
+        m3: "1.05x", l3: "Cadence Pace",
+        m4: "0.28s VAD", l4: "Silero Silence Cut",
+        formula: "sarvam.TTS(model='bulbul:v3', speaker='kabir', pace=1.05, enable_preprocessing=False)",
+        formulaDesc: "Skips text preprocessing delays to stream speech packets to LiveKit immediately.",
+        role: "Synthesizes warm, natural conversational speech. Silero VAD instantly truncates agent speech when user speaks.",
+        safety: "Preemptive generation minimizes pause duration between user question and spoken response."
+      }
+    };
+
+    // Node Click Handlers
+    const allNodeGroups = document.querySelectorAll('.node-group');
+    allNodeGroups.forEach(node => {
+      node.addEventListener('click', () => {
+        const key = node.getAttribute('data-node');
+        if (nodeData[key]) {
+          showInspection(key);
+        }
+      });
+    });
+
+    function showInspection(key) {
+      const data = nodeData[key];
+      document.getElementById('inspTitle').innerText = data.title;
+      document.getElementById('inspSub').innerText = data.sub;
+      document.getElementById('inspTier').innerText = data.tier;
+      document.getElementById('inspTier').style.borderColor = data.tierColor;
+      document.getElementById('inspTier').style.color = data.tierColor;
+      document.getElementById('inspSection').innerText = data.section;
+      document.getElementById('metric1').innerText = data.m1;
+      document.getElementById('label1').innerText = data.l1;
+      document.getElementById('metric2').innerText = data.m2;
+      document.getElementById('label2').innerText = data.l2;
+      document.getElementById('metric3').innerText = data.m3;
+      document.getElementById('label3').innerText = data.l3;
+      document.getElementById('metric4').innerText = data.m4;
+      document.getElementById('label4').innerText = data.l4;
+      document.getElementById('inspFormula').innerText = data.formula;
+      document.getElementById('inspFormulaDesc').innerText = data.formulaDesc;
+      document.getElementById('inspRole').innerText = data.role;
+      document.getElementById('inspSafety').innerText = data.safety;
+    }
+
+    // Path Tracing Filters
+    const pills = document.querySelectorAll('.pill');
+    pills.forEach(pill => {
+      pill.addEventListener('click', () => {
+        pills.forEach(p => p.classList.remove('active'));
+        pill.classList.add('active');
+        const trace = pill.getAttribute('data-trace');
+        applyTrace(trace);
+      });
+    });
+
+    function applyTrace(trace) {
+      const allPaths = document.querySelectorAll('.flow-path');
+      const allNodes = document.querySelectorAll('.node-group');
+
+      // Reset all
+      allPaths.forEach(p => {
+        p.className.baseVal = 'flow-path path-default';
+        p.classList.remove('flow-animated', 'dimmed', 'highlighted');
+      });
+      allNodes.forEach(n => n.classList.remove('dimmed', 'highlighted'));
+
+      if (trace === 'all') {
+        return;
+      }
+
+      const traces = {
+        reflex: {
+          nodes: ['node-esp32', 'node-mux', 'node-yolo', 'node-proximity', 'node-localtts', 'node-speaker'],
+          paths: [
+            { id: 'path-esp32-mux', class: 'path-reflex' },
+            { id: 'path-mux-yolo', class: 'path-reflex' },
+            { id: 'path-yolo-prox', class: 'path-reflex' },
+            { id: 'path-prox-localtts', class: 'path-reflex' },
+            { id: 'path-localtts-speaker', class: 'path-reflex' }
+          ]
+        },
+        cloud: {
+          nodes: ['node-mic', 'node-livekit', 'node-stt', 'node-mllm', 'node-tts', 'node-speaker', 'node-auth'],
+          paths: [
+            { id: 'path-mic-livekit', class: 'path-cloud' },
+            { id: 'path-livekit-stt', class: 'path-cloud' },
+            { id: 'path-stt-mllm', class: 'path-cloud' },
+            { id: 'path-mllm-tts', class: 'path-cloud' },
+            { id: 'path-tts-speaker', class: 'path-cloud' }
+          ]
+        },
+        fall: {
+          nodes: ['node-imu', 'node-svm', 'node-countdown', 'node-dispatch', 'node-mic'],
+          paths: [
+            { id: 'path-imu-svm', class: 'path-fall' },
+            { id: 'path-fall-countdown', class: 'path-fall' },
+            { id: 'path-countdown-dispatch', class: 'path-fall' }
+          ]
+        },
+        camera: {
+          nodes: ['node-esp32', 'node-camerax', 'node-mux', 'node-localtts', 'node-speaker'],
+          paths: [
+            { id: 'path-esp32-mux', class: 'path-camera' },
+            { id: 'path-phone-mux', class: 'path-camera' },
+            { id: 'path-localtts-speaker', class: 'path-camera' }
+          ]
+        },
+        datachannel: {
+          nodes: ['node-mux', 'node-livekit', 'node-mllm', 'node-proximity', 'node-biofilter'],
+          paths: [
+            { id: 'path-datachannel-frame', class: 'path-datachannel' }
+          ]
+        },
+        modes: {
+          nodes: ['node-modemgr', 'node-yolo', 'node-proximity', 'node-localtts', 'node-livekit', 'node-mllm'],
+          paths: [
+            { id: 'path-prox-localtts', class: 'path-reflex' },
+            { id: 'path-localtts-duck', class: 'path-cloud' }
+          ]
+        }
+      };
+
+      const sel = traces[trace];
+      if (!sel) return;
+
+      allNodes.forEach(n => {
+        if (!sel.nodes.includes(n.id)) {
+          n.classList.add('dimmed');
+        } else {
+          n.classList.add('highlighted');
+        }
+      });
+
+      allPaths.forEach(p => {
+        const found = sel.paths.find(x => x.id === p.id);
+        if (found) {
+          p.className.baseVal = `flow-path ${found.class} flow-animated highlighted`;
+        } else {
+          p.classList.add('dimmed');
+        }
+      });
+    }
+
+    // Node Search Filter
+    const searchInput = document.getElementById('nodeSearch');
+    searchInput.addEventListener('input', (e) => {
+      const q = e.target.value.toLowerCase().trim();
+      if (!q) {
+        allNodeGroups.forEach(n => n.classList.remove('dimmed', 'highlighted'));
+        return;
+      }
+      allNodeGroups.forEach(n => {
+        const key = n.getAttribute('data-node');
+        const data = nodeData[key];
+        const match = data && (
+          data.title.toLowerCase().includes(q) ||
+          data.sub.toLowerCase().includes(q) ||
+          data.role.toLowerCase().includes(q) ||
+          data.formula.toLowerCase().includes(q) ||
+          data.section.toLowerCase().includes(q)
+        );
+        if (match) {
+          n.classList.remove('dimmed');
+          n.classList.add('highlighted');
+        } else {
+          n.classList.add('dimmed');
+          n.classList.remove('highlighted');
+        }
+      });
+    });
+
+    // Sub-Tabs Navigation
+    const tabBtns = document.querySelectorAll('.tab-btn');
+    const tabContents = document.querySelectorAll('.tab-content');
+    tabBtns.forEach(btn => {
+      btn.addEventListener('click', () => {
+        tabBtns.forEach(b => b.classList.remove('active'));
+        tabContents.forEach(c => c.classList.remove('active'));
+        btn.classList.add('active');
+        const targetId = btn.getAttribute('data-target');
+        const target = document.getElementById(targetId);
+        if (target) target.classList.add('active');
+      });
+    });
+
+    // Theme Toggle
+    const themeBtn = document.getElementById('themeToggle');
+    themeBtn.addEventListener('click', () => {
+      const cur = document.body.getAttribute('data-theme');
+      const next = cur === 'dark' ? 'light' : 'dark';
+      document.body.setAttribute('data-theme', next);
+    });
+
+    // Copy Mermaid Button
+    const copyBtn = document.getElementById('copyMermaidBtn');
+    copyBtn.addEventListener('click', () => {
+      const code = document.getElementById('mermaidCode').innerText;
+      navigator.clipboard.writeText(code).then(() => {
+        copyBtn.innerText = '✅ Copied!';
+        setTimeout(() => copyBtn.innerText = '📋 Copy Mermaid Code', 2000);
+      });
+    });
+
+    // Reset View
+    document.getElementById('resetZoom').addEventListener('click', () => {
+      searchInput.value = '';
+      pills[0].click();
+    });
+  </script>
+</body>
+</html>
