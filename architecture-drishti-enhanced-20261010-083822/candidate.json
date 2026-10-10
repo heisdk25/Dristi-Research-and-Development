@@ -1,0 +1,572 @@
+{
+  "schema_version": 1,
+  "diagram_type": "architecture",
+  "meta": {
+    "title": "Drishti Assistive Companion Architecture",
+    "subtitle": "Voice-First Multimodal Android Edge & LiveKit Cloud System",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "output": ".archify/architecture-drishti-enhanced-20261010-083822/drishti-architecture-enhanced.html",
+    "quality_profile": "showcase",
+    "repository": {
+      "url": "https://github.com/mksinha01/hackbios-neuraX.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "5a261e8d78c7df1d6fa76dd8fb1d04bd5f370713"
+    },
+    "views": [
+      {
+        "id": "voice-loop",
+        "label": "Conversational Voice Loop",
+        "focus": ["user", "drishti_service", "livekit_client", "livekit_cloud", "agent_worker", "speech_sarvam"],
+        "note": "Ultra-low latency full-duplex conversational audio via Sarvam Saaras STT & Bulbul TTS over LiveKit WebRTC."
+      },
+      {
+        "id": "edge-reflex",
+        "label": "Sub-100ms On-Device Reflex",
+        "focus": ["esp32_cam", "camera_mgr", "tflite_vision", "local_tts"],
+        "note": "Immediate on-device YOLOv8n obstacle warning with offline Android LocalTTS priority interrupt."
+      },
+      {
+        "id": "navigation-guidance",
+        "label": "Navigation & Walking Guidance",
+        "focus": ["user", "drishti_service", "nav_engine", "agent_worker", "maps_api"],
+        "note": "Voice-initiated walking navigation with Google Maps Routes API and heading-aware turn alerts."
+      },
+      {
+        "id": "scene-ocr-mode",
+        "label": "Scene Reasoning & Reading Mode",
+        "focus": ["camera_mgr", "drishti_service", "livekit_client", "agent_worker", "llm_vision"],
+        "note": "Multimodal Gemini 2.0 / GPT-4o scene description and printed document reading triggered by voice tools."
+      },
+      {
+        "id": "emergency-safety",
+        "label": "Fall Detection & Emergency Dispatch",
+        "focus": ["sensor_fall", "drishti_service", "mode_mgr", "emergency_dispatch"],
+        "note": "Biomechanical fall detection (>2.5g) with 10s voice cancel window and automated SMS/WhatsApp/Call dispatch."
+      }
+    ]
+  },
+  "components": [
+    {
+      "id": "user",
+      "type": "external",
+      "label": "Visually Impaired User",
+      "sublabel": "Earphone Mic & Headset",
+      "tag": "Voice & Audio",
+      "icon": "person",
+      "pos": [40, 280],
+      "size": [140, 64]
+    },
+    {
+      "id": "esp32_cam",
+      "type": "external",
+      "label": "ESP32-CAM",
+      "sublabel": "Wearable Wi-Fi Camera",
+      "tag": "MJPEG :81",
+      "icon": "external",
+      "sources": [
+        {
+          "path": "esp32-firmware/mjpeg_streamer/mjpeg_streamer.ino",
+          "line": 21,
+          "end_line": 65,
+          "label": "MJPEG Stream Handler"
+        }
+      ],
+      "pos": [40, 60],
+      "size": [140, 56]
+    },
+    {
+      "id": "phone_camera",
+      "type": "frontend",
+      "label": "Phone CameraX",
+      "sublabel": "Back/Front Lens Fallback",
+      "tag": "CameraX API",
+      "icon": "frontend",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/camera/PhoneCamera.kt",
+          "line": 18,
+          "end_line": 45,
+          "label": "CameraX Lifecycle"
+        }
+      ],
+      "pos": [40, 140],
+      "size": [140, 56]
+    },
+    {
+      "id": "emergency_dispatch",
+      "type": "external",
+      "label": "Emergency Dispatch",
+      "sublabel": "SMS, WhatsApp & Phone Call",
+      "tag": "Multi-Channel",
+      "icon": "external",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/emergency/AlertSender.kt",
+          "line": 25,
+          "end_line": 65,
+          "label": "Alert Dispatcher"
+        }
+      ],
+      "pos": [40, 460],
+      "size": [140, 56]
+    },
+    {
+      "id": "camera_mgr",
+      "type": "frontend",
+      "label": "CameraManager",
+      "sublabel": "Dual Source Hot-Fallback",
+      "tag": "Video Switcher",
+      "icon": "frontend",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/camera/CameraManager.kt",
+          "line": 46,
+          "end_line": 95,
+          "label": "Dual Camera Coordinator"
+        }
+      ],
+      "pos": [320, 100],
+      "size": [150, 60]
+    },
+    {
+      "id": "drishti_service",
+      "type": "frontend",
+      "label": "DrishtiService",
+      "sublabel": "Android Foreground Brain",
+      "tag": "24/7 Service",
+      "icon": "frontend",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/DrishtiService.kt",
+          "line": 39,
+          "end_line": 125,
+          "label": "Core Orchestrator"
+        }
+      ],
+      "pos": [320, 280],
+      "size": [150, 64]
+    },
+    {
+      "id": "sensor_fall",
+      "type": "backend",
+      "label": "Sensors & Emergency",
+      "sublabel": "FallDetector & GPS Provider",
+      "tag": "Sensors >2.5g",
+      "icon": "backend",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/sensors/FallDetector.kt",
+          "line": 15,
+          "end_line": 45,
+          "label": "Fall Impact Heuristic"
+        },
+        {
+          "path": "android/app/src/main/java/ai/drishti/emergency/EmergencyMonitor.kt",
+          "line": 11,
+          "end_line": 45,
+          "label": "10s Cancel Window"
+        }
+      ],
+      "pos": [320, 460],
+      "size": [150, 60]
+    },
+    {
+      "id": "tflite_vision",
+      "type": "backend",
+      "label": "TFLite Detector",
+      "sublabel": "YOLOv8n Obstacle Model",
+      "tag": "5-10 FPS Float16",
+      "icon": "backend",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/vision/TFLiteDetector.kt",
+          "line": 18,
+          "end_line": 60,
+          "label": "TFLite Inference"
+        }
+      ],
+      "pos": [600, 70],
+      "size": [150, 56]
+    },
+    {
+      "id": "local_tts",
+      "type": "frontend",
+      "label": "LocalTTS Engine",
+      "sublabel": "Offline Android Audio",
+      "tag": "<100ms Priority Alert",
+      "icon": "frontend",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/audio/LocalTTS.kt",
+          "line": 12,
+          "end_line": 45,
+          "label": "Low-Latency Speech"
+        }
+      ],
+      "pos": [600, 160],
+      "size": [150, 56]
+    },
+    {
+      "id": "mode_mgr",
+      "type": "frontend",
+      "label": "ModeManager",
+      "sublabel": "Sealed Class State Machine",
+      "tag": "4-Mode Switcher",
+      "icon": "frontend",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/mode/ModeManager.kt",
+          "line": 1,
+          "end_line": 50,
+          "label": "State Machine"
+        }
+      ],
+      "pos": [600, 250],
+      "size": [150, 56]
+    },
+    {
+      "id": "livekit_client",
+      "type": "backend",
+      "label": "LiveKitClient",
+      "sublabel": "WebRTC Room & Data Channel",
+      "tag": "Audio & Data Stream",
+      "icon": "backend",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/audio/LiveKitClient.kt",
+          "line": 53,
+          "end_line": 110,
+          "label": "WebRTC Client"
+        }
+      ],
+      "pos": [600, 340],
+      "size": [150, 60]
+    },
+    {
+      "id": "nav_engine",
+      "type": "backend",
+      "label": "NavigationEngine",
+      "sublabel": "Turn Alerts & Waypoints",
+      "tag": "Step-by-Step",
+      "icon": "backend",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/navigation/NavigationEngine.kt",
+          "line": 9,
+          "end_line": 50,
+          "label": "Walking Route Engine"
+        }
+      ],
+      "pos": [600, 440],
+      "size": [150, 56]
+    },
+    {
+      "id": "token_server",
+      "type": "backend",
+      "label": "Token Server",
+      "sublabel": "FastAPI Auth Service",
+      "tag": "JWT Issuance :8000",
+      "icon": "backend",
+      "sources": [
+        {
+          "path": "token-server/main.py",
+          "line": 69,
+          "end_line": 115,
+          "label": "Token & Dispatch API"
+        }
+      ],
+      "pos": [880, 160],
+      "size": [150, 56]
+    },
+    {
+      "id": "livekit_cloud",
+      "type": "cloud",
+      "label": "LiveKit Cloud",
+      "sublabel": "WebRTC SFU & Realtime Mesh",
+      "tag": "WebRTC Room SFU",
+      "icon": "cloud",
+      "pos": [880, 280],
+      "size": [150, 64]
+    },
+    {
+      "id": "conv_observer",
+      "type": "backend",
+      "label": "Conversation Logger",
+      "sublabel": "Terminal Monitor & Rotation",
+      "tag": "Turn Audit :8000",
+      "icon": "backend",
+      "sources": [
+        {
+          "path": "agent/conversation_logger.py",
+          "line": 1,
+          "end_line": 50,
+          "label": "Observer Engine"
+        }
+      ],
+      "pos": [880, 400],
+      "size": [150, 56]
+    },
+    {
+      "id": "agent_worker",
+      "type": "backend",
+      "label": "LiveKit Voice Agent",
+      "sublabel": "Python Worker (drishti_agent)",
+      "tag": "Multimodal Agent",
+      "icon": "backend",
+      "sources": [
+        {
+          "path": "agent/drishti_agent.py",
+          "line": 1265,
+          "end_line": 1320,
+          "label": "AgentSession Worker"
+        }
+      ],
+      "pos": [1170, 280],
+      "size": [160, 64]
+    },
+    {
+      "id": "llm_vision",
+      "type": "external",
+      "label": "Gemini 2.0 / GPT-4o",
+      "sublabel": "Scene Reasoning & OCR",
+      "tag": "Multimodal LLM",
+      "icon": "cloud",
+      "pos": [1450, 160],
+      "size": [150, 56]
+    },
+    {
+      "id": "speech_sarvam",
+      "type": "external",
+      "label": "Sarvam AI Voice",
+      "sublabel": "Saaras STT & Bulbul TTS",
+      "tag": "Indian Accent Voice",
+      "icon": "cloud",
+      "pos": [1450, 280],
+      "size": [150, 60]
+    },
+    {
+      "id": "maps_api",
+      "type": "external",
+      "label": "Google Maps Routes",
+      "sublabel": "Turn-by-Turn Directions",
+      "tag": "Navigation API",
+      "icon": "cloud",
+      "pos": [1450, 410],
+      "size": [150, 56]
+    }
+  ],
+  "boundaries": [
+    {
+      "kind": "region",
+      "label": "Peripherals & External Hardware",
+      "wraps": ["user", "esp32_cam", "phone_camera", "emergency_dispatch"]
+    },
+    {
+      "kind": "region",
+      "label": "Android Edge Runtime (Drishti Service)",
+      "wraps": ["camera_mgr", "drishti_service", "sensor_fall", "tflite_vision", "local_tts", "mode_mgr", "livekit_client", "nav_engine"]
+    },
+    {
+      "kind": "region",
+      "label": "Cloud Infrastructure & Voice Agent",
+      "wraps": ["token_server", "livekit_cloud", "conv_observer", "agent_worker"]
+    },
+    {
+      "kind": "region",
+      "label": "External Multimodal Intelligence",
+      "wraps": ["llm_vision", "speech_sarvam", "maps_api"]
+    }
+  ],
+  "connections": [
+    {
+      "id": "esp32-to-camera-mgr",
+      "from": "esp32_cam",
+      "to": "camera_mgr",
+      "label": "HTTP MJPEG :81",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "phone-to-camera-mgr",
+      "from": "phone_camera",
+      "to": "camera_mgr",
+      "label": "CameraX frames",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "user-to-service",
+      "from": "user",
+      "to": "drishti_service",
+      "label": "voice command",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "camera-to-tflite",
+      "from": "camera_mgr",
+      "to": "tflite_vision",
+      "label": "YOLO frames",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "camera-to-service",
+      "from": "camera_mgr",
+      "to": "drishti_service",
+      "label": "active frame",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "tflite-to-tts",
+      "from": "tflite_vision",
+      "to": "local_tts",
+      "label": "priority alert",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "service-to-mode",
+      "from": "drishti_service",
+      "to": "mode_mgr",
+      "label": "mode state",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "mode-to-client",
+      "from": "mode_mgr",
+      "to": "livekit_client",
+      "label": "data packet",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "service-to-nav",
+      "from": "drishti_service",
+      "to": "nav_engine",
+      "label": "GPS updates",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "sensor-to-service",
+      "from": "sensor_fall",
+      "to": "drishti_service",
+      "label": "fall & GPS",
+      "fromSide": "top",
+      "toSide": "bottom"
+    },
+    {
+      "id": "sensor-to-emergency",
+      "from": "sensor_fall",
+      "to": "emergency_dispatch",
+      "label": "SMS & call",
+      "variant": "security",
+      "fromSide": "left",
+      "toSide": "right"
+    },
+    {
+      "id": "client-to-token-server",
+      "from": "livekit_client",
+      "to": "token_server",
+      "label": "GET /token",
+      "variant": "security",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "token-to-cloud",
+      "from": "token_server",
+      "to": "livekit_cloud",
+      "label": "agent dispatch",
+      "fromSide": "bottom",
+      "toSide": "top"
+    },
+    {
+      "id": "client-to-cloud",
+      "from": "livekit_client",
+      "to": "livekit_cloud",
+      "label": "WebRTC channel",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "cloud-to-agent",
+      "from": "livekit_cloud",
+      "to": "agent_worker",
+      "label": "room connection",
+      "variant": "emphasis",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "agent-to-observer",
+      "from": "agent_worker",
+      "to": "conv_observer",
+      "label": "turn logs",
+      "variant": "dashed",
+      "fromSide": "left",
+      "toSide": "right"
+    },
+    {
+      "id": "agent-to-llm",
+      "from": "agent_worker",
+      "to": "llm_vision",
+      "label": "scene Q&A",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "agent-to-sarvam",
+      "from": "agent_worker",
+      "to": "speech_sarvam",
+      "label": "STT & TTS",
+      "fromSide": "right",
+      "toSide": "left"
+    },
+    {
+      "id": "agent-to-maps",
+      "from": "agent_worker",
+      "to": "maps_api",
+      "label": "routes API",
+      "fromSide": "right",
+      "toSide": "left"
+    }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Sub-100ms Edge Reflexes",
+      "items": [
+        "Dual camera hot-fallback: ESP32-CAM Wi-Fi stream to phone CameraX",
+        "On-device YOLOv8n TFLite inference at 5-10 FPS for immediate safety",
+        "Offline Android LocalTTS priority interrupt for zero-latency speech"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Conversational & Navigation Intelligence",
+      "items": [
+        "LiveKit WebRTC audio & data channel connecting Android and Agent",
+        "Sarvam Saaras & Bulbul for authentic Indian English/Hindi voice",
+        "Google Maps Routes API client providing turn-by-turn walking steps",
+        "Real-time conversation observer & terminal turn audit logging"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Emergency & Sensor Safeguards",
+      "items": [
+        "Accelerometer fall detection with 10-second voice cancellation window",
+        "Automated multi-channel dispatch via SMS, WhatsApp, and emergency call",
+        "FastAPI token server auto-dispatching agent workers to rooms"
+      ]
+    }
+  ]
+}

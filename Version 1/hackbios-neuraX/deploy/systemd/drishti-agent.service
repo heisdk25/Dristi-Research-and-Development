@@ -1,0 +1,18 @@
+[Unit]
+Description=Drishti LiveKit Voice Agent Worker (Python)
+After=network.target drishti-token-server.service
+Wants=drishti-token-server.service
+
+[Service]
+Type=simple
+User=root
+WorkingDirectory=/opt/drishti/agent
+EnvironmentFile=/opt/drishti/.env
+ExecStart=/usr/local/bin/uv run --with-requirements requirements.txt python drishti_agent.py start
+Restart=always
+RestartSec=5
+StandardOutput=journal
+StandardError=journal
+
+[Install]
+WantedBy=multi-user.target

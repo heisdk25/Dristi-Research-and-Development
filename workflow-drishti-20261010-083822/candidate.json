@@ -1,0 +1,304 @@
+{
+  "schema_version": 2,
+  "diagram_type": "workflow",
+  "meta": {
+    "title": "Drishti Voice & Reflex Workflow",
+    "subtitle": "Voice-First Multimodal Android Edge & Cloud Agent Decision Pipeline",
+    "animation": "trace",
+    "visual_preset": "signal-flow",
+    "quality_profile": "showcase",
+    "output": ".archify/workflow-drishti-20261010-083822/drishti-workflow.html",
+    "repository": {
+      "url": "https://github.com/mksinha01/hackbios-neuraX.git",
+      "provider": "github",
+      "link_mode": "web",
+      "revision": "5a261e8d78c7df1d6fa76dd8fb1d04bd5f370713"
+    }
+  },
+  "lanes": [
+    { "id": "ui", "label": "User Sensory & Audio Surface" },
+    { "id": "agent", "label": "LiveKit Cloud Conversational Agent" },
+    { "id": "edge", "label": "Android Edge Reflex & Vision" },
+    { "id": "safety", "label": "Safety Fallback & Emergency Net", "variant": "exception" }
+  ],
+  "phases": [
+    { "id": "intake", "label": "1. Intake & Stream", "fromCol": 0, "toCol": 1, "variant": "default" },
+    { "id": "decision", "label": "2. Reflex & Intent Routing", "fromCol": 2, "toCol": 3, "variant": "emphasis" },
+    { "id": "execution", "label": "3. Tool Execution & Output", "fromCol": 4, "toCol": 5, "variant": "dashed" }
+  ],
+  "groups": [
+    { "id": "cloud_agent_loop", "label": "Cloud Conversational Reasoning", "lane": "agent", "fromCol": 2, "toCol": 5, "variant": "emphasis" },
+    { "id": "edge_reflex_group", "label": "Sub-100ms Edge Reflex Loop", "lane": "edge", "fromCol": 0, "toCol": 2, "variant": "default" },
+    { "id": "safety_circuit", "label": "Biomechanical Protection Window", "lane": "safety", "fromCol": 0, "toCol": 5, "variant": "security" }
+  ],
+  "mainPath": ["user_mic", "intent_parse", "livekit_webrtc", "vad_stt", "tool_dispatch", "cloud_reasoning", "tts_output"],
+  "nodes": [
+    {
+      "id": "user_mic",
+      "lane": "ui",
+      "col": 0,
+      "type": "external",
+      "label": "User Utterance",
+      "sublabel": "Bluetooth mic",
+      "tag": "Continuous audio",
+      "width": 124
+    },
+    {
+      "id": "intent_parse",
+      "lane": "ui",
+      "col": 1,
+      "type": "frontend",
+      "label": "Audio Capture",
+      "sublabel": "Opus audio track",
+      "tag": "LiveKit client",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/DrishtiService.kt",
+          "line": 442,
+          "end_line": 450,
+          "label": "Voice Input Handler"
+        }
+      ],
+      "width": 124
+    },
+    {
+      "id": "livekit_webrtc",
+      "lane": "agent",
+      "col": 2,
+      "type": "cloud",
+      "label": "LiveKit WebRTC",
+      "sublabel": "SFU media session",
+      "tag": "Audio & Data",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/audio/LiveKitClient.kt",
+          "line": 53,
+          "end_line": 110,
+          "label": "WebRTC Room Client"
+        }
+      ],
+      "width": 124
+    },
+    {
+      "id": "vad_stt",
+      "lane": "agent",
+      "col": 3,
+      "type": "backend",
+      "label": "Silero VAD + STT",
+      "sublabel": "Sarvam Saaras STT",
+      "tag": "Indian accents",
+      "sources": [
+        {
+          "path": "agent/drishti_agent.py",
+          "line": 1265,
+          "end_line": 1285,
+          "label": "VAD & Endpointing Config"
+        }
+      ],
+      "width": 124
+    },
+    {
+      "id": "tool_dispatch",
+      "lane": "agent",
+      "col": 4,
+      "type": "backend",
+      "label": "Agent Tools Router",
+      "sublabel": "describe / nav / ocr",
+      "tag": "Function calling",
+      "sources": [
+        {
+          "path": "agent/drishti_agent.py",
+          "line": 1255,
+          "end_line": 1264,
+          "label": "Voice Agent Tools"
+        }
+      ],
+      "width": 124
+    },
+    {
+      "id": "cloud_reasoning",
+      "lane": "agent",
+      "col": 5,
+      "type": "cloud",
+      "label": "Gemini 2.0 / GPT-4o",
+      "sublabel": "Multimodal LLM",
+      "tag": "1-2 short sentences",
+      "sources": [
+        {
+          "path": "agent/drishti_agent.py",
+          "line": 44,
+          "end_line": 62,
+          "label": "LLM Provider Integration"
+        }
+      ],
+      "width": 124
+    },
+    {
+      "id": "tts_output",
+      "lane": "ui",
+      "col": 5,
+      "type": "external",
+      "label": "Sarvam Bulbul TTS",
+      "sublabel": "Spoken earphone reply",
+      "tag": "Pace 1.18x",
+      "sources": [
+        {
+          "path": "agent/drishti_agent.py",
+          "line": 48,
+          "end_line": 52,
+          "label": "Sarvam TTS Plugin"
+        }
+      ],
+      "width": 124
+    },
+    {
+      "id": "camera_frames",
+      "lane": "edge",
+      "col": 0,
+      "type": "frontend",
+      "label": "Camera Frames",
+      "sublabel": "ESP32 Wi-Fi / CameraX",
+      "tag": "Dual stream",
+      "sources": [
+        {
+          "path": "esp32-firmware/mjpeg_streamer/mjpeg_streamer.ino",
+          "line": 21,
+          "end_line": 65,
+          "label": "MJPEG Camera Streamer"
+        }
+      ],
+      "width": 124
+    },
+    {
+      "id": "yolo_detector",
+      "lane": "edge",
+      "col": 1,
+      "type": "backend",
+      "label": "YOLOv8n TFLite",
+      "sublabel": "Obstacle classification",
+      "tag": "Float16 @ 10 FPS",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/vision/TFLiteDetector.kt",
+          "line": 18,
+          "end_line": 60,
+          "label": "TFLite Inference Engine"
+        }
+      ],
+      "width": 124
+    },
+    {
+      "id": "local_alert",
+      "lane": "edge",
+      "col": 2,
+      "type": "frontend",
+      "label": "LocalTTS Reflex",
+      "sublabel": "Audio ducking warning",
+      "tag": "<100ms priority",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/audio/LocalTTS.kt",
+          "line": 12,
+          "end_line": 45,
+          "label": "Offline Priority Audio"
+        }
+      ],
+      "width": 124
+    },
+    {
+      "id": "sensor_impact",
+      "lane": "safety",
+      "col": 0,
+      "type": "backend",
+      "label": "Fall Detector",
+      "sublabel": "Impact >2.5g + stillness",
+      "tag": "Accelerometer",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/sensors/FallDetector.kt",
+          "line": 15,
+          "end_line": 45,
+          "label": "Impact Detection Heuristic"
+        }
+      ],
+      "width": 124
+    },
+    {
+      "id": "cancel_window",
+      "lane": "safety",
+      "col": 3,
+      "type": "security",
+      "label": "Emergency Window",
+      "sublabel": "10s countdown timer",
+      "tag": "Say 'Cancel' to stop",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/emergency/EmergencyMonitor.kt",
+          "line": 11,
+          "end_line": 45,
+          "label": "Countdown Monitor"
+        }
+      ],
+      "width": 124
+    },
+    {
+      "id": "emergency_dispatch_node",
+      "lane": "safety",
+      "col": 5,
+      "type": "external",
+      "label": "Alert Sender",
+      "sublabel": "SMS, WhatsApp, Call",
+      "tag": "GPS coordinate URL",
+      "sources": [
+        {
+          "path": "android/app/src/main/java/ai/drishti/emergency/AlertSender.kt",
+          "line": 25,
+          "end_line": 65,
+          "label": "Multi-Channel Emergency Dispatch"
+        }
+      ],
+      "width": 124
+    }
+  ],
+  "edges": [
+    { "id": "mic-to-capture", "from": "user_mic", "to": "intent_parse", "label": "voice stream", "variant": "default" },
+    { "id": "capture-to-webrtc", "from": "intent_parse", "to": "livekit_webrtc", "label": "Opus audio", "variant": "emphasis" },
+    { "id": "webrtc-to-vad", "from": "livekit_webrtc", "to": "vad_stt", "label": "speech frame", "variant": "emphasis" },
+    { "id": "vad-to-router", "from": "vad_stt", "to": "tool_dispatch", "label": "user query", "variant": "emphasis" },
+    { "id": "router-to-llm", "from": "tool_dispatch", "to": "cloud_reasoning", "label": "prompt context", "variant": "default" },
+    { "id": "llm-to-tts", "from": "cloud_reasoning", "to": "tts_output", "label": "synthesize speech", "variant": "emphasis" },
+    { "id": "frames-to-yolo", "from": "camera_frames", "to": "yolo_detector", "label": "frames", "variant": "default" },
+    { "id": "yolo-to-alert", "from": "yolo_detector", "to": "local_alert", "label": "close obstacle", "variant": "emphasis" },
+    { "id": "impact-to-window", "from": "sensor_impact", "to": "cancel_window", "label": "fall trigger", "variant": "security" },
+    { "id": "window-to-dispatch", "from": "cancel_window", "to": "emergency_dispatch_node", "label": "countdown expired", "variant": "security" }
+  ],
+  "cards": [
+    {
+      "dot": "cyan",
+      "title": "Sub-100ms Edge Reflex Path",
+      "items": [
+        "Camera frames undergo on-device YOLOv8n inference locally in 30-50ms",
+        "Imminent obstacle warnings immediately duck speech and speak via Android LocalTTS",
+        "Completely immune to cloud network disconnects or cell dead zones"
+      ]
+    },
+    {
+      "dot": "emerald",
+      "title": "Conversational Cloud Loop",
+      "items": [
+        "LiveKit WebRTC connects mobile participant to Python agent worker",
+        "Silero VAD with 250ms endpointing prevents cutting off user speech",
+        "Sarvam Saaras STT and Bulbul TTS provide natural Indian-accented speech"
+      ]
+    },
+    {
+      "dot": "rose",
+      "title": "Biomechanical Safety Net",
+      "items": [
+        "Accelerometer detects high impact (>25 m/s²) followed by stillness",
+        "Triggers 10-second countdown alert allowing spoken voice cancellation",
+        "Dispatches SMS with Google Maps link, WhatsApp message, and phone call"
+      ]
+    }
+  ]
+}

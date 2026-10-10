@@ -1,118 +1,209 @@
-# Project Drishti: Research and Development
+# Drishti (दृष्टि) — AI Voice Companion for Visually Impaired
 
-[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
-[![Kotlin](https://img.shields.io/badge/Kotlin-1.9+-7F52FF.svg?logo=kotlin&logoColor=white)](https://kotlinlang.org)
-[![Python](https://img.shields.io/badge/Python-3.11+-3776AB.svg?logo=python&logoColor=white)](https://www.python.org)
-[![LiveKit](https://img.shields.io/badge/LiveKit-WebRTC-FF4F00.svg)](https://livekit.io)
-[![BOM Cost](https://img.shields.io/badge/Hardware%20BOM-%3C%2460%20USD-brightgreen.svg)](#hardware-bom)
-
-> **Voice-First Multimodal Assistive Companion for Visually Impaired Persons (VIPs)**  
-> Engineered with a dual-tier edge-cloud architecture: **sub-400ms on-device reflex hazard detection** coupled with **low-latency cloud conversational intelligence**.
+> **A Voice-First, Multi-Modal Mobility & Assistive System**  
+> Built as an Android Native (Kotlin) app paired with LiveKit Voice Agent, on-device TensorFlow Lite vision, and optional ESP32-CAM Wi-Fi streaming.
 
 ---
 
-## 📑 Repository Structure
+## 1. Mission Statement
 
-`
-├── hackbios-neuraX/             # Complete Production Codebase
-│   ├── android/                 # Native Android App (Kotlin, CameraX, YOLOv8n TFLite, LiveKit)
-│   ├── agent/                   # Cloud Multimodal Agent (Python, LiveKit Agents, Sarvam, Gemini/Groq)
-│   ├── token-server/            # Room Token Dispatch Server (Node.js / Express / FastAPI)
-│   ├── esp32-firmware/          # ESP32-CAM Firmware (C++/Arduino, MJPEG Wi-Fi SoftAP Streamer)
-│   └── docs/                    # Codebase Guides & Architectural Flowcharts
+Drishti provides visually impaired individuals with complete auditory independence. Operating 24/7 as an Android foreground service with earphone audio interaction, it offers three primary modes switched entirely by voice:
+
+- **Assistive Voice Agent**: Continuous background obstacle detection, scene Q&A ("What is in front of me?"), everyday queries, and emergency protection.
+- **Navigation Mode**: Turn-by-turn walking guidance, heading tracking, and obstacle-aware pathway alerts.
+- **OCR / Reading Mode**: Text recognition from camera frames for reading printed signs, labels, currency, and documents, with conversational summarization.
+
+---
+
+## 2. System Architecture
+
+```
+┌─────────────────┐       HTTP MJPEG       ┌──────────────────────────────────────────────┐
+│    ESP32-CAM    │ ─────────────────────> │             Android App (Kotlin)             │
+│ (WiFi Hotspot)  │                        │                                              │
+└─────────────────┘                        │  - CameraManager (ESP32 / Phone CameraX)     │
+                                           │  - TFLiteDetector (YOLOv8n Obstacles)        │
+┌─────────────────┐       CameraX          │  - LocalTTS (Offline Priority Safety Alerts) │
+│  Phone Camera   │ ─────────────────────> │  - FallDetector & LocationProvider           │
+└─────────────────┘                        │  - ModeManager (State Machine)               │
+                                           │  - LiveKitClient (WebRTC Audio/Data Channel) │
+┌─────────────────┐                        └──────────────────────┬───────────────────────┘
+│   Earphone      │ <── Audio In / Out ───────────────────────────┤
+│   Mic / Speaker │                                               │
+└─────────────────┘                                               │ WebRTC Voice & Data
+                                                                  ▼
+                                           ┌──────────────────────────────────────────────┐
+                                           │               LiveKit Cloud                  │
+                                           └──────────────────────┬───────────────────────┘
+                                                                  │
+                                                                  ▼
+┌─────────────────┐                        ┌──────────────────────────────────────────────┐
+│  Token Server   │ ── Signed JWTs ──────> │             LiveKit Agent Worker             │
+│ (FastAPI:8000)  │                        │                                              │
+└─────────────────┘                        │  - STT: Sarvam Saaras v3 / Whisper           │
+                                           │  - LLM: OpenAI GPT-4o / Gemini 2.0           │
+                                           │  - TTS: Sarvam Bulbul v3 / Silero            │
+                                           │  - Data Channel: OCR text & Obstacle events  │
+                                           └──────────────────────────────────────────────┘
+```
+
+---
+
+## 3. Repository Structure
+
+```
+vision_man/
+├── android/                             # 📱 Native Android Application (Kotlin)
+│   ├── app/
+│   │   ├── src/main/java/ai/drishti/
+│   │   │   ├── MainActivity.kt          # UI entrypoint, accessible controls, permissions
+│   │   │   ├── DrishtiService.kt        # Foreground service orchestrating all modules
+│   │   │   ├── audio/
+│   │   │   │   ├── LiveKitClient.kt     # WebRTC room audio/video & data channel
+│   │   │   │   └── LocalTTS.kt          # Low-latency offline Android TextToSpeech
+│   │   │   ├── camera/
+│   │   │   │   ├── CameraManager.kt     # Coordinates ESP32-CAM ↔ Phone Camera fallback
+│   │   │   │   ├── Esp32StreamClient.kt # HTTP MJPEG parser & bitmap decoder
+│   │   │   │   └── PhoneCamera.kt       # CameraX integration for phone camera
+│   │   │   ├── vision/
+│   │   │   │   ├── TFLiteDetector.kt    # On-device YOLOv8n TFLite inference
+│   │   │   │   ├── ObstacleClassifier.kt# Proximity & position calculation
+│   │   │   │   ├── FaceDetector.kt      # Privacy-preserving ML Kit face detector
+│   │   │   │   └── OcrEngine.kt         # On-device ML Kit text recognition
+│   │   │   ├── navigation/
+│   │   │   │   ├── NavigationEngine.kt  # Route coordination & turn alert generation
+│   │   │   │   └── NavStateManager.kt   # Waypoint progression & off-route detection
+│   │   │   ├── mode/
+│   │   │   │   ├── ModeManager.kt       # Type-safe sealed class state machine
+│   │   │   │   ├── VoiceIntentRouter.kt # Natural voice intent classification
+│   │   │   │   └── ModeConfig.kt        # Per-mode parameter presets
+│   │   │   ├── emergency/
+│   │   │   │   ├── EmergencyMonitor.kt  # Cancellation window & countdown state machine
+│   │   │   │   ├── AlertSender.kt       # Multi-channel dispatch (SMS, WhatsApp, Call)
+│   │   │   │   └── ContactStore.kt      # Encrypted local contact storage
+│   │   │   ├── sensors/
+│   │   │   │   ├── LocationProvider.kt  # FusedLocationProviderClient GPS wrapper
+│   │   │   │   └── FallDetector.kt      # Accelerometer fall impact heuristic
+│   │   │   └── utils/
+│   │   │       ├── PreferenceManager.kt # Device & network preferences
+│   │   │       └── WifiProvisioner.kt   # SoftAP/BLE Wi-Fi provisioner for ESP32
+│   │   ├── src/test/java/ai/drishti/    # JVM Unit Tests
+│   │   │   ├── ModeManagerTest.kt
+│   │   │   ├── VoiceIntentRouterTest.kt
+│   │   │   ├── ObstacleClassifierTest.kt
+│   │   │   ├── NavStateManagerTest.kt
+│   │   │   └── EmergencyMonitorTest.kt
+│   │   └── src/main/res/                # Layouts, themes, strings, accessibility
+│   ├── build.gradle.kts
+│   └── settings.gradle.kts
 │
-├── hackathon_strategy/          # Hackathon Strategic & Research Ops Compendium
-│   ├── DRISHTI_EXISTING_FEATURES_AND_UPGRADES.md       # Master Inventory & Upgrades Roadmap
-│   ├── DRISHTI_RESEARCH_OPS_COMPARISON_AND_OPTIMIZATIONS.md # Literature Gap Analysis & 7 Upgrades
-│   ├── HACKATHON_SPONSORS_INTEGRATION_PLAN.md          # Gemini 2.0, ElevenLabs, Vultr, Tiger Data
-│   └── DRISHTI_NON_TECH_EXPLAINER_AND_PITCH_GUIDE.md   # Pitch Scripts & Non-Tech Analogies
+├── agent/                               # 🔧 LiveKit Agent Worker (Python)
+│   ├── drishti_agent.py                 # Multi-modal voice agent with mode awareness
+│   ├── requirements.txt                 # Pinned dependencies
+│   ├── .env.example                     # Environment template
+│   └── tests/
+│       └── test_drishti_agent.py        # Agent unit tests
 │
-├── paper_memories/              # Deep Extraction Memories from 8 Benchmark Research Papers
-│   ├── INDEX_ASSISTIVE_RESEARCH_COMPENDIUM.md
-│   ├── MEMORY_01_SOUND_BASED_NAVIGATION_MALAEKAH.md
-│   ├── MEMORY_02_LVLM_WEARABLE_VISION_ASSIST_BAIG.md
-│   ├── MEMORY_03_OPSISVISION_HYBRID_EDGE_CLOUD_TSINAFORNIOTIS.md
-│   ├── MEMORY_04_DRISHT_DUAL_STREAM_MOBILE_LOTEY.md
-│   ├── MEMORY_05_EDGE_CLOUD_INTELLIGENT_CANE_MA.md
-│   ├── MEMORY_06_BHARAT_ASSIST_EMBEDDED_VISION_CHAWAN.md
-│   ├── MEMORY_07_LOW_COST_MULTIFUNCTIONAL_GLASSES_KRAL.md
-│   └── MEMORY_08_SEMANTIC_VISUAL_SLAM_WEARABLE_CHEN.md
+├── token-server/                        # 🔐 FastAPI Token Authentication Server
+│   ├── main.py                          # LiveKit JWT generation & health check
+│   ├── requirements.txt                 # Dependencies
+│   ├── .env.example                     # Environment template
+│   └── tests/
+│       └── test_token_server.py         # Token server unit tests
 │
-├── papers/                      # Original PDF Research Papers (Peer-Reviewed Literature)
-├── DRISHTI_SYSTEM_MEMORY.md     # Single Source of Truth System Architecture & Math Specs
-├── drishti_architecture.mermaid # Full Mermaid System Topology
-└── drishti_architecture_archify.html # Interactive Visual Architecture Explorer
-`
+├── esp32-firmware/                      # 🔌 ESP32-CAM Firmware
+│   ├── mjpeg_streamer/
+│   │   ├── mjpeg_streamer.ino           # Arduino MJPEG camera server
+│   │   └── config.h                     # Pin definitions & Wi-Fi config
+│   └── README.md                        # Flashing guide
+│
+├── assets/
+│   ├── labels/coco_labels.txt           # 80 COCO classes for YOLO
+│   └── models/README.md                 # TFLite model instructions
+│
+├── docs/                                # Architecture & design specifications
+│   ├── architecture_overview.md
+│   ├── mode_manager_design.md
+│   └── emergency_alert_flow.md
+│
+├── start_all.bat                        # Unified local startup script
+└── README.md
+```
 
 ---
 
-## ⚡ Core Architecture
+## 4. Voice Commands & Mode Switching
 
-Drishti solves the assistive computing trade-off through a decoupled **two-tier architecture**:
+All actions can be triggered by voice through the connected earphone mic:
 
-1. **Tier 1: Ultra-Fast Edge Reflex Loop (Sub-400ms, Completely Offline)**
-   - **Object Detection:** YOLOv8n Float16 ( \times 320$, 4 CPU threads + NNAPI delegate) executing in -38\text{ ms}$.
-   - **Monocular Depth Heuristic:**  = \frac{0.8}{\text{safeHeight}}$ with clock-face directional mapping (*10, 12, 2 o'clock*).
-   - **Immediate Haptic & Voice Reflex:** High-priority local Android TTS with audio ducking interrupts background chatter for critical hazards ($< 2.5\text{ m}$).
-   - **Inertial Fall Detection:** Accelerometer impact spike ($> 25\text{ m/s}^2$) followed by stillness ($< 11.5\text{ m/s}^2$) triggers a 15-second SOS countdown.
-
-2. **Tier 2: Cloud Multimodal Conversational Loop (Ambient Intelligence)**
-   - **WebRTC Transport:** LiveKit ultra-low latency real-time audio and video streaming.
-   - **DataChannel Telemetry:** Periodic 40% JPEG frames ( \times 240$) and hazard alerts sent to the cloud worker.
-   - **Conversational Reasoning:** Multi-provider fallback across Groq LPU (GPT-OSS-120B, $<300\text{ ms}$ TTFT), Google Gemini 2.0 Flash, and OpenAI GPT-4o.
-   - **Vernacular Speech:** Sarvam AI STT (saaras:v4) and TTS (ulbul:v3) tailored for Indian-accented English and Hindi. Enforces a strict 1–2 sentence brevity limit.
-
----
-
-## 🛠️ Hardware Bill of Materials (BOM < )
-
-| Component | Role | Approximate Cost |
-| :--- | :--- | :--- |
-| **Android Smartphone** | Edge Compute (YOLOv8n, Sensor Fusion, TTS, LiveKit) | User-owned / BYOD base device |
-| **Drishti Smart Sunglasses (ESP32-CAM)** | Smart sunglasses frame with embedded forward eye-level camera | ~$6.50 – $9.50 |
-| **Slim LiPo Battery / USB-C Tether** | Power supply (slim temple battery or phone-tethered) | ~$1.50 – $2.50 |
-| **Eyewear Chassis & Retainer Strap** | Ergonomic sunglasses frame with UV400 lenses & sports strap | ~$1.50 – $2.00 |
-| **Earphone / Headset** | Spatial audio output & microphone | ~$3.00 |
-| **Total Hardware Cost** | Ultra-accessible, mass-manufacturable smart sunglasses | **~$12.50 – $16.00** |
+| User Utterance | Resulting Action |
+|---|---|
+| `"Switch to navigation"` | Switches to Navigation mode |
+| `"Take me to the railway station"` | Enters Navigation mode and plans walking route |
+| `"Switch to read mode"` / `"Read this"` | Triggers camera OCR and reads text aloud |
+| `"Summarize this"` | Reads a concise summary of the captured text |
+| `"Switch to assistant"` | Returns to default companion mode |
+| `"Which mode am I in?"` | Spoken announcement of current mode |
+| `"Help, emergency!"` | Initiates 10-second emergency countdown |
+| `"Cancel"` / `"Stop"` | Cancels emergency countdown |
 
 ---
 
-## 🚀 Quickstart Guide
+## 5. Coding Principles Adherence
 
-### 1. Token Dispatch Server
-`ash
-cd hackbios-neuraX/token-server
-npm install
-npm run dev
-# Running on http://localhost:3000
-`
+This codebase strictly follows clean software engineering best practices:
+1. **KISS (Keep It Simple, Stupid)**: Straightforward classes with clear, readable logic.
+2. **DRY (Don't Repeat Yourself)**: Shared utilities for distance calculations, coordinates, and network calls.
+3. **YAGNI (You Aren't Going to Need It)**: Built strictly to the requirements of the architecture plan.
+4. **Meaningful Naming**: Clean, self-explanatory domain models (`ObstacleClassifier`, `VoiceIntentRouter`, `EmergencyMonitor`, `DrishtiService`).
+5. **Single Responsibility Principle (SRP)**: Every component has exactly one well-defined responsibility.
+6. **Proper Error Handling**: Graceful network and camera fallbacks; no swallowed exceptions.
+7. **Write Tests**: Fully covered with unit test suites across Python and Kotlin modules.
 
-### 2. Python Multimodal Agent
-`ash
-cd hackbios-neuraX/agent
-python -m venv venv
-# On Windows:
-.\venv\Scripts\activate
+---
+
+## 6. Getting Started
+
+### 1. Token Server
+```bash
+cd token-server
 pip install -r requirements.txt
-python drishti_agent.py dev
-`
+uvicorn main:app --host 0.0.0.0 --port 8000
+```
 
-### 3. Android Edge Application
-1. Open hackbios-neuraX/android in **Android Studio Hedgehog / Iguana / Jellyfish**.
-2. Sync Gradle dependencies.
-3. Configure your server URL in DrishtiService.kt or pp-config.json.
-4. Build and deploy to an Android device (API 26+).
+### 2. LiveKit Agent Worker
+```bash
+cd agent
+pip install -r requirements.txt
+python drishti_agent.py start
+```
+
+### 3. Run All Backend Services (Windows)
+Double-click or run:
+```powershell
+.\start_all.bat
+```
+
+### 4. Android App
+Open the `android/` directory in Android Studio and run on a connected device or emulator.
+Ensure the phone has microphone, camera, and location permissions granted.
 
 ---
 
-## 🏆 Hackathon Sponsors Integration Ready
+## 7. Cloud Deployment (Vultr)
 
-- **Google Gemini 2.0 Flash:** Native multimodal visual QA via LiveKit video channel.
-- **ElevenLabs:** Hyper-realistic emotional speech synthesis with conversational interrupts.
-- **Vultr Cloud Compute:** High-performance container hosting for the agent worker with global edge low-latency routing.
-- **Tiger Data:** Ultra-low latency time-series telemetry store for fall detection and spatial logs.
+Deploy the Drishti backend to **Vultr Cloud Compute** using Docker Compose:
 
----
+```bash
+# 1. Copy environment template and configure API keys
+cp .env.example .env
 
-## 📄 License
-This project is licensed under the MIT License — see the LICENSE file for details.
+# 2. Launch token-server and livekit-agent containers
+docker compose up -d --build
+
+# 3. Optional: Launch with Caddy automatic Let's Encrypt SSL
+docker compose --profile ssl up -d --build
+```
+
+For complete cloud-init automation, Vultr firewall configuration, and domain setup, see the [Vultr Deployment Guide](docs/vultr_deployment.md).
+
